@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tiles-definitions PUBLIC
+					"-//Apache Software Foundation//DTD Tiles Configuration 2.0//EN"
+					"http://tiles.apache.org/dtds/tiles-config_2_0.dtd">
+<tiles-definitions>
+
+	<definition name=".contents"
+		template="/WEB-INF/views/templates/defaultLayout.jsp">
+	</definition>
+	
+	<definition name=".popup_v2"
+		template="/WEB-INF/views/templates/popup_tiles_v2.jsp">
+	</definition>
+
+	<!-- layer 팝업에서 사용 -->
+	<definition name=".layer_popup"
+		template="/WEB-INF/views/templates/layer_popup_tiles.jsp"></definition>
+
+	<definition name="/*" extends=".contents">
+		<put-attribute name="body" value="/WEB-INF/views/{1}.jsp"></put-attribute>
+	</definition>
+	
+	<definition name="/budget/*" extends=".contents">
+		<put-attribute name="body" value="/WEB-INF/views/budget/{1}.jsp"></put-attribute>
+	</definition>
+	
+	<definition name="/budget/add/*" extends=".contents">
+		<put-attribute name="body" value="/WEB-INF/views/budget/add/{1}.jsp"></put-attribute>
+	</definition>
+	
+	<definition name="/budget/pop/*" extends=".popup_v2">
+		<put-attribute name="body" value="/WEB-INF/views/budget/pop/{1}.jsp"></put-attribute>
+	</definition>
+
+	<definition name="/gridSample/*" extends=".contents">
+		<put-attribute name="body" value="/WEB-INF/views/gridSample/{1}.jsp"></put-attribute>
+	</definition>
+
+	<definition name="/vacationApply/*" extends=".contents">
+		<put-attribute name="body" value="/WEB-INF/views/vacationApply/{1}.jsp"></put-attribute>
+	</definition>
+
+	<definition name="/ac/*/*/Popup/*" extends=".popup_v2">
+		<put-attribute name="body" value="/WEB-INF/views/ac/{1}/{2}/{3}.jsp" />
+	</definition>
+
+	<definition name="/ac/*/*/*" extends=".contents">
+		<put-attribute name="body" value="/WEB-INF/views/ac/{1}/{2}/{3}.jsp" />
+	</definition>
+
+	<definition name="/ac/*/*/SubPopup/*" extends=".layer_popup">
+		<put-attribute name="body" value="/WEB-INF/views/ac/{1}/{2}/{3}.jsp" />
+	</definition>
+	<definition name="/kukgoh/*" extends=".contents">
+		<put-attribute name="body" value="/WEB-INF/views/kukgoh/{1}.jsp"></put-attribute>
+	</definition>
+	<definition name="/bsrp/*" extends=".contents">
+		<put-attribute name="body" value="/WEB-INF/views/bsrp/{1}.jsp"></put-attribute>
+	</definition>
+	<definition name="/commcode/*" extends=".contents">
+		<put-attribute name="body" value="/WEB-INF/views/commcode/{1}.jsp"></put-attribute>
+	</definition>
+	<definition name="/eval/*" extends=".contents">
+		<put-attribute name="body" value="/WEB-INF/views/eval/{1}.jsp"></put-attribute>
+	</definition>
+	<definition name="/salary/*" extends=".contents">
+		<put-attribute name="body" value="/WEB-INF/views/salary/{1}.jsp"></put-attribute>
+	</definition>
+	<definition name="/popup/*/popup/*" extends=".contents">
+		<put-attribute name="body" value="/WEB-INF/views/popup/{1}/popup/{2}.jsp"></put-attribute>
+	</definition>
+	
+	<!-- 지출결의서 2.0 -->
+	<definition name=".iframe"
+		template="/WEB-INF/views/templates/defaultIframeLayout.jsp">
+	</definition>
+	
+	<definition name="/ac/*/*/iframe/*" extends=".iframe">
+		<put-attribute name="body" value="/WEB-INF/views/ac/{1}/{2}/iframe/{3}.jsp" />
+	</definition>
+	
+	<definition name="/*/iframe/*" extends=".iframe">
+		<put-attribute name="body" value="/WEB-INF/views/{1}/iframe/{2}.jsp" />
+	</definition>
+	
+	<definition name="/resAlphaG20/*" extends=".contents">
+		<put-attribute name="body" value="/WEB-INF/views/resAlphaG20/{1}.jsp" />
+	</definition>
+	
+	<definition name="/resAlphaG20/pop/*" extends=".contents">
+		<put-attribute name="body" value="/WEB-INF/views/resAlphaG20/pop/{1}.jsp"></put-attribute>
+	</definition>
+	<definition name="/busTrip/*" extends=".contents">
+		<put-attribute name="body" value="/WEB-INF/views/busTrip/{1}.jsp"></put-attribute>
+	</definition>
+	<definition name="/busTrip/pop/*" extends=".contents">
+		<put-attribute name="body" value="/WEB-INF/views/busTrip/pop/{1}.jsp"></put-attribute>
+	</definition>
+	
+	<definition name="/eval/eval_out_process" extends=".iframe">
+		<put-attribute name="body" value="/WEB-INF/views/eval/eval_out_process.jsp"></put-attribute>
+	</definition>
+	<!-- 지출결의서 2.0 -->
+	
+	<definition name="/consDocMng/*" extends=".contents">
+		<put-attribute name="body" value="/WEB-INF/views/consDocMng/{1}.jsp"></put-attribute>
+	</definition>
+</tiles-definitions>

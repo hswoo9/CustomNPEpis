@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- iCUBE mssql -->
+<mapper namespace="AcG20StateErp">
+
+    <!-- 예산레벨 리스트 -->
+    <select id="AcG20StateErp.getErpSbgtLevel" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+        EXECUTE USP_ANCJ060_TERM_DML @LANGKIND='kr', @CO_CD='${CO_CD}', @DML_FG='S',@ID_NO='0',@USER_NM=null,@USER_NMK=null
+    </select>
+    
+    <!-- 예실대비현황 -->
+    <select id="AcG20StateErp.getErpBgtCompareStatus" parameterType="StateVO" resultType="java.util.HashMap">
+        EXECUTE USP_ANC0040_BY_SELECT_01D 
+                         @LANGKIND=N'KOR',@CO_CD='${CO_CD}',@GISU='${GISU}',@DIV_CDS='${DIV_CDS}',@MGT_CDS='${MGT_CDS}',@ZEROLINE_FG='${ZEROLINE_FG}'
+                        ,@GR_FG='${GR_FG}',@BGT_CNT='${BGT_CNT}',@DIV_FG='${DIV_FG}',@BGT_CD_FROM='${BGT_CD_FROM}',@BGT_CD_TO='${BGT_CD_TO}',@OPT12='${OPT12}',@OPT13='${OPT13}',@OPT14='${OPT14}'
+                        ,@DATE_FROMS='${DATE_FROM}',@DATE_TOS='${DATE_TO}',@FR_DT='${FR_DT}',@LOGIN_EMP_CD='${EMP_CD}',@BOTTOM_CDS='${BOTTOM_CD}'
+    </select>
+    
+    <!-- 예산단계별현황     -->
+    <select id="AcG20StateErp.getBudgetStepStatus" parameterType="StateVO" resultType="java.util.HashMap" >
+         EXECUTE USP_ANC0045_BY_SELECT_01D 
+                        @LANGKIND=N'KOR',@CO_CD='${CO_CD}',@GISU='${GISU}',@DIV_CDS='${DIV_CDS}',@MGT_CDS='${MGT_CDS}',@ZEROLINE_FG='${ZEROLINE_FG}',@DIV_FG='${DIV_FG}'
+                       ,@BGT_CD_FROM='${BGT_CD_FROM}',@BGT_CD_TO='${BGT_CD_TO}',@BGT_DIFF_S='${BGT_DIFF_S}',@BGT_DIFF_D='${BGT_DIFF_D}'
+                       ,@DATE_FROMS='${DATE_FROM}',@DATE_TOS='${DATE_TO}',@FR_DT='${FR_DT}',@TO_DT='${TO_DT}',@LOGIN_EMP_CD='${EMP_CD}',@GR_FG='${GR_FG}',@CON_OPT=N'0',@BOTTOM_CDS='${BOTTOM_CDS}'                          
+    </select>  
+    
+    <select id="AcG20StateErp.getErpBgtEaDetail" parameterType="StateVO"  resultType="java.util.HashMap">      
+        EXECUTE USP_ANC0090_BY_BUDGET_SELECT @LANGKIND=N'KOR',@CO_CD='${CO_CD}',@DIV_CD_STR='${DIV_CDS}',@MGT_CD_STR='${MGT_CDS}',@BGT_CD='${BGT_CD}'
+                      ,@GISU_DT_FROM='${DATE_FROMS}',@GISU_DT_TO='${DATE_TOS}',@EMP_CD='${EMP_CD}',@TYPE=N'0',@CAUSE_TY=N'0',@FILL_TY=N'0',@BOTTOM_CD_STR='${BOTTOM_CDS}'
+    </select>
+</mapper>

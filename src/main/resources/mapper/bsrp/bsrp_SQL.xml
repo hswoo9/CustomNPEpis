@@ -1,0 +1,1091 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="bsrp">
+
+
+	<select id="bsrpAdminListSerch" parameterType="map" resultType="map">
+	/*출장관리 관리자 리스트*/
+		SELECT 
+		A.*
+		, B.CODE_KR AS 'tfcmn_kr'
+		, C.CODE_KR AS 'trff_kr'
+		, D.CODE_KR AS 'strtpnt_kr'
+		, E.CODE_KR AS 'aloc_kr'
+		FROM DJ_BSRP_ADMIN A
+		JOIN common_code B
+		ON A.TFCMN = B.CODE
+		AND A.ACTIVE = 'Y'
+		AND B.GROUP_CODE = 'BSRP_TFCMN'
+		AND B.ACTIVE = 'Y'
+		
+		<if test="tfcmn != 'all'">
+		AND A.TFCMN = #{tfcmn}
+		</if>		
+		<if test="trff != 'all'">
+		AND A.TRFF = #{trff}
+		</if>		
+		<if test="strtpnt != 'all'">
+		AND A.STRTPNT = #{strtpnt}
+		</if>		
+		<if test="aloc != 'all'">
+		AND A.ALOC = #{aloc}
+		</if>
+
+		JOIN common_code C
+		ON A.TRFF = C.CODE
+		AND C.GROUP_CODE = 'BSRP_TRFF'
+		AND C.ACTIVE = 'Y'
+		JOIN common_code D
+		ON A.STRTPNT = D.CODE
+		AND D.GROUP_CODE = 'BSRP_AREA'
+		AND D.ACTIVE = 'Y'
+		JOIN common_code E
+		ON A.ALOC = E.CODE
+		AND E.GROUP_CODE = 'BSRP_AREA'
+		AND E.ACTIVE = 'Y'
+		
+		<if test="alocTxt != null">
+		AND E.CODE_KR LIKE CONCAT('%', #{alocTxt}, '%') 
+		</if>
+		
+		ORDER BY A.WRITE_DATE DESC
+		
+		<if test="type != 'all'">
+		LIMIT ${skip} , ${pageSize}
+		</if>
+	</select>
+	
+	<select id="bsrpAdminListSerchTotal" parameterType="map" resultType="int">
+	/*출장관리 관리자 리스트 토탈*/
+		SELECT COUNT(1) FROM DJ_BSRP_ADMIN WHERE ACTIVE = 'Y'
+		
+		<if test="tfcmn != 'all'">
+		AND TFCMN = #{tfcmn}
+		</if>		
+		<if test="trff != 'all'">
+		AND TRFF = #{trff}
+		</if>		
+		<if test="strtpnt != 'all'">
+		AND STRTPNT = #{strtpnt}
+		</if>		
+		<if test="aloc != 'all'">
+		AND ALOC = #{aloc}
+		</if>		
+		
+	</select>
+	
+	<insert id="bsrpAdminSave" parameterType="map">
+	/*출장관리 관리자 등록*/
+		INSERT INTO DJ_BSRP_ADMIN(
+		TFCMN
+		, TRFF
+		, STRTPNT
+		, ALOC
+		, PYMNTAMT
+		, RM
+		, WRITE_EMP_SEQ
+		, WRITE_DATE
+		, ACTIVE
+		)VALUES(
+		#{tfcmn}
+		, #{trff}
+		, #{strtpnt}
+		, #{aloc}
+		, #{pymntamt}
+		, #{rm}
+		, #{empSeq}
+		, NOW()
+		, 'Y'
+		)
+	</insert>
+	
+	<update id="bsrpAdminUpdate" parameterType="map">
+	/*출장관리 관리자 수정*/
+		UPDATE DJ_BSRP_ADMIN SET
+		TFCMN = #{tfcmn}
+		, TRFF = #{trff}
+		, STRTPNT = #{strtpnt}
+		, ALOC = #{aloc}
+		, PYMNTAMT = #{pymntamt}
+		, RM = #{rm}
+		, UPDATE_EMP_SEQ = #{empSeq}
+		, UPDATE_DATE = NOW()
+		WHERE BA_SEQ = #{ba_seq}
+	</update>
+	
+	<update id="bsrpAdminDel" parameterType="map">
+	/*출장관리 관리자 삭제*/
+		UPDATE DJ_BSRP_ADMIN SET
+		ACTIVE = 'N'
+		, UPDATE_EMP_SEQ = #{empSeq}
+		, UPDATE_DATE = NOW()
+		WHERE BA_SEQ IN (${ba_seq})
+	</update>
+	
+	<insert id="whthrcTrvctSave" parameterType="map">
+	/*출장 관내 등록*/
+		INSERT INTO DJ_BSRP_LIST(
+		WRITE_EMP_SEQ
+		, WRITE_DATE
+		, ACTIVE
+		, ABDOCU_ST
+		, TOTAL
+		, APPLCNT_SEQ
+		, RQSTDT
+		, APP_USER_SEQ
+		, APP_USER_DEPUTY
+		, FSSE
+		, PJT_NM
+		, PJT_CD
+		, RM
+		, CAR_YN
+		, BS_TYPE
+		, BS_DES_TXT
+		)VALUES(
+		#{userSeq}
+		, NOW()
+		, 'Y'
+		, '20'
+		, #{total}
+		, #{applcnt_seq}
+		, #{rqstdt}
+		, #{app_user_seq}
+		, #{app_user_deputy}
+		, #{fsse}
+		, #{pjt_nm}
+		, #{pjt_cd}
+		, #{rm}
+		, #{car_yn}
+		, #{bs_type}
+		, #{bs_des_txt}
+		)
+	</insert>
+	
+	<update id="whthrcTrvctUpdate" parameterType="map">
+	/*출장 관내 수정*/
+		UPDATE DJ_BSRP_LIST SET
+		UPDATE_EMP_SEQ = #{userSeq}
+		, UPDATE_DATE = NOW()
+		, TOTAL = #{total}
+		, APPLCNT_SEQ = #{applcnt_seq}
+		, RQSTDT = #{rqstdt}
+		, APP_USER_SEQ = #{app_user_seq}
+		, APP_USER_DEPUTY = #{app_user_deputy}
+		, FSSE = #{fsse}
+		, PJT_NM = #{pjt_nm}
+		, PJT_CD = #{pjt_cd}
+		, RM = #{rm}
+		, CAR_YN = #{car_yn}
+		, BS_DES_TXT = #{bs_des_txt}
+		WHERE BS_SEQ = #{bs_seq}
+	</update>
+	
+	<select id="whthrcTrvctListSerch" parameterType="map" resultType="map">
+	/*출장 관내 신청 조회*/
+		SELECT 
+		a.bs_seq
+		, a.abdocu_st
+		, a.total
+		, a.applcnt_seq
+		, a.rqstdt
+		, a.app_user_seq
+		, a.fsse
+		, a.pjt_cd
+		, a.pjt_nm
+		, a.rm
+		, a.car_yn
+		, a.bs_des_txt
+        , b.emp_name as applcnt_nm
+        , b.dept_name as applcnt_dept
+        ,CONCAT((select emp_name from neos.V_USER_INFO where emp_seq = a.APP_USER_SEQ AND B.MAIN_DEPT_YN = 'Y' limit 1), IF(a.APP_USER_DEPUTY = 'Y', '(대결)','')) as app_user_nm
+		FROM DJ_BSRP_LIST A
+		
+		LEFT OUTER JOIN NEOS.V_USER_INFO B
+	    ON A.APPLCNT_SEQ = B.EMP_SEQ
+		AND B.MAIN_DEPT_YN = 'Y'
+		
+		where 1=1
+		AND A.ACTIVE = 'Y'
+        AND A.BS_TYPE = '1'
+        <if test="startDt != '' and endDt != ''">
+        and a.rqstdt between #{startDt} and #{endDt}
+        </if>
+        <if test="topSearchAbdocuSt != 'all'">
+        and a.abdocu_st = #{topSearchAbdocuSt}
+        </if>
+       <if test="topSearchProject != null">
+        and a.pjt_cd = #{topSearchProject}
+        </if>
+        <if test="topSearchUser != null">
+        and a.applcnt_seq = #{topSearchUser}
+        </if>
+        <if test="appUserSeq != null">
+        and a.app_user_seq = #{appUserSeq}
+        </if>
+        <if test="topSearchDept != 'all'">
+        and c.dept_seq = #{topSearchDept}
+        </if>
+        
+        <choose>
+        	<when test="sorting != null">
+		ORDER BY ${sorting}
+        	</when>
+        	<otherwise>
+        ORDER BY A.BS_SEQ DESC
+        	</otherwise>
+        </choose>
+
+        LIMIT ${skip} , ${pageSize}
+        
+	</select>
+	
+	<select id="whthrcTrvctListSerchTotal" parameterType="map" resultType="int">
+	/*출장 관내 신청 조회 카운트*/
+		SELECT 
+		COUNT(1)
+		FROM DJ_BSRP_LIST A
+		
+		LEFT OUTER JOIN NEOS.V_USER_INFO B
+	    ON A.APPLCNT_SEQ = B.EMP_SEQ
+		AND B.MAIN_DEPT_YN = 'Y'
+		
+		where 1=1
+		AND A.ACTIVE = 'Y'
+        AND A.BS_TYPE = '1'
+        <if test="startDt != '' and endDt != ''">
+        and a.rqstdt between #{startDt} and #{endDt}
+        </if>
+        <if test="topSearchAbdocuSt != 'all'">
+        and a.abdocu_st = #{topSearchAbdocuSt}
+        </if>
+       <if test="topSearchProject != null">
+        and a.pjt_cd = #{topSearchProject}
+        </if>
+        <if test="topSearchUser != null">
+        and a.applcnt_seq = #{topSearchUser}
+        </if>
+        <if test="appUserSeq != null">
+        and a.app_user_seq = #{appUserSeq}
+        </if>
+        <if test="topSearchDept != 'all'">
+        and c.dept_seq = #{topSearchDept}
+        </if>
+	</select>
+	
+	<insert id="bsrpAdminPositionSave" parameterType="map" useGeneratedKeys="true" keyProperty="bspd_seq">
+	/*직급별 출장비 등록*/
+		INSERT INTO DJ_BSRP_PER_DIEM(
+		WRITE_EMP_SEQ
+		, WRITE_DATE
+		, ACTIVE
+		, ORDER_CNT
+		, BSPD_NAME
+		, TRAFFIC_PD
+		, ROOM_PD
+		, FOOD_PD
+		, TRAVEL_PD
+		, RM
+		)VALUES(
+		#{userSeq}
+		, NOW()
+		, 'Y'
+		, #{order_cnt}
+		, #{bspd_name}
+		, #{traffic_pd}
+		, #{room_pd}
+		, #{food_pd}
+		, #{travel_pd}
+		, #{rm}
+		)
+	</insert>
+	
+	<insert id="positionSave" parameterType="map">
+	/*직급등록*/
+		INSERT INTO DJ_BSRP_POSITION(
+		DP_SEQ
+		, ACTIVE
+		, BSPD_SEQ
+		)VALUES(
+		#{dp_seq}
+		, 'Y'
+		, #{bspd_seq}
+		)	
+	</insert>
+	
+	<select id="bsrpAdminPositionListSerch" parameterType="map" resultType="map">
+	/*출장 직급별 여비 조회*/
+		SELECT 
+		a.*
+		, b.ps_seq
+		, group_concat(b.dp_seq) as dp_seq
+		, group_concat(c.dp_name) as dp_name
+		 FROM dj_bsrp_per_diem a
+		JOIN DJ_BSRP_POSITION B
+		ON A.BSPD_SEQ = B.BSPD_SEQ
+		AND A.ACTIVE = 'Y'
+		AND B.ACTIVE = 'Y'
+		JOIN NEOS.T_CO_COMP_DUTY_POSITION_MULTI C
+		ON B.DP_SEQ = C.DP_SEQ
+		AND C.DP_TYPE = 'POSITION'
+		AND C.LANG_CODE = 'kr'
+		AND C.USE_YN = 'Y'
+		GROUP BY A.BSPD_SEQ
+		ORDER BY ORDER_CNT
+	</select>
+	
+	<update id="bsrpAdminPositionUpdate" parameterType="map">
+	/*출장 직급별 여비 수정*/
+		UPDATE DJ_BSRP_PER_DIEM SET
+		UPDATE_EMP_SEQ = #{userSeq}
+		, UPDATE_DATE = NOW()
+		, ORDER_CNT = #{order_cnt}
+		, BSPD_NAME = #{bspd_name}
+		, TRAFFIC_PD = #{traffic_pd}
+		, ROOM_PD = #{room_pd}
+		, FOOD_PD = #{food_pd}
+		, TRAVEL_PD = #{travel_pd}
+		, RM = #{rm}
+		WHERE BSPD_SEQ = #{bspd_seq}
+	</update>
+	
+	<update id="positionDel" parameterType="map">
+	/*직급 삭제*/
+		UPDATE DJ_BSRP_POSITION SET ACTIVE = 'N' WHERE BSPD_SEQ = #{bspd_seq}
+	</update>
+	
+	<update id="bsrpAdminPositionDel1" parameterType="map">
+		UPDATE DJ_BSRP_PER_DIEM SET
+		ACTIVE = 'N'
+		, UPDATE_EMP_SEQ = #{userSeq}
+		, UPDATE_DATE = NOW()
+		WHERE BSPD_SEQ IN (${bspd_seq})
+	</update>
+	
+	<update id="bsrpAdminPositionDel2" parameterType="map">
+		UPDATE dj_bsrp_position SET
+		ACTIVE = 'N'
+		WHERE BSPD_SEQ IN (${bspd_seq})
+	</update>
+	
+	<update id="whthrcTrvctApp" parameterType="map">
+	/*관내 승인*/
+		UPDATE DJ_BSRP_LIST SET 
+		ABDOCU_ST = 90
+		, UPDATE_EMP_SEQ = #{userSeq}
+		, UPDATE_DATE = NOW()
+		WHERE BS_SEQ IN (${bs_seq})
+	</update>
+
+	<update id="whthrcTrvctAppCancel" parameterType="map">
+	/*관내 승인취소*/
+		UPDATE DJ_BSRP_LIST SET 
+		ABDOCU_ST = 20
+		, UPDATE_EMP_SEQ = #{userSeq}
+		, UPDATE_DATE = NOW()
+		WHERE BS_SEQ IN (${bs_seq})
+	</update>
+	
+	<update id="whthrcTrvctCancel" parameterType="map">
+	/*관내 출장 신청 취소*/
+		UPDATE DJ_BSRP_LIST SET 
+		ACTIVE = 'N'
+		, UPDATE_EMP_SEQ = #{userSeq}
+		, UPDATE_DATE = NOW()
+		WHERE BS_SEQ IN (${bs_seq})
+	</update>
+	
+	<select id="getUserPosition" parameterType="map" resultType="map">
+	/*직급별 출장비 조회*/
+		SELECT A.* FROM DJ_BSRP_PER_DIEM A 
+		JOIN DJ_BSRP_POSITION B
+		ON A.BSPD_SEQ = B.BSPD_SEQ
+		AND A.ACTIVE = 'Y'
+		AND B.ACTIVE = 'Y'
+		AND B.DP_SEQ = (SELECT POSITION_CODE FROM V_EMP_INFO WHERE EMP_SEQ = #{emp_seq} AND USE_YN = 'Y')
+	</select>
+
+	<select id="getUserPositionEmp" parameterType="map" resultType="map">
+	/*직급별 출장비 조회*/
+		SELECT A.* FROM DJ_BSRP_PER_DIEM A 
+		JOIN DJ_BSRP_POSITION B
+		ON A.BSPD_SEQ = B.BSPD_SEQ
+		AND A.ACTIVE = 'Y'
+		AND B.ACTIVE = 'Y'
+		AND B.DP_SEQ = (SELECT POSITION_CODE FROM V_EMP_INFO WHERE ERP_EMP_NUM = #{EMP_CD} AND USE_YN = 'Y' LIMIT 1)
+	</select>
+	
+	<insert id="bsrpSave" parameterType="map" useGeneratedKeys="true" keyProperty="bs_seq">
+	/*출장 신청*/
+		INSERT INTO DJ_BSRP_LIST(
+		write_emp_seq
+		, write_date
+		, active
+		, abdocu_no
+		, fare
+		, daily
+		, toll
+		, room
+		, food
+		, total
+		, bs_start
+		, bs_end
+		, bs_des
+		, bs_des_txt
+		, car_yn
+		, tfcmn
+		, applcnt_seq
+		, rqstdt
+		, room_yn
+		, food_yn
+		, dty_seq
+		, bs_day
+		, bs_type
+		, app_user_seq
+		, fsse
+		, pjt_cd
+		, pjt_nm
+		, rm
+		, fg
+		, ex_rate
+		)values(
+		#{userSeq}
+		, NOW()
+		, 'Y'
+		, #{abdocu_no}
+		, #{fare}
+		, #{daily}
+		, #{toll}
+		, #{room}
+		, #{food}
+		, #{total}
+		, #{bs_start}
+		, #{bs_end}
+		, #{bs_des}
+		, #{bs_des_txt}
+		, #{car_yn}
+		, #{tfcmn}
+		, #{applcnt_seq}
+		, #{rqstdt}
+		, #{room_yn}
+		, #{food_yn}
+		, #{dty_seq}
+		, #{bs_day}
+		, #{bs_type}
+		, #{app_user_seq}
+		, #{fsse}
+		, #{pjt_cd}
+		, #{pjt_nm}
+		, #{rm}
+		, #{fg}
+		, #{ex_rate}
+		)
+	</insert>
+	
+	<update id="bsrpApp" parameterType="Map">
+		/*bsrp.bsrpApp*/
+		update dj_bsrp_list
+		set	update_emp_seq = #{empSeq}
+			, update_date = now()
+			, abdocu_st = #{docSts}
+		where concat('bsrp_', bs_seq) = #{approKey}
+	</update>
+	
+	<select id="bsrpReqstListSerch" parameterType="map" resultType="map">
+	/*출장 신청 조회*/
+		SELECT 
+		a.bs_seq
+		, a.abdocu_st
+		, a.applcnt_seq
+		, a.rqstdt
+		, a.app_user_seq
+		, a.fsse
+		, a.pjt_cd
+		, a.pjt_nm
+		, a.rm
+		, a.car_yn
+		, a.bs_start
+		, a.bs_end
+		, a.report_st
+        , b.emp_name as applcnt_nm
+        , b.dept_name as applcnt_dept
+        , c.abgt_nm
+        , c.apply_am as total
+        , (select count(confer_return) from NEOS.G20_ABDOCU_B where confer_return = c.abdocu_b_no) as confer_return
+        , a.return_reason
+		FROM DJ_BSRP_LIST A
+        
+        LEFT OUTER JOIN NEOS.V_USER_INFO B
+	    ON A.APPLCNT_SEQ = B.EMP_SEQ
+		AND B.MAIN_DEPT_YN = 'Y'
+		
+		JOIN NEOS.G20_ABDOCU_B C
+		ON A.ABDOCU_NO = C.ABDOCU_NO
+		AND C.CONFER_RETURN IS NULL
+        
+        WHERE ABDOCU_ST IN (20,90)
+        
+        AND A.ACTIVE = 'Y'
+        AND A.BS_TYPE IN ('2','3')
+        <if test="startDt != '' and endDt != ''">
+        and a.rqstdt between #{startDt} and #{endDt}
+        </if>
+        <if test="topSearchAbdocuSt != 'all'">
+        and a.abdocu_st = #{topSearchAbdocuSt}
+        </if>
+       <if test="topSearchProject != null">
+        and a.pjt_cd = #{topSearchProject}
+        </if>
+        <if test="topSearchUser != null">
+        and a.applcnt_seq = #{topSearchUser}
+        </if>
+        <if test="topSearchDept != 'all'">
+        and b.dept_seq = #{topSearchDept}
+        </if>
+        <if test="pjtCds != null">
+        and a.pjt_cd in (${pjtCds})
+        </if>
+        
+        <choose>
+        	<when test="sorting != null">
+		ORDER BY ${sorting}
+        	</when>
+        	<otherwise>
+        ORDER BY A.BS_SEQ DESC
+        	</otherwise>
+        </choose>
+
+        LIMIT ${skip} , ${pageSize}
+        
+	</select>
+	
+	<select id="bsrpReqstListSerchTotal" parameterType="map" resultType="int">
+	/*출장 신청 조회 카운트*/
+		SELECT 
+		COUNT(1)
+		FROM DJ_BSRP_LIST A
+        
+        LEFT OUTER JOIN NEOS.V_USER_INFO B
+	    ON A.APPLCNT_SEQ = B.EMP_SEQ
+		AND B.MAIN_DEPT_YN = 'Y'
+        
+        WHERE ABDOCU_ST IN (20,90)
+        
+        AND A.ACTIVE = 'Y'
+        AND A.BS_TYPE IN ('2','3')
+        <if test="startDt != '' and endDt != ''">
+        and a.rqstdt between #{startDt} and #{endDt}
+        </if>
+        <if test="topSearchAbdocuSt != 'all'">
+        and a.abdocu_st = #{topSearchAbdocuSt}
+        </if>
+       <if test="topSearchProject != null">
+        and a.pjt_cd = #{topSearchProject}
+        </if>
+        <if test="topSearchUser != null">
+        and a.applcnt_seq = #{topSearchUser}
+        </if>
+        <if test="topSearchDept != 'all'">
+        and b.dept_seq = #{topSearchDept}
+        </if>
+        <if test="pjtCds != null">
+        and a.pjt_cd in (${pjtCds})
+        </if>
+	</select>
+	
+	<select id="getBsrpInfo" parameterType="map" resultType="map">
+	/*getBsrpInfo*/
+		SELECT 
+		a.*
+		, (select emp_name from v_emp_info where lang_code = 'kr' and emp_seq = a.applcnt_seq limit 1) as applcnt_nm
+		, (select dept_name from v_emp_info where lang_code = 'kr' and emp_seq = a.applcnt_seq limit 1) as applcnt_dept
+		, (select DP_NAME from v_position where dp_seq = (select position_code from v_emp_info where lang_code = 'kr' and emp_seq = a.applcnt_seq limit 1) limit 1) as applcnt_pt
+		, h.abdocu_no
+        , h.erp_co_cd
+        , h.erp_div_nm
+        , h.erp_div_cd
+        , h.mgt_nm
+        , h.mgt_cd
+        , h.rmk_dc
+        , b.abgt_nm
+        , b.abgt_cd
+        , b.erp_bgt_nm3
+		FROM DJ_BSRP_LIST A
+		
+		join neos.g20_abdocu_h h
+		on a.abdocu_no = h.abdocu_no
+		
+		join neos.g20_abdocu_b b
+		on a.abdocu_no = b.abdocu_no
+		and b.confer_return is null
+		
+		<choose>
+			<when test="abdocu_no != null and abdocu_no != ''">
+        WHERE a.abdocu_no = #{abdocu_no}
+        	</when>
+        	<otherwise>
+        WHERE a.bs_seq = #{bs_seq}
+        	</otherwise>
+        </choose>
+        limit 1
+	</select>
+	
+	<update id="bsrp.bsrpReportSave" parameterType="map">
+		/*bsrp.bsrpReportSave*/
+		update DJ_BSRP_LIST
+		set report_json = #{report_json}
+		where bs_seq = #{bs_seq}
+	</update>
+	
+	<update id="bsrpRApp" parameterType="Map">
+		/*bsrp.bsrpRApp*/
+		update dj_bsrp_list
+		set	update_emp_seq = #{empSeq}
+			, update_date = now()
+			, report_st = #{docSts}
+		where abdocu_no = #{approKey}
+	</update>
+	
+	<update id="docIdUpdate" parameterType="Map">
+		/*docIdUpdate*/
+		update neos.g20_abdocu_h
+		set c_dikeycode = #{docId}
+		where abdocu_no = #{abdocu_no}
+	</update>
+	
+	<update id="abdocu_b_update" parameterType="Map">
+		/*abdocu_b_update*/
+		update neos.g20_abdocu_b
+		set apply_am = #{unit_am}
+		where abdocu_no = #{abdocu_no}
+		and confer_return is null
+	</update>
+	
+	<update id="abdocu_t_update" parameterType="Map">
+		/*abdocu_t_update*/
+		update neos.g20_abdocu_t
+		set unit_am = #{unit_am}
+			, sup_am = #{sup_am}
+			, vat_am = #{vat_am}
+		where abdocu_no = #{abdocu_no}
+	</update>
+	
+	<select id="bsrpStatementListSerch" parameterType="map" resultType="map">
+	/*출장내역 조회*/
+		SELECT 
+			a.* 
+		FROM
+		(
+			SELECT
+			@rownum:=@rownum+1 as row_num
+			, a.bs_seq
+			, a.abdocu_no
+			, a.abdocu_st
+			, a.applcnt_seq
+			, a.rqstdt
+			, a.app_user_seq
+			, a.fsse
+			, a.pjt_cd
+			, a.pjt_nm
+			, a.rm
+			, a.car_yn
+			, a.bs_start
+			, a.bs_end
+			, a.report_st
+		    , a.daily
+		    , (a.fare + a.toll) as fare
+		    , a.room
+		    , a.food
+		    , a.total
+		    , a.payment_dt
+		    , a.return_yn
+		    , a.report_json
+	        , b.emp_name as applcnt_nm
+	        , b.dept_name as applcnt_dept
+		    , c.abgt_nm
+<!-- 		    , c.apply_am as total -->
+		    , c.abdocu_b_no
+		    , (select count(confer_return) from NEOS.G20_ABDOCU_B where confer_return = c.abdocu_b_no) as confer_return
+<!-- 		    , d.code_kr as bs_des -->
+			, (CASE 
+				WHEN a.bs_des_txt is null
+                THEN d.code_kr
+                ELSE a.bs_des_txt
+                END
+			) AS bs_des
+		    , (	CASE
+					WHEN (e.appr_end_date IS NOT NULL and a.abdocu_st = 90)
+	                THEN DATE_FORMAT(e.appr_end_date, '%Y-%m-%d')
+	                WHEN (e.appr_end_date IS NULL and a.abdocu_st = 90)
+	                THEN a.rqstdt
+	                ELSE ''
+				END) AS end_dt
+			FROM DJ_BSRP_LIST A
+	        
+	        LEFT JOIN NEOS.V_USER_INFO B
+		    ON A.APPLCNT_SEQ = B.EMP_SEQ
+			AND B.MAIN_DEPT_YN = 'Y'
+			
+			LEFT JOIN NEOS.G20_ABDOCU_B C
+    		ON A.ABDOCU_NO = C.ABDOCU_NO
+    		AND C.CONFER_RETURN IS NULL
+    		
+    		LEFT JOIN common_code D
+    		ON D.GROUP_CODE = 'BSRP_AREA'
+    		AND A.BS_DES = D.CODE
+    		
+    		LEFT JOIN NEOS.ERPGWLINK E
+    		ON CONCAT('bsrp_', A.BS_SEQ) = E.DOCX_NUMB
+    		
+    		JOIN (SELECT @rownum:=0) TMP
+			
+	        WHERE A.ACTIVE = 'Y'
+	        
+	        AND A.ABDOCU_ST IN (20,90)
+	        AND A.BS_TYPE IN ('2','3')
+	        <if test="startDt != '' and endDt != ''">
+	        and a.bs_start between #{startDt} and #{endDt}
+	        </if>
+	        <if test="topSearchYear != null and topSearchYear != ''">
+	        and a.bs_start like concat(#{topSearchYear},'%')
+	        </if>
+	        <if test="topSearchPlace != null and topSearchPlace != ''">
+	        and d.code_kr like concat('%',#{topSearchPlace},'%')
+	        </if>
+	        <if test="topSearchEmp != null and topSearchEmp != ''">
+	        and a.applcnt_seq = #{topSearchEmp}
+	        </if>
+	        <if test="topSearchDept != null and topSearchDept != ''">
+	        and b.dept_seq = #{topSearchDept}
+	        </if>
+	        <if test="topSearchState != null and topSearchState != ''">
+	        and a.abdocu_st = #{topSearchState}
+	        </if>
+	        <if test="topSearchProject != null and topSearchProject != ''">
+	        and a.pjt_cd = #{topSearchProject}
+	        </if>
+	        <if test="topSearchBudget1 != null and topSearchBudget1 != ''">
+	        and c.abgt_cd = #{topSearchBudget1}
+	        </if>
+	        <if test="topSearchBudget2 != null and topSearchBudget2 != ''">
+	        and c.erp_bgt_nm3 like concat('%',#{topSearchBudget2},'%')
+	        </if>
+	        <if test="pjtCds != null and pjtCds != ''">
+	        and a.pjt_cd in (${pjtCds})
+	        </if>
+	        <if test='returnYN == "Y"'>
+	        and a.abdocu_st in (90)
+<!-- 	        and a.report_st in (90) -->
+	        and (a.report_st in (90) or (a.return_yn = 'Y' and (report_st is null or report_st not in (10,20))))
+	        </if>
+	        <if test='returnConferYN == "Y"'>
+	        and a.abdocu_st in (90)
+	        </if>
+	        <if test='statYN == "Y"'>
+	        and ((select count(confer_return) from NEOS.G20_ABDOCU_B where confer_return = c.abdocu_b_no) = 0 or (A.payment_dt is null or A.payment_dt != ''))
+	        </if>
+	        <choose>
+	        	<when test="sorting != null">
+			ORDER BY ${sorting}
+	        	</when>
+	        	<otherwise>
+	        ORDER BY A.BS_SEQ DESC
+	        	</otherwise>
+	        </choose>
+		) A
+		ORDER BY A.ROW_NUM
+        LIMIT ${skip} , ${pageSize}
+        
+	</select>
+	
+	<select id="bsrpStatementListSerchTotal" parameterType="map" resultType="int">
+	/*출장내역 조회*/
+		SELECT 
+		COUNT(*)
+		FROM DJ_BSRP_LIST A
+	        
+        LEFT JOIN NEOS.V_USER_INFO B
+	    ON A.APPLCNT_SEQ = B.EMP_SEQ
+		AND B.MAIN_DEPT_YN = 'Y'
+		
+		LEFT JOIN NEOS.G20_ABDOCU_B C
+   		ON A.ABDOCU_NO = C.ABDOCU_NO
+   		AND C.CONFER_RETURN IS NULL
+   		
+   		LEFT JOIN common_code D
+   		ON D.GROUP_CODE = 'BSRP_AREA'
+   		AND A.BS_DES = D.CODE
+   		
+   		LEFT JOIN NEOS.ERPGWLINK E
+   		ON CONCAT('bsrp_', A.BS_SEQ) = E.DOCX_NUMB
+		
+		JOIN (SELECT @rownum:=0) TMP
+        
+        WHERE A.ACTIVE = 'Y'
+	        
+        AND A.ABDOCU_ST IN (20,90)
+        AND A.BS_TYPE IN ('2','3')
+        <if test="startDt != '' and endDt != ''">
+        and a.bs_start between #{startDt} and #{endDt}
+        </if>
+        <if test="topSearchYear != null and topSearchYear != ''">
+        and a.bs_start like concat(#{topSearchYear},'%')
+        </if>
+        <if test="topSearchPlace != null and topSearchPlace != ''">
+        and d.code_kr like concat('%',#{topSearchPlace},'%')
+        </if>
+        <if test="topSearchEmp != null and topSearchEmp != ''">
+        and a.applcnt_seq = #{topSearchEmp}
+        </if>
+        <if test="topSearchDept != null and topSearchDept != ''">
+        and b.dept_seq = #{topSearchDept}
+        </if>
+        <if test="topSearchState != null and topSearchState != ''">
+        and a.abdocu_st = #{topSearchState}
+        </if>
+        <if test="topSearchProject != null and topSearchProject != ''">
+        and a.pjt_cd = #{topSearchProject}
+        </if>
+        <if test="topSearchBudget1 != null and topSearchBudget1 != ''">
+        and c.abgt_cd = #{topSearchBudget1}
+        </if>
+        <if test="topSearchBudget2 != null and topSearchBudget2 != ''">
+        and c.erp_bgt_nm3 like concat('%',#{topSearchBudget2},'%')
+        </if>
+        <if test="pjtCds != null and pjtCds != ''">
+        and a.pjt_cd in (${pjtCds})
+        </if>
+        <if test='returnYN == "Y"'>
+        and a.abdocu_st in (90)
+<!--         and a.report_st in (90) -->
+        and (a.report_st in (90) or (a.return_yn = 'Y' and (report_st is null or report_st not in (10,20))))
+        </if>
+        <if test='returnConferYN == "Y"'>
+        and a.abdocu_st in (90)
+        </if>
+        <if test='statYN == "Y"'>
+        and ((select count(confer_return) from NEOS.G20_ABDOCU_B where confer_return = c.abdocu_b_no) = 0 or (A.payment_dt is null or A.payment_dt != ''))
+        </if>
+	</select>
+	
+	<update id="paymentDtSave">
+		/*bsrp.paymentDtSave*/
+		UPDATE DJ_BSRP_LIST
+		SET payment_dt = #{payment_dt}
+		where bs_seq = #{bs_seq}
+	</update>
+	
+	<select id="getErpGwLink" parameterType="Map" resultType="Map">
+		/*bsrp.getErpGwLink*/
+		select * from neos.erpgwlink
+		where docx_numb = #{docx_numb}
+		limit 1
+	</select>
+	
+	<update id="bsrpReturn" parameterType="Map">
+		/*bsrp.bsrpReturn*/
+		UPDATE DJ_BSRP_LIST
+		SET report_st = NULL,
+			return_reason = #{return_reason},
+			return_json = #{return_json},
+			mileage_json = #{mileage_json},
+			return_Yn = 'Y'
+		where bs_seq = #{bs_seq}
+	</update>
+	
+	<delete id="erpgwlinkDel" parameterType="Map">
+		/*bsrp.erpgwlinkDel*/
+		delete from neos.erpgwlink
+		where appr_seqn = #{appr_seqn}
+	</delete>
+	
+	<select id="getReturnJson" parameterType="Map" resultType="String">
+		/*bsrp.getReturnJson*/
+		select return_json from DJ_BSRP_LIST
+		where bs_seq = #{bs_seq}
+		limit 1
+	</select>
+	
+	<update id="bsrpReturnCancel" parameterType="Map">
+		/*bsrp.bsrpReturnCancel*/
+		UPDATE DJ_BSRP_LIST
+		SET report_st = 90,
+			return_reason = NULL,
+			return_json = NULL,
+			mileage_json = NULL
+		where bs_seq = #{bs_seq}
+	</update>
+	
+	<insert id="erpgwlinkInsert" parameterType="Map">
+		/*bsrp.erpgwlinkInsert*/
+		insert into neos.erpgwlink
+		(appr_seqn, pack_knd_cd, docx_gubn, docx_numb, requ_userid, requ_userkey, requ_date, appr_dikey, appr_status, appr_end_date)
+		values
+		(#{appr_seqn}, #{pack_knd_cd}, #{docx_gubn}, #{docx_numb}, #{requ_userid}, #{requ_userkey}, #{requ_date}, #{appr_dikey}, #{appr_status}, #{appr_end_date})
+	</insert>
+	
+	<select id="getBsrpMileage" parameterType="Map" resultType="Integer">
+		/*bsrp.getBsrpMileage*/
+		select 
+			(ifnull(sum(new_mileage),0) - ifnull(sum(use_mileage),0)) as saved_mileage 
+		from dj_bsrp_mileage
+		where active = 'Y'
+		and applcnt_seq = #{applcnt_seq}
+		and airline = #{airline}
+	</select>
+	
+	<insert id="bsrpMileageSave" parameterType="Map">
+		/*bsrp.bsrpMileageSave*/
+		insert into dj_bsrp_mileage
+		(
+			write_emp_seq
+			, write_date
+			, active
+			, bs_seq
+			, applcnt_seq
+			, airline
+			, new_mileage
+			, use_mileage
+			, saved_mileage
+		)
+		values
+		(
+			#{userSeq}
+			, now()
+			, 'N'
+			, #{bs_seq}
+			, #{applcnt_seq}
+			, #{airline}
+			, #{new_mileage}
+			, #{use_mileage}
+			, #{saved_mileage}
+		)
+	</insert>
+	
+	<update id="bsrpMileageActive" parameterType="Map">
+		/*bsrp.bsrpMileageActive*/
+		update dj_bsrp_mileage
+		set	active = #{active}
+		where bs_seq = #{bs_seq}
+	</update>
+	
+	<update id="bsrpMileageUpdate" parameterType="Map">
+		/*bsrp.bsrpMileageUpdate*/
+		update dj_bsrp_mileage
+		set	new_mileage = #{new_mileage},
+			use_mileage = #{use_mileage},
+			saved_mileage = #{saved_mileage}
+		where bs_seq = #{bs_seq}
+	</update>
+	
+	<delete id="bsrpMileageDel" parameterType="Map">
+		/*bsrp.bsrpMileageDel*/
+		delete from dj_bsrp_mileage
+		where bs_seq = #{bs_seq}
+	</delete>
+	
+	<select id="getBsrpMileageInfo" parameterType="Map" resultType="Map">
+		/*bsrp.getBsrpMileageInfo*/
+		select * from dj_bsrp_mileage where bs_seq = #{bs_seq} limit 1
+	</select>
+	
+	<select id="getMileageJson" parameterType="Map" resultType="String">
+		/*bsrp.getMileageJson*/
+		select mileage_json from DJ_BSRP_LIST
+		where bs_seq = #{bs_seq}
+		limit 1
+	</select>
+	
+	<select id="bsrpMileageListSerch" parameterType="Map" resultType="Map">
+		/*bsrp.bsrpMileageListSerch*/
+		SELECT 
+			a.* 
+		FROM
+		(
+			SELECT
+			@rownum:=@rownum+1 as row_num,
+			UI.dept_name,
+		    (SELECT DP_NAME FROM V_POSITION WHERE DP_SEQ = UI.DEPT_POSITION_CODE) AS position_name,
+		    UI.emp_num,
+		    UI.emp_name,
+		    BL.bs_start,
+		    BL.bs_des_txt,
+		    (SELECT CODE_KR FROM common_code WHERE GROUP_CODE = 'BIZTRIP_AIRLINE' AND CODE = BM.AIRLINE) AS airline,
+		    format(BM.new_mileage,0) as new_mileage,
+		    format(BM.use_mileage,0) as use_mileage
+			FROM DJ_BSRP_MILEAGE BM
+			
+			LEFT OUTER JOIN DJ_BSRP_LIST BL
+			ON BM.BS_SEQ = BL.BS_SEQ
+			
+			LEFT OUTER JOIN NEOS.V_USER_INFO UI
+			ON BM.APPLCNT_SEQ = UI.EMP_SEQ
+			AND UI.MAIN_DEPT_YN = 'Y'
+	        
+    		JOIN (SELECT @rownum:=0) TMP
+			
+	        WHERE BM.ACTIVE = 'Y'
+	        
+	        <if test="startDt != '' and endDt != ''">
+	        and bl.rqstdt between #{startDt} and #{endDt}
+	        </if>
+	        
+	        <if test="topSearchAirline != null and topSearchAirline != ''">
+	        and bm.airline = #{topSearchAirline}
+	        </if>
+	        
+	        <if test="topSearchEmp != null and topSearchEmp != ''">
+	        and bm.applcnt_seq = #{topSearchEmp}
+	        </if>
+	        
+	        <if test="topSearchDept != null and topSearchDept != ''">
+	        and ui.dept_seq = #{topSearchDept}
+	        </if>
+	        
+	        <choose>
+	        	<when test="sorting != null">
+			ORDER BY ${sorting}
+	        	</when>
+	        	<otherwise>
+	        ORDER BY BM.BSM_SEQ DESC
+	        	</otherwise>
+	        </choose>
+		) A
+		ORDER BY A.ROW_NUM
+        LIMIT ${skip} , ${pageSize}
+	</select>
+	
+	<select id="bsrpMileageListSerchTotal" parameterType="Map" resultType="Integer">
+		/*bsrp.bsrpMileageListSerchTotal*/
+		SELECT
+			COUNT(*)
+		FROM DJ_BSRP_MILEAGE BM
+		
+		LEFT OUTER JOIN DJ_BSRP_LIST BL
+		ON BM.BS_SEQ = BL.BS_SEQ
+		
+		LEFT OUTER JOIN NEOS.V_USER_INFO UI
+		ON BM.APPLCNT_SEQ = UI.EMP_SEQ
+		AND UI.MAIN_DEPT_YN = 'Y'
+        
+   		JOIN (SELECT @rownum:=0) TMP
+		
+        WHERE BM.ACTIVE = 'Y'
+        
+        <if test="startDt != '' and endDt != ''">
+        and bl.rqstdt between #{startDt} and #{endDt}
+        </if>
+        
+        <if test="topSearchAirline != null and topSearchAirline != ''">
+        and bm.airline = #{topSearchAirline}
+        </if>
+        
+        <if test="topSearchEmp != null and topSearchEmp != ''">
+        and bm.applcnt_seq = #{topSearchEmp}
+        </if>
+        
+        <if test="topSearchDept != null and topSearchDept != ''">
+        and ui.dept_seq = #{topSearchDept}
+        </if>
+	</select>
+</mapper>

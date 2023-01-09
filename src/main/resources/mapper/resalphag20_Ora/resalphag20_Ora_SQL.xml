@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="resalphag20_Ora">
+	
+	<select id="resalphag20_Ora.getOnnaraDocs" parameterType="map" resultType="map">
+	
+		/* resalphag20_Ora.getOnnaraDocs - Oracle */
+	
+		SELECT A.*, (SELECT wm_concat(OBJID) FROM BMS_DCT_PATH B WHERE A.DOCID = B.DOCID) AS AUTHEMP 
+		FROM BMS_DCT_RDOC A 
+		WHERE INDT BETWEEN #{fromDate} AND #{toDate}
+			AND DOCTTL LIKE '%' ||  #{docTtl} || '%'
+			AND AUTHORID IN
+			<foreach collection="erpEmpSeqArr" item="type"  open="(" close=")" separator=",">
+            #{type,jdbcType=VARCHAR}
+        	</foreach>
+           	AND DELFLAG = 'N' and TEMPFLAG = 'N' and ENDDT is not null order by ENDDT DESC
+	</select>
+	
+	<select id="resalphag20_Ora.getOnnaraDocAllFiles" parameterType="map" resultType="map">
+	
+		/* resalphag20_Ora.getOnnaraDocAllFiles - Oracle */
+	
+		SELECT *
+		FROM BMS_DCT_FILE
+		WHERE DOCID = #{DOCID}
+	</select>
+	
+	<select id="resalphag20_Ora.getOnnaraFile" parameterType="map" resultType="map">
+	
+		/* resalphag20_Ora.getOnnaraFile - Oracle */
+	
+		SELECT *
+		FROM BMS_DCT_FILE
+		WHERE FLEID = #{o_file_id}
+	</select>
+	
+	<select id="resalphag20_Ora.getOnnaraDocInfo" parameterType="map" resultType="map">
+	
+		/* resalphag20_Ora.getOnnaraDocInfo - Oracle */
+	
+		SELECT *
+		FROM BMS_DCT_RDOC A 
+		WHERE DOCID = #{DOCID} 
+           	AND DELFLAG = 'N' and TEMPFLAG = 'N' and ENDDT is not null order by ENDDT DESC
+	</select>
+	
+</mapper>

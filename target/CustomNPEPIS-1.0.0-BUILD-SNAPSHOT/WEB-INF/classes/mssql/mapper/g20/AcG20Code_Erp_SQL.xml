@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- iCUBE mssql -->
+<mapper namespace="AcG20CodeErp">
+
+    <select id="AcG20CodeErp.getErpConfigList" parameterType="java.util.Map" resultType="java.util.Map">
+       /* AcG20CodeErp.getErpConfigList - mssql */
+       SELECT * FROM SYSCFG WHERE CO_CD = '${CO_CD}' 
+    </select>	
+
+	<!-- 사원정보 가져오기 -->
+	<select id="AcG20CodeErp.getErpUser" parameterType="java.util.Map" resultType="java.util.Map">
+		/* AcG20CodeErp.getErpUser - mssql */
+		EXECUTE P_GWG20_COMMON_USER_INFO @CO_CD='${CO_CD}',@EMP_CD='${EMP_CD}',@LANGKIND='KR'
+	</select>
+	
+	<select id="AcG20CodeErp.getErpGISU" parameterType="java.util.Map" resultType="java.util.Map">
+		/* AcG20CodeErp.getErpGISU - mssql */
+		EXECUTE P_GWG20_COMMON_GISU_LIST @CO_CD='${CO_CD}',@GISU=NULL
+	</select>
+
+    <!-- 회계단위리스트 -->
+    <select id="AcG20CodeErp.getErpDIVList" parameterType="java.util.Map" resultType="java.util.Map">
+        /* AcG20CodeErp.getErpDIVList - mssql */
+        EXECUTE P_GWG20_COMMON_DIV_LIST @CO_CD='${CO_CD}',@BASE_DT='${BASE_DT}',@LANGKIND='${LANGKIND}'
+    </select>
+	
+	<!-- 사원리스트 -->
+	<select id="AcG20CodeErp.getErpUserList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	    /* AcG20CodeErp.getErpUserList - mssql */
+		exec P_GWG20_COMMON_EMP_LIST @CO_CD='${CO_CD}',@DIV_CD='${DIV_CD}',@DEPT_CD='${DEPT_CD}',@EMP_CD='${EMP_CD}',@EMP_NM='${EMP_NM}'
+			,@BASE_DT='${BASE_DT}',@LANGKIND='${LANGKIND}', @TO_DT='${TO_DT}'
+	</select>	
+	
+<!-- 	<select id="AcG20CodeErp.getErpMgtPjtList" parameterType="java.util.HashMap" resultType="java.util.HashMap"> -->
+<!-- 	    /* AcG20CodeErp.getErpMgtPjtList - mssql */ -->
+<!-- 		exec P_GWG20_COMMON_SPROJECT_LIST @CO_CD='${CO_CD}',@PJT_CD=N'',@EMP_CD='${EMP_CD}',@LANGKIND='${LANGKIND}'	 -->
+<!-- 	</select> -->
+	
+	<select id="AcG20CodeErp.getErpMgtPjtList" parameterType="java.util.HashMap" resultType="java.util.HashMap"><![CDATA[
+	    /* mssql/iCUBE/common/procedure/G20ProcedureSQL - g20Procedure.selectProjectList */
+		/* 프로젝트 리스트 조회 */
+		/* 원본 프로시저 [1.0] -  [dbo].[P_GWG20_COMMON_SPROJECT_LIST] */
+		/* params[ erpCompSeq, erpPjtSeq, erpPjtName, erpPjtStatus, erpPjtType, baseDate, erpEmpSeq ] */	
+
+		DECLARE
+		   @CO_CD   NVARCHAR(4)     
+		 , @PJT_CD   NVARCHAR(10)
+		 , @PJT_NM   NVARCHAR(30)
+		 , @PJT_PROC   NCHAR(3)
+		 , @PJT_WORKTY  NCHAR(1)
+		 , @BAST_DT   NVARCHAR(8)
+		 , @EMP_CD   NVARCHAR(10)
+		
+		SELECT	
+			@CO_CD 			= '${CO_CD}'		/* 회사코드 */
+			, @PJT_CD 		= '${erpPjtSeq}'		/* 프로젝트 코드 */
+			, @PJT_NM 		= '${erpPjtName}'		/* 프로젝트 명 */
+			, @PJT_PROC 	= '${erpPjtStatus}'	/* 프로젝트 진행 상태 (0:완료, 1:진행, 9:미사용) */
+			, @PJT_WORKTY 	= '${erpPjtType}'		/* 프로젝트 유형 */ 
+			, @BAST_DT 		= '${baseDate}'		/* 기준일자 */
+			, @EMP_CD 		= '${EMP_CD}'		/* 프로젝트 조회 권한 사용자 */		
+		/************************************************************/
+		
+		SELECT    
+			A.PJT_CD    					AS PJT_CD 
+			, ISNULL(PJT_NM, A.PJT_NMK) 	AS PJT_NM    
+			, A.PROG_FG    					AS progFg
+			, CASE WHEN A.FR_DT IN ('00000000', '99991231') THEN '' ELSE CONVERT(NVARCHAR(10), CONVERT(DATETIME, A.FR_DT), 120) END AS pjtFromDate    
+			, CASE WHEN A.TO_DT IN ('00000000', '99991231') THEN '' ELSE CONVERT(NVARCHAR(10), CONVERT(DATETIME, A.TO_DT), 120) END AS pjtToDate    
+			, ISNULL(B.DEPT_NM, B.DEPT_NMK) AS pjtDeptName    
+			, ISNULL(C.KOR_NM, C.KOR_NMK)	AS pjtName    
+			, T.ATTR_NM						AS atTrName
+			, T.BA_NB						AS bankNumber
+			, T.TR_CD						AS trSeq
+			, ( 
+				SELECT	COUNT(1) 
+				FROM	IT_BUSINESSLINK I 
+				WHERE	I.CO_CD = @CO_CD 
+				 AND	A.PJT_CD = I.PJT_CD 
+			)								AS itBusinessLink
+		FROM	SPJT A WITH(NOLOCK)    
+			LEFT OUTER JOIN SDEPT B WITH(NOLOCK) 
+			 ON (B.CO_CD = @CO_CD AND A.DEPT_CD = B.DEPT_CD)    
+			LEFT OUTER JOIN SEMP C WITH(NOLOCK) 
+			 ON (C.CO_CD = @CO_CD AND A.EMP_CD = C.EMP_CD)    
+			LEFT OUTER JOIN STRADE T WITH(NOLOCK) 
+			 ON (T.CO_CD = @CO_CD AND A.TR_CD = T.TR_CD)    
+		WHERE	A.CO_CD = @CO_CD    
+		 AND	charindex((CASE @PJT_PROC WHEN '' THEN ' ' ELSE prog_fg END), @PJT_PROC) > 0 
+		 AND    ISNULL(A.PJT_NM, PJT_NMK) LIKE '%'+ @PJT_NM +'%'  
+		 AND	( 
+					CASE 
+						WHEN A.PJT_AUTH ='0' THEN ( 
+													CASE 
+														WHEN '' + @EMP_CD + '' IN ( 
+															SELECT	EMP_CD 
+															FROM	SPJT_D 
+															WHERE	CO_CD = A.CO_CD 
+															 AND	PJT_CD = A.PJT_CD 
+														)	THEN	'1' 
+														ELSE		'0' 
+													END 
+											)
+						ELSE '1' 
+					END 
+				) = '1'
+	]]>
+		<if test="pjtFromDate != null and pjtFromDate != ''">
+			AND A.FR_DT BETWEEN #{pjtFromDate} AND #{pjtToDate}
+		</if>
+	</select>
+
+	<select id="AcG20CodeErp.getErpMgtDeptList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	    /* AcG20CodeErp.getErpMgtDeptList - mssql */
+	    exec P_GWG20_COMMON_MGT_SDEPT_LIST @CO_CD='${CO_CD}',@EMP_CD='${EMP_CD}',@JOB_OPTION=N'0',@LANGKIND='${LANGKIND}'	
+	</select>
+	
+	<select id="AcG20CodeErp.getErpAbgtBottomList" parameterType="java.util.HashMap" resultType="java.util.HashMap" > 
+	    /* AcG20CodeErp.getErpAbgtBottomList - mssql */
+		exec P_GWG20_COMMON_ABGT_BOTTOM_LIST @CO_CD='${CO_CD}',@MGT_CD='${MGT_CD}',@LANGKIND='${LANGKIND}'
+	</select>		
+	
+	<select id="AcG20CodeErp.getErpBTRList" parameterType="java.util.HashMap" resultType="java.util.HashMap" >
+	    /* AcG20CodeErp.getErpBTRList - mssql */
+	    exec P_GWG20_COMMON_BTR_CD_LIST @CO_CD='${CO_CD}'
+	</select>
+	
+	<select id="AcG20CodeErp.getErpBudgetList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	    /* AcG20CodeErp.getErpBudgetList - mssql */
+	    exec USP_COMMON_ACC_CUSTOMHELP_SBGTCD_SELECT 
+	            @CO_CD='${CO_CD}',@GISU='${GISU}',@FR_DT='${FR_DT}',@TO_DT='${TO_DT}',@GR_FG='${GR_FG}'
+	           ,@DIV_CDS='${DIV_CDS}',@MGT_CDS='${MGT_CDS}',@BOTTOM_CDS='${BOTTOM_CDS}',@BGT_CD='${BGT_CD}',@BGT_NM='${BGT_NM}'
+	           ,@OPT_01='${OPT_01}',@OPT_02='${OPT_02}',@OPT_03='${OPT_03}',@BGT_FR_DT='${GISU_DT}',@GROUP_CD='${GROUP_CD}',@LANGKIND='KOR'
+	</select>
+	
+		
+	<select id="AcG20CodeErp.getErpBudgetNameList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	    /* AcG20CodeErp.getErpBudgetNameList - mssql */
+		SELECT	
+				ID_NO
+				, ISNULL(USER_NM, USER_NMK) 'USER_NM'
+		FROM 	ZN_SBGTLEVEL_TERM 
+		WHERE	CO_CD = '${CO_CD}'
+	</select>
+	
+	<select id="AcG20CodeErp.getErpTradeList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	    /* AcG20CodeErp.getErpTradeList - mssql */
+	    EXEC P_GWG20_COMMON_TR_LIST @CO_CD='${CO_CD}',@TR_CD='${TR_CD}',@TR_NM='${TR_NM}',@TYPE='${TYPE}',@DETAIL_TYPE='${DETAIL_TYPE}',@LANGKIND='${LANGKIND}'
+	</select>
+	
+	<select id="AcG20CodeErp.getErpBankList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	    /* AcG20CodeErp.getErpBankList - mssql */
+	    exec P_GWG20_COMMON_BANK_LIST @CO_CD='${CO_CD}',@BANK_CD='${BANK_CD}',@BANK_NM='${BANK_NM}',@LANGKIND='${LANGKIND}'	
+	</select>
+	
+	<select id="AcG20CodeErp.getErpEmpList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+        /* AcG20CodeErp.getErpEmpList - mssql */	
+	    exec USP_GET_HELPCODE @LANGKIND=N'KOR',@P_HELP_TY=N'SEMP_CODE',@P_CO_CD='${CO_CD}',@P_CODE=NULL,@P_CODE2=NULL,@P_CODE3=NULL,@P_USE_YN=NULL,@P_NAME=NULL,@P_STD_DT='${P_STD_DT}',@P_WHERE=NULL
+	</select>
+	
+	<select id="AcG20CodeErp.getErpEmpBankInfo" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+        /* 선택된 사원 금융정보 조회 */
+        /* AcG20Code_Erp_SQL.xml/AcG20CodeErp.getErpEmpBankInfo - mssql */	
+	    exec USP_ANA0006_BY_SEMP_SELECT @LANGKIND = '${LANGKIND}', @CO_CD = '${CO_CD}', @EMP_CD = '${EMP_CD}'
+	</select>
+	
+	<select id="AcG20CodeErp.getErpHpmeticList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	    /* AcG20CodeErp.getErpHpmeticList - mssql */
+	    exec USP_ANA0006_BY_HPMETIC_SELECT @LANGKIND=N'KOR',@CO_CD='${CO_CD}',@BASE_DT='${BASE_DT}'
+	</select>	
+	
+    <select id="AcG20CodeErp.getErpHincomeList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+        /* AcG20CodeErp.getErpHincomeList - mssql */
+        exec USP_ANA0005_BY_HINCOME_TRFG9_SELECT @LANGKIND=N'KOR',@CO_CD='${CO_CD}'
+    </select>		
+    
+    <!-- mabatis 그러므로 위와 같은 에러를 피하기 위해서 다음과 같이 조치한다. -->
+    <!-- 1. <if test='value == "s"'> : 쌍 따옴표와 홈따옴표의 위치 변경 -->
+    <!-- 2. <if test="value == &quot;s&quot;"> - HTML 코드 사용 -->
+    <!-- 3. <if test="value == 's'.toString()"> - toString() 함수 사용 -->
+    
+    <!-- 기타소득자 소득구분코드 조회 -->      
+    <select id="AcG20CodeErp.getErpEtcIncomeList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+        /* AcG20CodeErp.getErpEtcIncomeList - mssql */
+        exec USP_GET_HELPCODE @LANGKIND=N'KOR',@P_HELP_TY=N'SCTRL_D_CODE',@P_CO_CD='${CO_CD}',
+			@P_CODE=NULL,@P_CODE2=NULL,@P_CODE3=NULL,@P_USE_YN=N'1',@P_NAME=NULL,@P_STD_DT=NULL
+            <choose>
+              <when test='DATA_CD == null'>
+                  ,@P_WHERE=N'CTRL_CD =''G'' AND MODULE_CD =''H'' AND CTD_CD IN (''60'', ''62'',''63'',''68'',''69'',''71'',''72'',''73'',''74'',''75'',''76'')  '
+              </when>
+              <otherwise>
+                <choose>
+                  <when test='DATA_CD == ""'>
+                  ,@P_WHERE=N'CTRL_CD =''G'' AND MODULE_CD =''H'' AND CTD_CD IN (''60'', ''62'',''63'',''68'',''69'',''71'',''72'',''73'',''74'',''75'',''76'')  '
+                  </when>
+                  <otherwise>
+                  <if test='DATA_CD == "G"'>   <!-- 거주 -->
+	              ,@P_WHERE=N'CTRL_CD =''G'' AND MODULE_CD =''H'' AND CTD_CD IN (''60'', ''62'',''63'',''68'',''69'',''71'',''72'',''73'',''74'',''75'',''76'')  '
+	              </if>
+	              <if test='DATA_CD == "BI"'>  <!-- 비거주 -->
+	              , @P_WHERE=N'CTRL_CD =''BI'' AND MODULE_CD =''H'' AND CTD_CD IN (''40'', ''41'',''42'',''61'',''62'' ) '
+	              </if>
+                  </otherwise>
+                </choose>	            
+              </otherwise>
+            </choose>
+    </select>
+</mapper>

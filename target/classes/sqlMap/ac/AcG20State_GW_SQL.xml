@@ -1,0 +1,364 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="AcG20ExState">
+    
+    <typeAlias type="ac.g20.ex.vo.StateVO" alias="StateVO" />
+    
+    <select id="AcG20StateGwDAO.getBgtConsUseAmtList" parameterClass="StateVO" resultClass="java.util.HashMap">
+        /* AcG20StateGwDAO.getBgtConsUseAmtList - mairaDB */
+		SELECT	
+			B.ABGT_CD
+			, IFNULL(SUM(IFNULL(B.APPLY_AM,0)),0) + IFNULL(C.APPLY_AM, 0) AS APPLY_AM
+			, IFNULL(SUM(IFNULL(B.OPEN_AM, 0)),0) AS OPEN_AM
+			, IFNULL(SUM(IFNULL(B.OPEN_AM, 0)) - SUM(IFNULL(B.APPLY_AM,0)),0) AS LEFT_AM
+		FROM	neos.g20_abdocu_h	H
+		 INNER JOIN	neos.g20_ABDOCU_B	B
+		 ON		H.ABDOCU_NO = B.ABDOCU_NO	
+		 INNER JOIN	NEOS.ERPGWLINK	E
+		 ON		E.APPR_DIKEY = H.C_DIKEYCODE
+		 AND     	IFNULL(E.APPR_STATUS, '008') IN ('002', '003', '008', '009')
+		 LEFT JOIN	(
+			SELECT	SUM(APPLY_AM) AS APPLY_AM, CONFER_RETURN
+			FROM	neos.g20_ABDOCU_B 
+			WHERE	CONFER_RETURN IS NOT NULL
+			GROUP BY CONFER_RETURN
+		 )	C
+		 ON	B.ABDOCU_B_NO = C.CONFER_RETURN   
+		 INNER JOIN	(
+			SELECT	abdocu_no, MIN(IFNULL(abgt_cd, -1))	confferReturn
+			FROM 	neos.g20_abdocu_b 
+			GROUP BY abdocu_no
+			HAVING 	confferReturn != -1
+		 )	B2
+		 ON	B.abdocu_no = B2.abdocu_no 
+        WHERE   H.DOCU_MODE = '0'
+        AND     C_DIKEYCODE IS NOT NULL
+        AND     H.ERP_CO_CD = #CO_CD#
+        AND     H.ERP_DIV_CD =  #DIV_CD#        
+        <isNotEmpty property="MGT_CD">
+        AND     H.MGT_CD    = #MGT_CD# 
+        </isNotEmpty>
+        <isNotEmpty property="BOTTOM_CD">
+        AND H.BOTTOM_CD = #BOTTOM_CD# 
+        </isNotEmpty>
+        AND     H.ERP_GISU_FROM_DT <![CDATA[ >= ]]>   #FR_DT# 
+        AND     H.ERP_GISU_TO_DT <![CDATA[ <= ]]>   #TO_DT#
+        AND     H.ERP_GISU_DT BETWEEN #DATE_FROM# AND #DATE_TO#
+        GROUP BY  B.ABGT_CD
+        
+        
+        
+    </select>
+
+    <select id="AcG20StateGwDAO.getBgtResUseAmtList" parameterClass="StateVO" resultClass="java.util.HashMap">
+        /* AcG20StateGwDAO.getBgtResUseAmtList - mairaDB */
+        SELECT  /*+ INDEX(H IDX_G20_ABDOCU_H_MGT_CD )  INDEX(B IDX_G20_ABDOCU_B_BGT_CD) */
+                B.ABGT_CD ,
+                IFNULL(SUM(IFNULL(B.APPLY_AM,0)),0) AS APPLY_AM,
+                IFNULL(SUM(IFNULL(B.OPEN_AM, 0)),0) AS OPEN_AM,
+                IFNULL(SUM(IFNULL(B.OPEN_AM, 0)) - SUM(IFNULL(B.APPLY_AM,0)),0) AS LEFT_AM
+        FROM    NEOS.G20_ABDOCU_H H
+        JOIN    NEOS.G20_ABDOCU_B B
+        ON      H.ABDOCU_NO     = B.ABDOCU_NO
+        JOIN    NEOS.ERPGWLINK LINK
+        ON      LINK.APPR_DIKEY =  H.C_DIKEYCODE
+        AND     IFNULL(APPR_STATUS, '008') IN ('002', '003', '008', '009')
+      	INNER JOIN	neos.g20_abdocu_b b2
+		 ON	b2.abdocu_b_no = b.abdocu_b_no_reffer
+		INNER JOIN	(
+			SELECT	abdocu_no, MIN(IFNULL(abgt_cd, -1))	confferReturn
+			FROM 	neos.g20_abdocu_b 
+			GROUP BY abdocu_no
+			HAVING 	confferReturn != -1
+		 )	B3
+		  ON	B2.abdocu_no = B3.abdocu_no    
+        WHERE   H.DOCU_MODE     = '1'
+        AND     H.ABDOCU_NO_REFFER IS NOT NULL
+        AND     C_DIKEYCODE IS NOT NULL
+        AND     H.ERP_CO_CD = #CO_CD#
+        AND     H.ERP_DIV_CD =  #DIV_CD#
+        <isNotEmpty property="MGT_CD">
+        AND     H.MGT_CD    = #MGT_CD# 
+        </isNotEmpty>
+        <isNotEmpty property="BOTTOM_CD">
+        AND H.BOTTOM_CD = #BOTTOM_CD# 
+        </isNotEmpty>         
+        AND     H.ERP_GISU_FROM_DT <![CDATA[ >= ]]>   #FR_DT# 
+        AND     H.ERP_GISU_TO_DT <![CDATA[ <= ]]>   #TO_DT#
+        AND     H.ERP_GISU_DT BETWEEN #DATE_FROM# AND #DATE_TO#
+        GROUP BY  B.ABGT_CD      
+    </select>
+    
+    <select id="AcG20StateGwDAO.getGwBgtExDetailList" parameterClass="StateVO" resultClass="java.util.HashMap" >
+        /* AcG20StateGwDAO.getGwBgtExDetailList - mairaDB */
+        SELECT H.ERP_CO_CD AS ERP_CO_CD
+             , H.ERP_GISU_DT AS ERP_GISU_DT
+             , H.ERP_GISU_SQ AS ERP_GISU_SQ
+             , H.DOCU_FG_TEXT AS DOCU_FG_TEXT
+             , (SELECT  C_RIDOCFULLNUM FROM NEOS.A_RECORDINFO R WHERE R.C_DIKEYCODE = E.APPR_DIKEY) AS DOC_NUMBER
+             , F_GETDOCINFO('2', C_DIKEYCODE, '','') AS DOC_TITLE
+             , ERP_EMP_NM AS DOC_DRAFTER
+             , DATE_FORMAT(F_GETDRAFTINFO('5', '000', C_DIKEYCODE, ''),'%Y-%m-%d') AS DOC_WRITE
+             , neos.GET_CODE_DETAIL_Info('0', 'COM109', (CASE WHEN IFNULL(APPR_STATUS, '008') = '009' THEN '008' ELSE IFNULL(APPR_STATUS, '008') END),  #LANGKIND#) AS  DOC_STATUS_NM     
+         FROM  NEOS.G20_ABDOCU_H H
+        INNER  JOIN NEOS.G20_ABDOCU_B B
+           ON  H.ABDOCU_NO = B.ABDOCU_NO
+        INNER  JOIN NEOS.ERPGWLINK E
+           ON  H.C_DIKEYCODE = E.APPR_DIKEY
+        WHERE  H.DOCU_MODE = '1'
+          AND  H.ERP_CO_CD = #CO_CD#
+          AND  H.ERP_DIV_CD =  #DIV_CD#
+        <isNotEmpty property="MGT_CD">
+          AND  H.MGT_CD    = #MGT_CD# 
+        </isNotEmpty>
+        <isNotEmpty property="BOTTOM_CD">
+          AND  H.BOTTOM_CD = #BOTTOM_CD#
+        </isNotEmpty>
+        <isNotEmpty>
+          AND  B.ABGT_CD = #BGT_CD#
+        </isNotEmpty>
+        <isNotEmpty property="FR_DT">
+          AND  H.ERP_GISU_FROM_DT <![CDATA[ >= ]]>   #FR_DT# 
+        </isNotEmpty>
+        <isNotEmpty property="TO_DT">
+          AND  H.ERP_GISU_TO_DT <![CDATA[ <= ]]>   #TO_DT#
+        </isNotEmpty>
+        <isNotEmpty property="DATE_FROM">  
+          AND  H.ERP_GISU_DT BETWEEN #DATE_FROM# AND #DATE_TO#     
+        </isNotEmpty>     
+    </select>
+
+    <select id="AcG20StateGwDAO.getAcExDocList_TOTALCOUNT" parameterClass="hashMap" resultClass="String">
+        /* AcG20StateGwDAO.getAcExDocList_TOTALCOUNT - mairaDB */
+		SELECT	COUNT(*)	AS TOTALCOUNT
+        FROM (
+               SELECT DOCU_MODE
+                    , DOCU_FG
+                    , RI.C_RIDOCNUM
+                    , RI.C_RIORGCODE                    
+                    , C_RIAFTERTITLE DOCTITLE
+                    , REQU_USERKEY
+                    , IF(IFNULL(APPR_STATUS, '008') = '009', '008', IFNULL(APPR_STATUS, '008'))  AS APPR_STATUS 
+                    , AH.ERP_CO_CD
+                    , AH.ERP_DIV_CD
+                    , AH.MGT_NM
+                    , AH.ERP_GISU_DT
+                    , AH.ERP_GISU_SQ
+                    , RI.C_DIKEYCODE
+                    , AH.ABDOCU_NO
+                    , RI.C_RIDOCFULLNUM
+                    , emp_name_multi
+				FROM	neos.G20_ABDOCU_H 	AH
+				 INNER JOIN	neos.ERPGWLINK LK
+<!-- 				 ON	       	AH.ABDOCU_NO = LK.DOCX_NUMB          -->
+				 ON	       	AH.C_DIKEYCODE = CAST(REPLACE(LK.APPR_DIKEY, '_', '999999') AS UNSIGNED)
+				 AND 		LK.DOCX_NUMB > ''
+				 INNER JOIN	neos.A_RECORDINFO RI
+				 ON		RI.C_DIKEYCODE = LK.APPR_DIKEY
+				 INNER JOIN	neos.A_DRAFTINFO DI
+		 		 ON		RI.C_DIKEYCODE = DI.C_DIKEYCODE
+		 		 AND    DI.c_diseqnum = '0000000001'
+		 		 LEFT OUTER JOIN neos.v_t_co_emp_multi EM ON LK.REQU_USERKEY = EM.emp_seq
+               WHERE   DOCX_GUBN in ('010', '011')
+               AND     IFNULL(DI.C_DISTATUS, '008') IN ('002', '008', '009', '004', '003', 'd')
+               AND     IFNULL(APPR_STATUS, '008') IN ('002', '008', '009', '004', '003', 'd')
+               AND     ERP_CO_CD = #CO_CD#
+               AND ERP_GISU_FROM_DT <![CDATA[<= ]]> REPLACE(#GISU_DT#, '-', '')
+               AND ERP_GISU_TO_DT <![CDATA[>= ]]>REPLACE(#GISU_DT#, '-', '')               
+        
+        <isNotEmpty property="DOCU_MODE" >
+               AND DOCU_MODE = #DOCU_MODE#
+        </isNotEmpty>
+        <isNotEmpty property="DATE_FROM" >
+        <isNotEmpty property="DATE_TO" >
+               AND ERP_GISU_DT BETWEEN REPLACE(#DATE_FROM#,'-','') AND REPLACE(#DATE_TO#,'-','')
+        </isNotEmpty>
+        </isNotEmpty>
+        <isNotEmpty property="DIV_CD" >
+               AND ERP_DIV_CD = #DIV_CD#
+        </isNotEmpty>
+        <isNotEmpty property="docTitle" >
+               AND C_RIAFTERTITLE LIKE CONCAT ('%' ,#docTitle# , '%')
+        </isNotEmpty>
+        <isNotEmpty property="docStatus" >
+               AND IF(IFNULL(APPR_STATUS, '008') = '009', '008', APPR_STATUS) = #docStatus#
+        </isNotEmpty>
+        <isNotEmpty property="docNum" >
+               AND RI.C_RIDOCFULLNUM LIKE CONCAT ('%' ,#docNum# , '%')
+        </isNotEmpty>
+        <isNotEmpty property="drafter" >
+               AND emp_name_multi LIKE CONCAT('%' ,#drafter# , '%')
+        </isNotEmpty>
+        <isNotEmpty property="MGT_CD" >
+               AND AH.MGT_CD = #MGT_CD#
+        </isNotEmpty>
+        <isNotEmpty property="BOTTOM_CD" >
+               AND AH.BOTTOM_CD = #BOTTOM_CD#
+        </isNotEmpty>
+        <isNotEmpty property="BGT_CD_FROM" >
+               AND AH.ABDOCU_NO IN (SELECT ABDOCU_NO FROM neos.G20_ABDOCU_B 
+                                                WHERE ABGT_CD BETWEEN #BGT_CD_FROM# AND #BGT_CD_TO#
+                                                AND ABDOCU_NO = AH.ABDOCU_NO)
+        </isNotEmpty>
+        <isNotEmpty property="SET_FG" >
+               AND AH.ABDOCU_NO IN (SELECT ABDOCU_NO FROM neos.G20_ABDOCU_B 
+                                                WHERE SET_FG = #SET_FG#
+                                                AND ABDOCU_NO = AH.ABDOCU_NO)
+        </isNotEmpty>                 
+        ) AA        
+    </select> 
+        
+    <select id="AcG20StateGwDAO.getAcExDocList" resultClass="hashMap" parameterClass="hashMap">
+        /* AcG20StateGwDAO.getAcExDocList - mairaDB */
+        SELECT AA.*
+                 , CASE WHEN DOCU_MODE = '0' THEN '품의서' ELSE  '결의서' END AS DOCU_MODE_NM
+                 , neos.get_code_detail_info('0', (CASE WHEN DOCU_MODE = '0' THEN 'G20101' ELSE  'G20201' END),  DOCU_FG , #langCode#) AS DOCU_FG_NM
+<!--                  , F_GETUSERINFO('1', REQU_USERKEY, #langCode# ) AS USERNAME -->
+                 , neos.FN_GetMultiLang(#langCode#, emp_name_multi) AS USERNAME
+                 , neos.get_code_detail_info('0', 'COM109', IFNULL(APPR_STATUS, '008') , #langCode#) AS  DOC_STATUS
+                 , (SELECT SUM(UNIT_AM) FROM neos.G20_ABDOCU_T WHERE ABDOCU_NO = AA.ABDOCU_NO) APPLY_AM
+                 , DATE_FORMAT(ERP_GISU_DT,'%Y-%m-%d') AS ERP_GISU_DT 
+        FROM (
+               SELECT DOCU_MODE
+                    , DOCU_FG
+                    , RI.C_RIDOCNUM
+                    , RI.C_RIORGCODE                    
+                    , C_RIAFTERTITLE DOCTITLE
+                    , REQU_USERKEY
+                    , IF(IFNULL(APPR_STATUS, '008') = '009', '008', IFNULL(APPR_STATUS, '008'))  AS APPR_STATUS 
+                    , AH.ERP_CO_CD
+                    , AH.ERP_DIV_CD
+                    , AH.MGT_NM
+                    , AH.ERP_GISU_DT
+                    , AH.ERP_GISU_SQ
+                    , RI.C_DIKEYCODE
+                    , AH.ABDOCU_NO
+                    , RI.C_RIDOCFULLNUM
+                    , emp_name_multi
+                    , btr_nm
+                    , btr_nb
+                    , DATE_FORMAT(IF(IFNULL(appr_end_date,'008') = '008', '009', IFNULL(appr_end_date,'008')),'%Y-%m-%d') AS appr_end_date
+                    
+				FROM	neos.G20_ABDOCU_H 	AH
+				 INNER JOIN	neos.ERPGWLINK LK
+<!-- 				 ON	       	AH.ABDOCU_NO = CAST( REPLACE(LK.DOCX_NUMB, '_', '999999') AS UNSIGNED)          -->
+				 ON	       	AH.C_DIKEYCODE = CAST(REPLACE(LK.APPR_DIKEY, '_', '999999') AS UNSIGNED)
+				 AND 		LK.DOCX_NUMB > ''
+				 INNER JOIN	neos.A_RECORDINFO RI
+				 ON		RI.C_DIKEYCODE = LK.APPR_DIKEY
+				 INNER JOIN	neos.A_DRAFTINFO DI
+		 		 ON		RI.C_DIKEYCODE = DI.C_DIKEYCODE
+		 		 AND    DI.c_diseqnum = '0000000001'
+		 		 LEFT OUTER JOIN neos.v_t_co_emp_multi EM ON LK.REQU_USERKEY = EM.emp_seq
+               WHERE   DOCX_GUBN in ('010', '011')
+               AND     IFNULL(DI.C_DISTATUS, '008') IN ('002', '008', '009', '004', '003', 'd')
+               AND     IFNULL(APPR_STATUS, '008') IN ('002', '008', '009', '004', '003', 'd')
+               AND     ERP_CO_CD = #CO_CD#
+               AND ERP_GISU_FROM_DT <![CDATA[<= ]]> REPLACE(#GISU_DT#, '-', '')
+               AND ERP_GISU_TO_DT <![CDATA[>= ]]>REPLACE(#GISU_DT#, '-', '')               
+        
+        <isNotEmpty property="DOCU_MODE" >
+               AND DOCU_MODE = #DOCU_MODE#
+        </isNotEmpty>
+        <isNotEmpty property="DATE_FROM" >
+        <isNotEmpty property="DATE_TO" >
+               AND ERP_GISU_DT BETWEEN REPLACE(#DATE_FROM#,'-','') AND REPLACE(#DATE_TO#,'-','')
+        </isNotEmpty>
+        </isNotEmpty>
+        <isNotEmpty property="DIV_CD" >
+               AND ERP_DIV_CD = #DIV_CD#
+        </isNotEmpty>
+        <isNotEmpty property="docTitle" >
+               AND C_RIAFTERTITLE LIKE CONCAT ('%' ,#docTitle# , '%')
+        </isNotEmpty>
+        <isNotEmpty property="docStatus" >
+               AND IF(IFNULL(APPR_STATUS, '008') = '009', '008', APPR_STATUS) = #docStatus#
+        </isNotEmpty>
+        <isNotEmpty property="docNum" >
+               AND RI.C_RIDOCFULLNUM LIKE CONCAT ('%' ,#docNum# , '%')
+        </isNotEmpty>
+        <isNotEmpty property="drafter" >
+               AND emp_name_multi LIKE CONCAT('%' ,#drafter# , '%')
+        </isNotEmpty>
+        <isNotEmpty property="MGT_CD" >
+               AND AH.MGT_CD = #MGT_CD#
+        </isNotEmpty>
+        <isNotEmpty property="BOTTOM_CD" >
+               AND AH.BOTTOM_CD = #BOTTOM_CD#
+        </isNotEmpty>
+        <isNotEmpty property="BGT_CD_FROM" >
+               AND AH.ABDOCU_NO IN (SELECT ABDOCU_NO FROM neos.G20_ABDOCU_B 
+                                                WHERE ABGT_CD BETWEEN #BGT_CD_FROM# AND #BGT_CD_TO# 
+                                                AND ABDOCU_NO = AH.ABDOCU_NO)
+        </isNotEmpty>
+        <isNotEmpty property="SET_FG" >
+               AND AH.ABDOCU_NO IN (SELECT ABDOCU_NO FROM neos.G20_ABDOCU_B 
+                                                WHERE SET_FG = #SET_FG#
+                                                AND ABDOCU_NO = AH.ABDOCU_NO)
+        </isNotEmpty>
+               ORDER BY ERP_GISU_DT DESC, ERP_GISU_SQ DESC
+               LIMIT $startNum$ , $endNum$                  
+        ) AA
+        
+    </select> 
+    
+    <select id="AcG20StateGwDAO.getAcExDocDetail" resultClass="java.util.HashMap" parameterClass="java.util.HashMap">
+        /* AcG20StateGwDAO.getAcExDocDetail - mairaDB */
+        <isEqual property="DOCU_MODE" compareValue="0">
+        
+        SELECT   
+                 ABDOCU_NO, ABDOCU_B_NO, ABGT_CD, ABGT_NM, ERP_BGT_NM1, ERP_BGT_NM2, ERP_BGT_NM3, ERP_BGT_NM4
+             ,   OPEN_AM AS OPEN_AM 
+             ,   APPLY_AM AS APPLY_AM 
+             ,   CASE  WHEN CONFER_RETURN > ' '  THEN '정산' ELSE  OPEN_AM - APPLY_AM   END AS LEFT_AM 
+             ,   CASE WHEN IFNULL(APPR_STATUS, '008') IN ('008', '009') 
+                      THEN (CASE WHEN T.CONFER_RETURN > ' ' THEN 'rollBack'
+	                            ELSE (CASE WHEN OPEN_AM - APPLY_AM <![CDATA[<>]]>  0  THEN  'return' ELSE '' END) END )
+                 ELSE '' END AS BUTTON
+             ,  '' AS REFFER_DOC 
+             ,  APPR_STATUS                 
+        FROM(
+              SELECT   H.ABDOCU_NO, ABDOCU_B_NO, ABGT_CD, ABGT_NM, ERP_BGT_NM1, ERP_BGT_NM2, ERP_BGT_NM3, ERP_BGT_NM4
+                   ,   B.APPLY_AM AS OPEN_AM
+                   ,   IFNULL((    SELECT SUM(IFNULL(APPLY_AM,0))
+                                FROM   NEOS.G20_ABDOCU_B B2
+                                JOIN   NEOS.G20_ABDOCU_H H2 ON  B2.ABDOCU_NO = H2.ABDOCU_NO AND  H2.C_DIKEYCODE IS NOT NULL
+                                JOIN   NEOS.ERPGWLINK A2 ON  H2.C_DIKEYCODE =  A2.APPR_DIKEY
+<!--                                 AND CONVERT(A2.DOCX_NUMB , CHAR) = CONVERT(H2.ABDOCU_NO , CHAR)      -->
+                                WHERE  B2.ABDOCU_NO_REFFER = B.ABDOCU_NO
+                                AND    B2.ABDOCU_B_NO_REFFER = B.ABDOCU_B_NO
+                                AND    B2.ABGT_CD = B.ABGT_CD
+                                AND    IFNULL(A2.APPR_STATUS, '008') IN ('002', '003', '008', '009')
+                              ),0) AS APPLY_AM
+                   ,   (SELECT CONFER_RETURN FROM NEOS.G20_ABDOCU_B B2 WHERE B2.CONFER_RETURN = B.ABDOCU_B_NO limit 1) CONFER_RETURN
+                   ,   APPR_STATUS
+              FROM     NEOS.G20_ABDOCU_H H
+              INNER JOIN NEOS.G20_ABDOCU_B B ON H.ABDOCU_NO = B.ABDOCU_NO
+              INNER JOIN NEOS.ERPGWLINK EW  ON  H.C_DIKEYCODE =  EW.APPR_DIKEY 
+<!--               AND CONVERT(EW.DOCX_NUMB , CHAR) = CONVERT(H.ABDOCU_NO , CHAR) -->
+              WHERE H.ABDOCU_NO = #abdocu_no#
+              AND   B.CONFER_RETURN        IS NULL
+        )T
+        </isEqual>
+        <isEqual property="DOCU_MODE" compareValue="1">
+        SELECT   H.ABDOCU_NO, ABDOCU_B_NO, ABGT_CD, ABGT_NM, ERP_BGT_NM1, ERP_BGT_NM2, ERP_BGT_NM3, ERP_BGT_NM4
+             ,   OPEN_AM AS OPEN_AM
+             ,   APPLY_AM AS APPLY_AM 
+             ,   '' AS LEFT_AM
+             ,   '' AS BUTTON
+             ,  (SELECT CONCAT(C_RIAFTERTITLE , CASE  WHEN RI.C_RIDOCNUM IS NOT NULL THEN  CONCAT( '(' , C_RIDOCFULLNUM ,')') ELSE '' END) AS DOCNUM
+                     FROM  NEOS.G20_ABDOCU_H LK, NEOS.A_RECORDINFO RI
+                   WHERE RI.C_DIKEYCODE = LK.c_DIKEYCODE
+                      AND DOCU_MODE = '0'
+                      AND ABDOCU_NO = H.ABDOCU_NO_REFFER) AS REFFER_DOC
+             , APPR_STATUS
+        FROM NEOS.G20_ABDOCU_H H
+        INNER JOIN NEOS.G20_ABDOCU_B B ON H.ABDOCU_NO = B.ABDOCU_NO
+        INNER JOIN NEOS.ERPGWLINK EW  ON  H.C_DIKEYCODE =  EW.APPR_DIKEY 
+<!--         AND CONVERT(EW.DOCX_NUMB , CHAR) = CONVERT(H.ABDOCU_NO , CHAR) -->
+        WHERE H.ABDOCU_NO = #abdocu_no# 
+        </isEqual>
+    </select>
+    
+       
+</sqlMap>

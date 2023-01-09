@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+<sqlMap namespace="AuditManageDAO">
+
+	<typeAlias alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	
+	<select id="AuditManageDAO.GetAudit" parameterClass="HashMap" resultClass="egovMap">
+	    /* AuditManageDAO.GetAuditList - mariaDB */
+	    SELECT audit_seq
+	         , neos.FN_GetLanguageName(#loginvo.langCode#, audit_name_kr, audit_name_en, audit_name_jp, audit_name_cn) AS audit_name
+	         , audit_name_kr
+	         , audit_name_en
+	         , audit_name_jp
+	         , audit_name_cn
+	         , a.group_seq
+	         , a.comp_seq
+	         , neos.FN_GetMultiLang(#loginvo.langCode#, m.COMP_NAME_MULTI) comp_name
+	         , audit_type
+	         , a.use_yn
+	         , neos.GET_CODE_DETAIL_Info('0','COM521',a.use_yn,  #loginvo.langCode#) AS use_yn_name
+	         , a.order_num
+	         , a.remark
+	    FROM `a_audit_info` a	
+	    INNER JOIN v_t_co_comp_multi m
+	    ON a.group_seq = m.group_seq
+	    AND a.comp_seq = m.comp_seq
+	    WHERE 1 = 1
+	    <isNotEmpty property="compSeq">
+	    AND a.comp_seq = #compSeq#
+	    </isNotEmpty>
+	    <isNotEmpty property="useYn">
+	    AND a.use_yn = #useYn#
+	    </isNotEmpty>
+	    <isNotEmpty property="txtSearch">
+	    AND neos.FN_GetLanguageName(#loginvo.langCode#, audit_name_kr, audit_name_en, audit_name_jp, audit_name_cn) like concat('%', #txtSearch#, '%')
+	    </isNotEmpty>
+	    <isNotEmpty property="auditSeq">
+	    AND audit_seq = #auditSeq#
+	    </isNotEmpty>		    	 
+	    order by LPAD(a.order_num, 10, 0) , LPAD(a.audit_seq  , 10, 0)
+	</select>
+	
+	<select id="AuditManageDAO.GetAuditUser" parameterClass="HashMap" resultClass="egovMap">
+	    /* AuditManageDAO.GetAuditUser - mariaDB */
+	    SELECT a.audit_seq
+	         , a.order_num
+	         , v.group_seq
+	         , v.comp_seq
+	         , v.dept_seq
+	         , v.emp_seq  
+	         , neos.FN_GetMultiLang(#loginvo.langCode#, v.emp_NAME_MULTI) AS EMP_NAME
+	         , neos.FN_GetMultiLang(#loginvo.langCode#, v.dept_NAME_MULTI) AS DEPT_NAME
+	         , neos.FN_GetMultiLang(#loginvo.langCode#, v.comp_NAME_MULTI) AS COMP_NAME
+	         , v.DEPT_DUTY_CODE AS DUTY_CODE
+		     , v.DEPT_POSITION_CODE AS POSITION_CODE	         
+	         , get_emp_duty_position_name(v.GROUP_SEQ, v.COMP_SEQ, v.DEPT_DUTY_CODE,'DUTY', #loginvo.langCode#) AS DUTY_NAME
+		     , get_emp_duty_position_name(v.GROUP_SEQ, v.COMP_SEQ, v.DEPT_POSITION_CODE,'POSITION', #loginvo.langCode#) AS POSITION_NAME
+		     , concat('(' , v.LOGIN_ID, ')')  AS emp_Name_Adv
+	         , CONCAT(v.group_seq , '|' , v.comp_seq , '|', v.dept_seq, '|' , v.emp_seq, '|', 'u') super_key
+	    from neos.a_audit_user a
+	    INNER JOIN v_user_info v
+	    ON    a.comp_seq = v.comp_seq
+	    AND   a.dept_seq = v.dept_seq
+	    ANd   a.emp_seq  = v.emp_seq
+	    WHERE audit_seq  = #auditSeq#
+	    ORDER BY LPAD(a.order_num, 10, 0)
+	</select>
+	
+	<select id="AuditManageDAO.GetAuditForm" parameterClass="HashMap" resultClass="egovMap">
+	    /* AuditManageDAO.GetAuditForm - mariaDB */
+	    SELECT form_Id
+	         , neos.FN_GETLANGUAGENAME(#loginVO.langCode#, C_TINAME, C_TINAME_EN, C_TINAME_JP, C_TINAME_CN ) AS form_name  
+	    from neos.a_audit_form a
+	    INNER JOIN neos.a_templateinfo t
+	    ON a.form_id = t.c_tikeycode
+	    WHERE audit_seq = #auditSeq#
+	    AND IFNULL(C_TIUSE, 'Y') = 'Y'
+	</select>	
+
+    <select id="AuditManageDAO.GetMaxAuditSeq" resultClass="String">
+        /* AuditManageDAO.GetMaxAuditSeq - mariaDB */
+        SELECT nextval('audit_seq') from dual
+    </select>
+    
+    <insert id="AuditManageDAO.InsertAuditInfo" parameterClass="HashMap" >
+        /* AuditManageDAO.InsertAuditInfo - mariaDB */
+        INSERT INTO neos.a_audit_info 
+        (        audit_seq
+               , group_seq
+               , comp_seq
+               , audit_name_kr
+               , audit_name_en 
+               , audit_name_jp
+               , audit_name_cn
+               , audit_type
+               , USE_YN 
+               , ORDER_NUM	
+               , remark
+               , create_seq
+               , create_date
+        )
+        VALUES 
+        (        #auditSeq#
+               , #loginvo.groupSeq#		       
+               , #compSeq#
+               , #auditName#
+               , #auditNameEn# 
+               , #auditNameJp#
+               , #auditNameCn#
+               , #auditType#
+               , #useYn# 
+               , IFNULL(#orderNum# ,NULL)	
+               , IFNULL(#remark# ,NULL)
+               , #loginVO.uniqId#
+               , now()
+        ) 	     
+    </insert>
+
+    <update id="AuditManageDAO.UpdateAuditInfo" parameterClass="HashMap">
+        /* AuditManageDAO.UpdateAuditInfo - mariaDB */
+        UPDATE neos.a_audit_info
+        SET      comp_seq = #compSeq#
+               , audit_name_kr = #auditName#
+               , audit_name_en = #auditNameEn# 
+               , audit_name_jp = #auditNameJp#
+               , audit_name_cn = #auditNameCn#
+               , audit_type = #auditType#
+               , USE_YN = #useYn# 
+               , ORDER_NUM = IFNULL(#orderNum# ,NULL)	
+               , remark = IFNULL(#remark# ,NULL)		       
+               , MODIFY_seq = #loginvo.uniqId#
+               , MODIFY_date = now()
+        WHERE audit_seq = #auditSeq#
+    </update>
+    
+    <insert id="AuditManageDAO.InsertAuditUser" parameterClass="HashMap" >
+        /* AuditManageDAO.InsertAuditUser - mairaDB */
+        insert into neos.a_audit_user 
+        (audit_seq , order_num, group_seq, comp_seq, dept_seq, emp_seq)
+        VALUES 
+        (#auditSeq#, #orderNum#, #groupSeq#, #compSeq#, #deptSeq#, #empSeq#)
+    </insert>
+    
+    <insert id="AuditManageDAO.InsertAuditForm" parameterClass="HashMap" >
+        /* AuditManageDAO.InsertAuditForm - mairaDB */
+        insert into neos.a_audit_form
+        (audit_seq , form_id)
+        VALUES 
+        (#auditSeq#, #formId#)        
+    </insert>    
+   
+    <delete id="AuditManageDAO.DeleteAuditInfo" parameterClass="HashMap" >
+        /* AuditManageDAO.DeleteAuditInfo - mairaDB */
+        delete from   neos.a_audit_info
+        where audit_seq = #auditSeq#            
+    </delete>
+        
+    <delete id="AuditManageDAO.DeleteAuditUser" parameterClass="HashMap" >
+        /* AuditManageDAO.DeleteAuditUser - mairaDB */  
+        delete from   neos.a_audit_user
+        where audit_seq = #auditSeq#
+    </delete>
+    
+    <delete id="AuditManageDAO.DeleteAuditForm" parameterClass="HashMap" >
+        /* AuditManageDAO.DeleteAuditForm - mairaDB */    
+        delete from   neos.a_audit_form
+        where audit_seq = #auditSeq#        
+    </delete>  
+</sqlMap>

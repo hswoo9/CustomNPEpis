@@ -1,0 +1,730 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="ConsDocMng">
+
+	<select id="ConsDocMng.selectConsDocMngList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		/* ConsDocMng.selectConsDocMngList */
+		SELECT	
+			d.cons_doc_seq						AS 'consDocSeq'
+			, d.doc_seq							AS 'docSeq'
+			, IFNULL(r.c_ridocfullnum, '')		AS 'docNo'
+			, d.doc_status						AS 'docStatus'
+			, d.consdoc_note					AS 'consdocNote'
+			, d.comp_name						AS 'compName'
+			, d.dept_name						AS 'deptName'	
+			, d.emp_name						AS 'empName'
+			, r.c_riaftertitle					AS 'docTitle'
+			, i.c_diwriteday					AS 'docDate'
+			, d.conffer_return_yn				AS 'confferReturnYN'
+			, d.conffer_return_name				AS 'confferReturnName'
+			, CONVERT(d.expend_date, CHAR(10)) 	AS 'expendDate'
+			, amt2.consDocStdAmt					AS 'consDocStdAmt'				
+			, amt2.consDocTaxAmt					AS 'consDocTaxAmt'			
+			, amt2.consDocAmt					AS 'consDocAmt'
+			, IFNULL(res.resDocStdAmt, 0)		AS 'resDocStdAmt'		
+			, IFNULL(res.resDocTaxAmt, 0)		AS 'resDocTaxAmt'	
+			, IFNULL(res.resDocAmt,    0)		AS 'resDocAmt'
+			, ( CASE	d.conffer_return_yn 
+				WHEN	'Y'	THEN	'0'
+				ELSE		amt.consDocStdAmt - IFNULL(res2.resDocStdAmt, 0)
+				END
+			)	AS 'balanceStdAmt'	
+			, ( CASE	d.conffer_return_yn 
+				WHEN	'Y'	THEN	'0'
+				ELSE		amt.consDocTaxAmt - IFNULL(res2.resDocTaxAmt, 0)
+				END
+			)	AS 'balanceTaxAmt'
+
+			, ( CASE	d.conffer_return_yn 
+				WHEN	'Y'	THEN	'0'
+				ELSE		amt.consDocAmt - IFNULL(res2.resDocAmt, 0)	
+				END
+			)	AS 'balanceAmt'	
+			, d.conffer_return_yn                                     AS 'confferReturnYN'
+			, ( CASE amt.consDocAmt = amt2.consDocAmt WHEN 1 THEN 'N' ELSE 'Y' END)  AS 'confferBudgetReturnYN'
+			, (SELECT aa.c_tiname FROM neos.a_templateinfo aa, neos.a_docinfo bb WHERE aa.c_tikeycode = bb.c_tikeycode AND bb.c_dikeycode = d.doc_seq) AS 'tiname'
+		FROM	neos.t_exnp_consdoc	d
+		INNER JOIN	neos.a_recordinfo	r
+		 ON	d.doc_seq = r.c_dikeycode
+		INNER JOIN	(
+			SELECT	c_dikeycode,  MIN(c_diwriteday) AS c_diwriteday
+			FROM	neos.a_draftinfo 
+			WHERE	IFNULL(c_distatus, '008') != 'd'
+			GROUP BY c_dikeycode 
+		)	i
+		 ON	r.c_dikeycode = i.c_dikeycode
+		LEFT JOIN	(
+			SELECT	
+				cons_doc_seq
+				, SUM(IFNULL(budget_amt, 0)) AS consDocAmt
+				, SUM(IFNULL(budget_tax_amt, 0)) AS consDocTaxAmt
+				, SUM(IFNULL(budget_std_amt, 0)) AS consDocStdAmt
+			FROM	neos.t_exnp_consbudget 
+			WHERE	conffer_budget_return_yn != 'Y'
+			GROUP BY cons_doc_seq		
+		)	amt
+		 ON	d.cons_doc_seq = amt.cons_doc_seq
+		INNER JOIN	(
+			SELECT
+				cons_doc_seq
+				, SUM(IFNULL(budget_amt, 0)) AS consDocAmt
+				, SUM(IFNULL(budget_tax_amt, 0)) AS consDocTaxAmt
+				, SUM(IFNULL(budget_std_amt, 0)) AS consDocStdAmt
+			FROM    neos.t_exnp_consbudget
+			GROUP BY cons_doc_seq
+		)       amt2
+		 ON     d.cons_doc_seq = amt2.cons_doc_seq			 
+		LEFT JOIN	(
+			SELECT	
+				SUM(b2.budget_std_amt)	AS 'resDocStdAmt'
+				, SUM(b2.budget_tax_amt)	AS 'resDocTaxAmt'
+				, SUM( (CASE IFNULL(b2.ctl_fg_code, '1') 
+							WHEN '0'	THEN 	IFNULL(b2.budget_std_amt, 0)
+							ELSE		IFNULL(b2.budget_amt, 0)	/* emptyStr or '1' */
+						END)
+				)	AS 'resDocAmt'
+				, b2.conffer_doc_seq	AS confferDocSeq
+			FROM	neos.t_exnp_resbudget b2
+			 INNER JOIN neos.t_exnp_resdoc d2
+			 ON	b2.res_doc_seq = d2.res_doc_seq
+            WHERE   d2.doc_seq IS NOT NULL
+			 AND	IFNULL(d2.doc_status, '008') IN ('001', '002', '003', '004', '008', '009','20', '30', '90' )
+			GROUP BY b2.conffer_doc_seq
+		)	res
+		 ON 	res.confferDocSeq = d.cons_doc_seq		 	
+		LEFT JOIN       (
+			SELECT
+				SUM(b2.budget_std_amt)  AS 'resDocStdAmt'
+				, SUM(b2.budget_tax_amt)        AS 'resDocTaxAmt'
+				, SUM( (CASE IFNULL(b2.ctl_fg_code, '1') 
+					WHEN '0'	THEN 	IFNULL(b2.budget_std_amt, 0)
+					ELSE		IFNULL(b2.budget_amt, 0)	/* emptyStr or '1' */
+						END)
+				)	AS 'resDocAmt'
+				, b2.conffer_doc_seq    AS confferDocSeq
+			FROM    neos.t_exnp_resbudget b2
+			 INNER JOIN neos.t_exnp_resdoc d2
+			 ON     b2.res_doc_seq = d2.res_doc_seq
+			 INNER JOIN neos.t_exnp_consbudget b3
+			 ON	b2.conffer_budget_seq = b3.budget_seq
+			  AND	b3.conffer_budget_return_yn != 'Y'
+			WHERE   IFNULL(d2.doc_status, '008') IN ( '001', '002', '003', '004', '005', '006', '008', '009' )
+			 AND    d2.doc_seq IS NOT NULL
+			GROUP BY b2.conffer_doc_seq
+		)       res2
+		ON      res2.confferDocSeq = d.cons_doc_seq   		 
+		LEFT JOIN dj_purc_req dpr
+    	 ON dpr.cons_doc_seq = d.cons_doc_seq 
+		WHERE	comp_seq = #{compSeq}
+		<if test='mng != null and mng != "Y"'>
+		 AND	(emp_seq = #{empSeq} OR dept_seq = #{deptSeq})
+		</if>
+		 AND	doc_seq IS NOT NULL
+		 AND 	IFNULL(doc_status, '008') IN ('001', '002', '003', '004', '007', '008', '009','20', '30', '90' )
+		 AND 	IFNULL(doc_status, '008') IN ('008' , '009')
+		 AND 	(dpr.req_state is null OR dpr.req_state IN ('007', '008', '009'))
+		 
+		<if test="frDt != null and frDt != ''">
+		 <if test="toDt != null and toDt != ''">
+		 AND	CONVERT(REPLACE(d.expend_date, '-', ''), CHAR(8)) BETWEEN #{frDt} AND #{toDt}
+		 </if>
+		</if>
+
+		<if test="docTitle != null and docTitle != ''">
+		 AND	c_riaftertitle LIKE CONCAT('%', #{docTitle}, '%')
+		</if>
+
+		<if test="docNo != null and docNo != ''">
+		 AND	c_ridocfullnum LIKE CONCAT('%', #{docNo}, '%')
+		</if>
+		
+		<if test="schDeptSeq != null and schDeptSeq != ''">
+		 AND	d.dept_seq = #{schDeptSeq}
+		</if>
+		
+		<if test="mgtSeq != null and mgtSeq != ''">
+		 and #{mgtSeq} in (select mgt_seq from neos.t_exnp_conshead where d.cons_doc_seq = cons_doc_seq)
+		</if>
+
+		ORDER BY CONVERT(d.expend_date, CHAR(10)) DESC		
+		
+		LIMIT ${skip} , ${pageSize}
+	</select>
+	
+	<select id="ConsDocMng.selectConsDocMngListTotalCount" parameterType="java.util.HashMap" resultType="Integer">
+		/* ConsDocMng.selectConsDocMngListTotalCount */
+		SELECT	
+			COUNT(*)		
+		FROM	neos.t_exnp_consdoc	d
+		INNER JOIN	neos.a_recordinfo	r
+		 ON	d.doc_seq = r.c_dikeycode
+		INNER JOIN	(
+			SELECT	c_dikeycode,  MIN(c_diwriteday) AS c_diwriteday
+			FROM	neos.a_draftinfo 
+			WHERE	IFNULL(c_distatus, '008') != 'd'
+			GROUP BY c_dikeycode 
+		)	i
+		 ON	r.c_dikeycode = i.c_dikeycode
+		LEFT JOIN	(
+			SELECT	
+				cons_doc_seq
+				, SUM(IFNULL(budget_amt, 0)) AS consDocAmt
+				, SUM(IFNULL(budget_tax_amt, 0)) AS consDocTaxAmt
+				, SUM(IFNULL(budget_std_amt, 0)) AS consDocStdAmt
+			FROM	neos.t_exnp_consbudget 
+			WHERE	conffer_budget_return_yn != 'Y'
+			GROUP BY cons_doc_seq		
+		)	amt
+		 ON	d.cons_doc_seq = amt.cons_doc_seq
+		INNER JOIN	(
+			SELECT
+				cons_doc_seq
+				, SUM(IFNULL(budget_amt, 0)) AS consDocAmt
+				, SUM(IFNULL(budget_tax_amt, 0)) AS consDocTaxAmt
+				, SUM(IFNULL(budget_std_amt, 0)) AS consDocStdAmt
+			FROM    neos.t_exnp_consbudget
+			GROUP BY cons_doc_seq
+		)       amt2
+		 ON     d.cons_doc_seq = amt2.cons_doc_seq			 
+		LEFT JOIN	(
+			SELECT	
+				SUM(b2.budget_std_amt)	AS 'resDocStdAmt'
+				, SUM(b2.budget_tax_amt)	AS 'resDocTaxAmt'
+				, SUM( (CASE IFNULL(b2.ctl_fg_code, '1') 
+							WHEN '0'	THEN 	IFNULL(b2.budget_std_amt, 0)
+							ELSE		IFNULL(b2.budget_amt, 0)	/* emptyStr or '1' */
+						END)
+				)	AS 'resDocAmt'
+				, b2.conffer_doc_seq	AS confferDocSeq
+			FROM	neos.t_exnp_resbudget b2
+			 INNER JOIN neos.t_exnp_resdoc d2
+			 ON	b2.res_doc_seq = d2.res_doc_seq
+            WHERE   d2.doc_seq IS NOT NULL
+			 AND	IFNULL(d2.doc_status, '008') IN ('001', '002', '003', '004', '008', '009','20', '30', '90' )
+			GROUP BY b2.conffer_doc_seq
+		)	res
+		 ON 	res.confferDocSeq = d.cons_doc_seq		 	
+		LEFT JOIN       (
+			SELECT
+				SUM(b2.budget_std_amt)  AS 'resDocStdAmt'
+				, SUM(b2.budget_tax_amt)        AS 'resDocTaxAmt'
+				, SUM( (CASE IFNULL(b2.ctl_fg_code, '1') 
+					WHEN '0'	THEN 	IFNULL(b2.budget_std_amt, 0)
+					ELSE		IFNULL(b2.budget_amt, 0)	/* emptyStr or '1' */
+						END)
+				)	AS 'resDocAmt'
+				, b2.conffer_doc_seq    AS confferDocSeq
+			FROM    neos.t_exnp_resbudget b2
+			 INNER JOIN neos.t_exnp_resdoc d2
+			 ON     b2.res_doc_seq = d2.res_doc_seq
+			 INNER JOIN neos.t_exnp_consbudget b3
+			 ON	b2.conffer_budget_seq = b3.budget_seq
+			  AND	b3.conffer_budget_return_yn != 'Y'
+			WHERE   IFNULL(d2.doc_status, '008') IN ( '001', '002', '003', '004', '005', '006', '008', '009' )
+			 AND    d2.doc_seq IS NOT NULL
+			GROUP BY b2.conffer_doc_seq
+		)       res2
+		ON      res2.confferDocSeq = d.cons_doc_seq   		 
+		LEFT JOIN dj_purc_req dpr
+    	 ON dpr.cons_doc_seq = d.cons_doc_seq 
+		WHERE	comp_seq = #{compSeq}
+		<if test='mng != null and mng != "Y"'>
+		 AND	(emp_seq = #{empSeq} OR dept_seq = #{deptSeq})
+		</if>
+		 AND	doc_seq IS NOT NULL
+		 AND 	IFNULL(doc_status, '008') IN ('001', '002', '003', '004', '007', '008', '009','20', '30', '90' )
+		 AND 	IFNULL(doc_status, '008') IN ('008' , '009')
+		 AND 	(dpr.req_state is null OR dpr.req_state IN ('007', '008', '009'))
+		 
+		<if test="frDt != null and frDt != ''">
+		 <if test="toDt != null and toDt != ''">
+		 AND	CONVERT(REPLACE(d.expend_date, '-', ''), CHAR(8)) BETWEEN #{frDt} AND #{toDt}
+		 </if>
+		</if>
+
+		<if test="docTitle != null and docTitle != ''">
+		 AND	c_riaftertitle LIKE CONCAT('%', #{docTitle}, '%')
+		</if>
+
+		<if test="docNo != null and docNo != ''">
+		 AND	c_ridocfullnum LIKE CONCAT('%', #{docNo}, '%')
+		</if>
+		
+		<if test="schDeptSeq != null and schDeptSeq != ''">
+		 AND	d.dept_seq = #{schDeptSeq}
+		</if>
+		
+		<if test="mgtSeq != null and mgtSeq != ''">
+		 and #{mgtSeq} in (select mgt_seq from neos.t_exnp_conshead where d.cons_doc_seq = cons_doc_seq)
+		</if>	
+	</select>
+	
+	<select id="ConsDocMng.selectConsDocMngDList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		/* ConsDocMng.selectConsDocMngDList */
+		SELECT 
+		    consDoc.erp_comp_seq AS 'erpCompSeq',
+		    consDoc.cons_doc_seq AS 'consDocSeq',
+		    consDoc.erp_emp_seq AS 'erpEmpSeq',
+		    consHead.cons_seq AS 'consSeq',
+		    consBudget.budget_seq AS 'budgetSeq',
+		    consHead.docu_fg_name AS 'docuFgName',
+		    consHead.cons_date AS 'consDate',
+		    consHead.erp_gisu_from_date AS 'erpGisuFromDate',
+		    consHead.erp_gisu_to_date AS 'erpGisuToDate',
+		    consHead.erp_gisu AS 'erpGisu',
+		    consHead.mgt_name AS 'mgtName',
+		    consHead.mgt_seq AS 'mgtSeq',
+		    consHead.bottom_seq AS 'bottomSeq',
+		    consHead.erp_pc_name AS 'erpPcName',
+		    consBudget.erp_budget_name AS 'erpBudgetName',
+		    consBudget.erp_budget_seq AS 'erpBudgetSeq',
+		    consBudget.erp_bgt1_name AS 'erpBgt1Name',
+		    consBudget.erp_bgt1_seq AS 'erpBgt1Seq',
+		    consBudget.erp_bgt2_name AS 'erpBgt2Name',
+		    consBudget.erp_bgt2_seq AS 'erpBgt2Seq',
+		    consBudget.erp_bgt3_name AS 'erpBgt3Name',
+		    consBudget.erp_bgt3_seq AS 'erpBgt3Seq',
+		    consBudget.erp_bgt4_name AS 'erpBgt4Name',
+		    consBudget.erp_bgt4_seq AS 'erpBgt4Seq',
+		    consHead.erp_div_name AS 'erpDivName',
+		    consHead.erp_div_seq AS 'erpDivSeq',
+		    IFNULL(consBudget.budget_amt, 0) AS 'budgetAmt',
+		    IFNULL(resBudget.res_budget_amt, 0) AS 'resBudgetAmt',
+		    (CASE consBudget.conffer_budget_return_yn
+		        WHEN 'Y' THEN '0'
+		        ELSE IFNULL(consBudget.budget_amt, 0) - IFNULL(resBudget.res_budget_amt, 0)
+		    END) AS 'balanceAmt',
+		    consBudget.conffer_budget_return_yn AS 'confferBudgetReturnYN',
+		    consBudget.conffer_budget_return_emp_seq AS 'confferBudgetReturnEmpSeq',
+		    consBudget.conffer_budget_return_emp_name AS 'confferBudgetReturnEmpName',
+		    IFNULL(consBudget.erp_bizplan_name, '') AS 'erpBizplanName',
+		    IFNULL(consBudget.erp_fiacct_name, '') AS 'erpFiacctName',
+		    (SELECT cons_mod_cnt FROM dj_cons_mod AA, dj_cons_mod_b BB WHERE AA.cons_mod_seq = BB.cons_mod_seq AND BB.budget_seq = consBudget.budget_seq AND AA.active != 'N') AS 'modCnt',
+		    (SELECT BB.active FROM dj_cons_mod AA, dj_cons_mod_b BB WHERE AA.cons_mod_seq = BB.cons_mod_seq AND BB.budget_seq_before = consBudget.budget_seq AND AA.active != 'N' LIMIT 1) AS 'modYN',
+		    (SELECT BB.active FROM dj_cons_mod AA, dj_cons_mod_b BB WHERE AA.cons_mod_seq = BB.cons_mod_seq AND BB.budget_seq_left = consBudget.budget_seq AND AA.active != 'N') AS 'leftYN'
+		FROM
+		    (SELECT 
+		        *
+		    FROM
+		        neos.t_exnp_consbudget
+		    WHERE
+		        cons_doc_seq = #{consDocSeq}) consBudget
+		        INNER JOIN
+		    neos.t_exnp_consdoc consDoc ON consBudget.cons_doc_seq = consDoc.cons_doc_seq
+		        INNER JOIN
+		    neos.t_exnp_conshead consHead ON consBudget.cons_seq = consHead.cons_seq
+		        LEFT JOIN
+		    (SELECT 
+		        SUM((CASE IFNULL(ctl_fg_code, '1')
+		                WHEN '0' THEN IFNULL(budget_std_amt, 0)
+		                ELSE IFNULL(budget_amt, 0)
+		            END)) AS 'res_budget_amt',
+		            SUM(budget_std_amt) 'res_budget_std_amt',
+		            SUM(budget_tax_amt) 'res_budget_tax_amt',
+		            conffer_budget_seq
+		    FROM
+		        neos.t_exnp_resbudget b2
+		    INNER JOIN neos.t_exnp_resdoc d2 ON b2.res_doc_seq = d2.res_doc_seq
+		    WHERE
+		        IFNULL(d2.doc_status, '008') IN ('001' , '002', '003', '004', '006', '008', '009')
+		            AND d2.doc_seq IS NOT NULL
+		    GROUP BY conffer_budget_seq
+		    ) resBudget 
+		ON consBudget.budget_seq = resBudget.conffer_budget_seq
+		ORDER BY budgetSeq
+	</select>
+
+	<select id="ConsDocMng.checkConsBudgetModify" parameterType="java.util.HashMap" resultType="Integer">
+		/* ConsDocMng.checkConsBudgetModify */
+		SELECT 
+	        count(conffer_budget_seq)
+	    FROM
+	        neos.t_exnp_resbudget b2
+	    INNER JOIN neos.t_exnp_resdoc d2 ON b2.res_doc_seq = d2.res_doc_seq
+	    WHERE IFNULL(d2.doc_status, '008') IN ('001' , '002', '003', '004', '006')
+		AND d2.doc_seq IS NOT NULL
+		AND d2.conffer_doc_seq = #{consDocSeq}
+	</select>
+	
+	<insert id="ConsDocMng.consModInsert" parameterType="java.util.HashMap" useGeneratedKeys="true" keyProperty="consModSeq">
+		/* ConsDocMng.consModInsert */
+		INSERT INTO dj_cons_mod
+			(
+				cons_mod_cnt,
+				cons_doc_seq, mod_emp_seq, mod_emp_name, mod_date, create_emp_seq, create_date, active
+			)
+		VALUES
+			(
+				(SELECT (count(*) + 1) FROM dj_cons_mod as a where a.cons_doc_seq = #{consDocSeq} AND a.active != 'N'),
+				#{consDocSeq}, #{empSeq}, #{empName}, replace(cast(now() as char(10)),'-',''), #{empSeq} , now(), 'N'
+			)
+	</insert>
+	
+	<insert id="ConsDocMng.consModHInsert" parameterType="java.util.HashMap" useGeneratedKeys="true" keyProperty="consModHSeq">
+		/* ConsDocMng.consModHInsert */
+		INSERT INTO dj_cons_mod_h
+			(
+				cons_mod_seq, cons_doc_seq, mgt_seq, mgt_name, cons_seq_before, mgt_seq_before, mgt_name_before, create_emp_seq, create_date
+			)
+		VALUES
+			(
+				#{consModSeq}, #{consDocSeq}, #{modMgtSeq}, #{modMgtName}, #{consSeq}, #{mgtSeq}, #{mgtName}, #{empSeq}, now()
+			)
+	</insert>
+	
+	<insert id="ConsDocMng.consModBInsert" parameterType="java.util.HashMap" useGeneratedKeys="true" keyProperty="consModBSeq">
+		/* ConsDocMng.consModBInsert */
+		INSERT INTO dj_cons_mod_b
+			(
+				cons_mod_seq, cons_mod_h_seq, cons_doc_seq,
+				erp_budget_seq, erp_budget_name, budget_amt,
+				erp_bgt1_name, erp_bgt1_seq, erp_bgt2_name, erp_bgt2_seq, erp_bgt3_name, erp_bgt3_seq, erp_bgt4_name, erp_bgt4_seq,
+				cons_seq_before, budget_seq_before, erp_budget_seq_before, erp_budget_name_before, budget_amt_before, create_emp_seq, create_date
+			)
+		VALUES
+			(
+				#{consModSeq}, #{consModHSeq}, #{consDocSeq},
+				#{modErpBudgetSeq}, #{modErpBudgetName}, #{modBalanceAmt},
+				#{modErpBgt1Name}, #{modErpBgt1Seq}, #{modErpBgt2Name}, #{modErpBgt2Seq}, #{modErpBgt3Name}, #{modErpBgt3Seq}, #{modErpBgt4Name}, #{modErpBgt4Seq},
+				#{consSeq}, #{budgetSeq}, #{erpBudgetSeq}, #{erpBudgetName}, #{balanceAmt}, #{empSeq}, now()
+			)
+	</insert>
+	
+	<select id="ConsDocMng.consModifyEndHListSelect" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		/* ConsDocMng.consModifyEndHListSelect */
+		SELECT 
+			cons_mod_h_seq AS consModHSeq,
+			cons_mod_seq AS consModSeq,
+			cons_doc_seq AS consDocSeq,
+			cons_seq AS consSeq,
+			mgt_seq AS mgtSeq,
+			mgt_name AS mgtName,
+			cons_seq_before AS consSeqBefore,
+			mgt_seq_before AS mgtSeqBefore,
+			mgt_name_before AS mgtNameBefore
+		FROM dj_cons_mod_h
+		WHERE cons_mod_seq = #{consModSeq}
+	</select>
+	
+	<insert id="ConsDocMng.consHeadInsert" parameterType="java.util.HashMap" useGeneratedKeys="true" keyProperty="consSeq">
+		/* ConsDocMng.consHeadInsert */
+		INSERT INTO neos.t_exnp_conshead
+			(
+				cons_doc_seq, cons_date, mgt_seq, mgt_name, docu_fg_code, docu_fg_name, cons_note,
+				erp_comp_seq, erp_comp_name, erp_pc_seq, erp_pc_name, erp_emp_seq, erp_emp_name, erp_div_seq, erp_div_name, erp_dept_seq, erp_dept_name,
+				erp_gisu, erp_gisu_from_date, erp_gisu_to_date, erp_year, btr_seq, btr_nb, btr_name, bottom_seq, bottom_name, create_seq
+			)
+		SELECT
+				cons_doc_seq, cons_date, #{mgtSeq}, #{mgtName}, docu_fg_code, docu_fg_name, cons_note,
+				erp_comp_seq, erp_comp_name, erp_pc_seq, erp_pc_name, erp_emp_seq, erp_emp_name, erp_div_seq, erp_div_name, erp_dept_seq, erp_dept_name,
+				erp_gisu, erp_gisu_from_date, erp_gisu_to_date, erp_year, btr_seq, btr_nb, btr_name, bottom_seq, bottom_name, #{empSeq}
+		FROM neos.t_exnp_conshead
+		WHERE cons_seq = #{consSeqBefore}
+	</insert>
+	
+	<update id="ConsDocMng.consModHUpdateSeq" parameterType="java.util.HashMap">
+		/* ConsDocMng.consModHUpdateSeq */
+		UPDATE dj_cons_mod_h
+		SET	cons_seq = #{consSeq}
+		WHERE cons_mod_h_seq =#{consModHSeq}
+	</update>
+	
+	<select id="ConsDocMng.consModifyEndBReturnListSelect" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		/* ConsDocMng.consModifyEndBReturnListSelect */
+		SELECT distinct
+			B.cons_doc_seq AS consDocSeq,
+			B.cons_seq_before AS consSeqBefore, 
+			B.budget_seq_before AS budgetSeqBefore, 
+			(B.budget_amt_before * -1) AS returnAmt
+		FROM dj_cons_mod_b B
+		WHERE B.cons_mod_seq = #{consModSeq}
+	</select>
+	
+	<select id="ConsDocMng.consModifyEndBListSelect" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		/* ConsDocMng.consModifyEndBListSelect */
+		SELECT 
+			B.cons_mod_B_seq AS consModBSeq,
+			B.cons_mod_seq AS consModSeq,
+			B.cons_mod_h_seq AS consModHSeq,
+			B.cons_doc_seq AS consDocSeq,
+			B.cons_seq AS consSeq,
+			B.budget_seq AS budgetSeq,
+			B.erp_budget_seq AS erpBudgetSeq,
+			B.erp_budget_name AS erpBudgetName,
+			B.budget_amt AS budgetAmt,
+			B.erp_bgt1_name AS erpBgt1Name,
+			B.erp_bgt1_seq AS erpBgt1Seq,
+			B.erp_bgt2_name AS erpBgt2Name,
+			B.erp_bgt2_seq AS erpBgt2Seq,
+			B.erp_bgt3_name AS erpBgt3Name,
+			B.erp_bgt3_seq AS erpBgt3Seq,
+			B.erp_bgt4_name AS erpBgt4Name,
+			B.erp_bgt4_seq AS erpBgt4Seq,
+			B.cons_seq_before AS consSeqBefore, 
+			B.budget_seq_before AS budgetSeqBefore, 
+			B.erp_budget_seq_before AS erpBudgetSeqBefore, 
+			B.erp_budget_name_before AS erpBudgetNameBefore, 
+			B.budget_amt_before AS budgetAmtBefore,
+			(B.budget_amt_before * -1) AS returnAmt,
+			H.mgt_seq AS mgtSeq,
+			H.mgt_name AS mgtName,
+			H.mgt_seq_before AS mgtSeqBefore,
+			H.mgt_name_before AS mgtNameBefore
+		FROM dj_cons_mod_b B
+		JOIN dj_cons_mod_h H
+		ON B.cons_mod_h_seq = H.cons_mod_h_seq
+		<choose>
+			<when test="consModHSeq != null and consModHSeq != ''">
+		WHERE B.cons_mod_h_seq = #{consModHSeq}
+			</when>
+			<otherwise>
+		WHERE B.cons_mod_seq = #{consModSeq}
+			</otherwise>
+		</choose>
+	</select>
+	
+	<update id="ConsDocMng.consBudgetReturn" parameterType="java.util.HashMap">
+		/* ConsDocMng.consBudgetReturn */
+		UPDATE neos.t_exnp_consbudget
+		SET conffer_budget_return_yn = 'Y',
+			conffer_budget_return_emp_seq = #{empSeq},
+			conffer_budget_return_emp_name = #{empName}
+		WHERE cons_doc_seq = #{consDocSeq}
+		AND	cons_seq = #{consSeqBefore}
+		AND	budget_seq = #{budgetSeqBefore}
+	</update>
+	
+	<insert id="ConsDocMng.consBudgetReturnAmtInsert" parameterType="java.util.HashMap" useGeneratedKeys="true" keyProperty="budgetSeqLeft">
+		/* ConsDocMng.consBudgetReturnAmtInsert */
+		INSERT INTO neos.t_exnp_consbudget
+			(
+				cons_doc_seq, cons_seq, erp_bq_seq, erp_bk_seq, erp_budget_seq, erp_budget_name,
+				erp_bizplan_seq, erp_bizplan_name, erp_div_seq, erp_div_name, erp_fiacct_seq, erp_fiacct_name, erp_bgacct_seq, erp_bgacct_name,
+				erp_bgt1_name, erp_bgt1_seq, erp_bgt2_name, erp_bgt2_seq, erp_bgt3_name, erp_bgt3_seq, erp_bgt4_name, erp_bgt4_seq,
+				erp_level01_seq, erp_level01_name, erp_level02_seq, erp_level02_name, erp_level03_seq, erp_level03_name,
+				erp_level04_seq, erp_level04_name, erp_level05_seq, erp_level05_name, erp_level06_seq, erp_level06_name,
+				set_fg_code, set_fg_name, vat_fg_code, vat_fg_name, tr_fg_code, tr_fg_name, ctl_fg_code, ctl_fg_name,
+				erp_open_amt, erp_apply_amt, erp_res_amt, erp_left_amt, gw_balance_amt, budget_amt, budget_note,
+				conffer_budget_return_yn, conffer_budget_return_emp_seq, conffer_budget_return_emp_name, create_seq
+			)
+		SELECT
+				cons_doc_seq, cons_seq, erp_bq_seq, erp_bk_seq, erp_budget_seq, erp_budget_name,
+				erp_bizplan_seq, erp_bizplan_name, erp_div_seq, erp_div_name, erp_fiacct_seq, erp_fiacct_name, erp_bgacct_seq, erp_bgacct_name,
+				erp_bgt1_name, erp_bgt1_seq, erp_bgt2_name, erp_bgt2_seq, erp_bgt3_name, erp_bgt3_seq, erp_bgt4_name, erp_bgt4_seq,
+				erp_level01_seq, erp_level01_name, erp_level02_seq, erp_level02_name, erp_level03_seq, erp_level03_name,
+				erp_level04_seq, erp_level04_name, erp_level05_seq, erp_level05_name, erp_level06_seq, erp_level06_name,
+				set_fg_code, set_fg_name, vat_fg_code, vat_fg_name, tr_fg_code, tr_fg_name, ctl_fg_code, ctl_fg_name,
+				erp_open_amt, erp_apply_amt, erp_res_amt, erp_left_amt, gw_balance_amt, #{returnAmt}, budget_note,
+				conffer_budget_return_yn, conffer_budget_return_emp_seq, conffer_budget_return_emp_name, #{empSeq}
+		FROM neos.t_exnp_consbudget
+		WHERE budget_seq = #{budgetSeqBefore}
+	</insert>
+	
+	<insert id="ConsDocMng.consBudgetInsert" parameterType="java.util.HashMap" useGeneratedKeys="true" keyProperty="budgetSeq">
+		/* ConsDocMng.consBudgetInsert */
+		INSERT INTO neos.t_exnp_consbudget
+			(
+				cons_doc_seq, cons_seq, erp_bq_seq, erp_bk_seq, erp_budget_seq, erp_budget_name,
+				erp_bizplan_seq, erp_bizplan_name, erp_div_seq, erp_div_name, erp_fiacct_seq, erp_fiacct_name, erp_bgacct_seq, erp_bgacct_name,
+				erp_bgt1_name, erp_bgt1_seq, erp_bgt2_name, erp_bgt2_seq, erp_bgt3_name, erp_bgt3_seq, erp_bgt4_name, erp_bgt4_seq,
+				erp_level01_seq, erp_level01_name, erp_level02_seq, erp_level02_name, erp_level03_seq, erp_level03_name,
+				erp_level04_seq, erp_level04_name, erp_level05_seq, erp_level05_name, erp_level06_seq, erp_level06_name,
+				set_fg_code, set_fg_name, vat_fg_code, vat_fg_name, tr_fg_code, tr_fg_name, ctl_fg_code, ctl_fg_name,
+				erp_open_amt, erp_apply_amt, erp_res_amt, erp_left_amt, gw_balance_amt, budget_amt, budget_note, create_seq
+			)
+		SELECT
+				cons_doc_seq, #{consSeq}, erp_bq_seq, erp_bk_seq, #{erpBudgetSeq}, #{erpBudgetName},
+				erp_bizplan_seq, erp_bizplan_name, erp_div_seq, erp_div_name, erp_fiacct_seq, erp_fiacct_name, erp_bgacct_seq, erp_bgacct_name,
+				#{erpBgt1Name}, #{erpBgt1Seq}, #{erpBgt2Name}, #{erpBgt2Seq}, #{erpBgt3Name}, #{erpBgt3Seq}, #{erpBgt4Name}, #{erpBgt4Seq},
+				erp_level01_seq, erp_level01_name, erp_level02_seq, erp_level02_name, erp_level03_seq, erp_level03_name,
+				erp_level04_seq, erp_level04_name, erp_level05_seq, erp_level05_name, erp_level06_seq, erp_level06_name,
+				set_fg_code, set_fg_name, vat_fg_code, vat_fg_name, tr_fg_code, tr_fg_name, ctl_fg_code, ctl_fg_name,
+				erp_open_amt, erp_apply_amt, erp_res_amt, erp_left_amt, gw_balance_amt, #{budgetAmt}, budget_note, #{empSeq}
+		FROM neos.t_exnp_consbudget
+		WHERE budget_seq = #{budgetSeqBefore}
+	</insert>
+	
+	<update id="ConsDocMng.consModBUpdateSeq" parameterType="java.util.HashMap">
+		/* ConsDocMng.consModBUpdateSeq */
+		UPDATE dj_cons_mod_b
+		SET	cons_seq = #{consSeq},
+			budget_seq = #{budgetSeq},
+			budget_seq_left = #{budgetSeqLeft}
+		WHERE cons_mod_b_seq =#{consModBSeq}
+	</update>
+	
+	<select id="ConsDocMng.consModifyEndTListSelect" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		/* ConsDocMng.consModifyEndTListSelect */
+		SELECT
+			cons_mod_t_seq AS consModTSeq,
+			cons_mod_seq AS consModSeq, 
+			cons_mod_h_seq AS consModHSeq, 
+			cons_mod_b_seq AS consModBSeq, 
+			cons_doc_seq AS consDocSeq, 
+			cons_seq AS consSeq, 
+			budget_seq AS budgetSeq, 
+			trade_seq AS tradeSeq, 
+			item_nm AS itemNm, 
+			standard AS standard, 
+			contents AS contents, 
+			item_cnt AS itemCnt, 
+			item_am AS itemAm, 
+			unit_am AS unitAm, 
+			trade_note AS tradeNote, 
+			purc_tr_type AS purcTrType
+		FROM dj_cons_mod_t
+		<choose>
+			<when test="consModBSeq != null and consModBSeq != ''">
+		WHERE cons_mod_b_seq = #{consModBSeq}
+			</when>
+			<otherwise>
+		WHERE cons_mod_seq = #{consModSeq}
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="ConsDocMng.consTradeInsert" parameterType="java.util.HashMap" useGeneratedKeys="true" keyProperty="tradeSeq">
+		/* ConsDocMng.consTradeInsert */
+		INSERT INTO neos.t_exnp_constrade
+		(
+			cons_doc_seq, cons_seq, budget_seq,
+			item_name, item_cnt, emp_name, trade_unit_amt, trade_note,
+			create_seq, create_date
+		)
+		VALUES
+		(
+			#{consDocSeq}, #{consSeq}, ${budgetSeq},
+			#{itemNm}, #{itemCnt}, #{empName}, #{unitAm}, #{tradeNote},
+			create_seq, create_date
+		)
+	</insert>
+	
+	<update id="ConsDocMng.consModTUpdateSeq" parameterType="java.util.HashMap">
+		/* ConsDocMng.consModTUpdateSeq */
+		UPDATE dj_cons_mod_t
+		SET	cons_seq = #{consSeq},
+			budget_seq = #{budgetSeq},
+			trade_seq = #{tradeSeq}
+		WHERE cons_mod_t_seq = #{consModTSeq}
+	</update>
+	
+	<update id="ConsDocMng.consDocModifyEnd" parameterType="java.util.HashMap">
+		/* ConsDocMng.consDocModifyEnd */
+		UPDATE dj_cons_mod
+		SET	active = 'Y'
+		WHERE cons_mod_seq = #{consModSeq}
+	</update>
+	
+	<select id="ConsDocMng.getTreadList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		/* ConsDocMng.getTreadList */
+		SELECT 
+			T.standard AS standard,
+			T.contents AS contents,
+			T.item_nm AS itemNm,
+			T.item_cnt AS itemCnt,
+			T.item_am AS itemAm,
+			T.unit_am AS unitAm,
+			(SELECT trade_note FROM neos.t_exnp_constrade WHERE T.abdocu_t_no = trade_seq) AS tradeNote
+		FROM dj_purc_cont_t T
+		JOIN dj_purc_cont_b B
+		ON T.purc_cont_b_id = B.purc_cont_b_id
+		WHERE B.abdocu_b_no = #{budgetSeq}
+		AND T.purc_cont_id = #{purcContId}
+	</select>
+	
+	<insert id="ConsDocMng.consModTInsert" parameterType="java.util.HashMap" useGeneratedKeys="true" keyProperty="consModTSeq">
+		/* ConsDocMng.consModTInsert */
+		INSERT INTO dj_cons_mod_t
+		(
+			cons_mod_seq, cons_mod_h_seq, cons_mod_b_seq, cons_doc_seq, 
+			item_nm, standard, contents, item_cnt, item_am, unit_am, trade_note, purc_tr_type,
+			create_emp_seq, create_date
+		)
+		SELECT
+			cons_mod_seq, cons_mod_h_seq, cons_mod_b_seq, cons_doc_seq,
+			#{itemNm}, #{standard}, #{contents}, #{itemCnt}, #{itemAm}, #{unitAm}, #{tradeNote}, #{purcTrType},
+			#{empSeq}, now()
+		FROM dj_cons_mod_b
+		WHERE cons_mod_b_seq = #{consModBSeq}
+	</insert>
+	
+	<select id="ConsDocMng.purcContBIdSelect" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		/* ConsDocMng.purcContBIdSelect */
+		SELECT 
+			purc_cont_b_id AS purcContBId,
+			purc_cont_id AS purcContId,
+			purc_req_id AS purcReqId,
+			purc_req_h_id AS purcReqHId,
+			purc_req_b_id AS purcReqBId,
+			abdocu_b_no AS abdocuBNo,
+			apply_am AS applyAm,
+			open_am AS openAm
+		FROM dj_purc_cont_b 
+		WHERE purc_cont_id = #{purcContId}
+		AND abdocu_b_no = #{budgetSeqBefore}
+		LIMIT 1
+	</select>
+	
+	<select id="ConsDocMng.purcContBDelete" parameterType="java.util.HashMap">
+		/* ConsDocMng.purcContBDelete */
+		DELETE FROM dj_purc_cont_b
+		WHERE purc_cont_id = #{purcContId}
+		AND purc_cont_b_id = #{purcContBId}
+	</select>
+	
+	<insert id="ConsDocMng.purcContBInsert" parameterType="java.util.HashMap" useGeneratedKeys="true" keyProperty="purcContBId">
+		/* ConsDocMng.purcContBInsert */
+		INSERT INTO dj_purc_cont_b
+		(
+			purc_cont_id, purc_req_id, purc_req_h_id, purc_req_b_id, abdocu_b_no, apply_am, open_am, write_emp_seq, write_emp_ip, write_date, active
+		)
+		VALUES
+		(
+			#{purcContId}, #{purcReqId}, #{purcReqHId}, #{purcReqBId}, #{budgetSeq}, #{budgetAmt}, #{openAm}, #{empSeq}, #{empIp}, now(), 'Y'
+		)
+	</insert>
+	
+	<update id="ConsDocMng.purcContBUpdate" parameterType="java.util.HashMap">
+		/* ConsDocMng.purcContBUpdate */
+		UPDATE dj_purc_cont_b
+		SET	abdocu_b_no = #{budgetSeq},
+			apply_am = #{budgetAmt}
+		WHERE purc_cont_id = #{purcContId}
+		AND purc_cont_b_id = #{purcContBId}
+	</update>
+	
+	<delete id="ConsDocMng.purcContTDelete" parameterType="java.util.HashMap">
+		/* ConsDocMng.purcContTDelete */
+		DELETE FROM dj_purc_cont_t
+		WHERE purc_cont_id = #{purcContId}
+		AND purc_cont_b_id = #{purcContBId}
+	</delete>
+	
+	<insert id="ConsDocMng.purcContTInsert" parameterType="java.util.HashMap" useGeneratedKeys="true" keyProperty="purcContTId">
+		/* ConsDocMng.purcContTInsert */
+		INSERT INTO dj_purc_cont_t
+		(
+			purc_cont_id, purc_cont_b_id, purc_req_id, purc_req_h_id, purc_req_b_id, abdocu_t_no,
+			standard, contents, purc_tr_type, item_nm, item_cnt, item_am, unit_am, sup_am, vat_am,
+			write_emp_seq, write_date
+		)
+		VALUES
+		(
+			#{purcContId}, #{purcContBId}, #{purcReqId}, #{purcReqHId}, #{purcReqBId}, #{tradeSeq},
+			#{standard}, #{contents}, #{purcTrType}, #{itemNm}, #{itemCnt}, #{itemAm}, #{unitAm}, #{unitAm}, 0,
+			#{empSeq}, now()
+		)
+	</insert>
+	
+	<select id="ConsDocMng.checkContract" parameterType="java.util.HashMap" resultType="String">
+		/* ConsDocMng.checkContract */
+		SELECT a.purc_cont_id 
+		FROM dj_purc_cont a
+		JOIN dj_purc_req b
+		ON a.purc_req_id = b.purc_req_id
+		WHERE a.cont_step  IN ('004', '005', '006', '007')
+		AND b.cons_doc_seq = #{consDocSeq}
+		LIMIT 1
+	</select>
+</mapper>

@@ -1,0 +1,875 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="budgetMs">
+
+	<select id="accountingUnitList" parameterType="map" resultType="map">
+	
+		EXEC dbo.HIS_DIVCD_SELECT1 ''
+	
+	</select>
+	
+	<select id="projectList" parameterType="map" resultType="map">
+	
+		EXEC dbo.HIS_PJTCD_SELECT1 #{fiscal_year}, #{project}
+	
+	</select>
+	
+	<select id="projectList2" parameterType="map" resultType="map">
+	
+		EXEC dbo.HIS_PJTCD_SELECT2 #{fiscal_year}, #{deptCd}, #{project}
+	
+	</select>
+	
+	<select id="projectList3" parameterType="map" resultType="map">
+	
+		EXEC dbo.HIS_PJTCD_SELECT3 #{fiscal_year}, #{deptCd}, #{projectNm}
+	
+	</select>
+	
+	<select id="budgetList" parameterType="map" resultType="map">
+	
+		EXEC dbo.HIS_BGTCD_SELECT1 #{fiscal_year} , #{project}, #{project}, ''
+	
+	</select>
+
+	<select id="mokList" parameterType="map" resultType="map">
+	
+		EXEC dbo.HIS_BGTCD_SELECT2 #{fiscal_year} , #{project}, #{project}, ''
+	
+	</select>
+	
+	<select id="accountTitleList" parameterType="map" resultType="map">
+	
+		EXEC dbo.HIS_ACCTCD_SELECT1 ''
+	
+	</select>
+
+	<select id="customerList" parameterType="map" resultType="map">
+	
+		EXEC dbo.HIS_TRCD_SELECT1 #{customer}
+	
+	</select>
+	
+	<select id="caseActList" parameterType="map" resultType="map">
+	
+		EXEC dbo.HIS_BUDGET_SELECT1 
+		#{fiscal_year} , #{accounting_unit} , #{from_project} , #{to_project} ,
+		#{from_budget_name} , #{to_budget_name} , #{from_mok_name} , #{to_mok_name},
+		#{from_standard_period} , #{to_standard_period} 
+	
+	</select>
+	
+	<select id="caseActDetailList" parameterType="map" resultType="map">
+	
+		EXEC dbo.HIS_BUDGET_SELECT2 
+		#{div_cd}, #{pjt_cd}, #{bgt_cd}, #{from_standard_period}, #{to_standard_period}
+	</select>
+	
+
+	<select id="ledgerList" parameterType="map" resultType="map">
+	
+		EXEC dbo.HIS_ACCT_TR_AMT_SELECT 
+		#{from_period} , #{to_period} , #{accounting_unit} , #{accounting_title} , #{customer}
+	
+	</select>
+	
+	<select id="accountLedgerList" parameterType="map" resultType="map">
+	
+		EXEC dbo.HIS_ACCT_AMT_SELECT 
+		#{from_period} , #{to_period} , #{accounting_unit} , #{accounting_title}
+	
+	</select>
+	
+	<select id="generalAccountLedgerList" parameterType="map" resultType="map">
+	
+		EXEC dbo.HIS_ACCT_DAY_SUM_SELECT 
+		#{from_period} , #{to_period} , #{accounting_unit} , #{accounting_title}
+	
+	</select>
+	
+	<select id="getVoucher" parameterType="map" resultType="map">
+		/* budget.getVoucher - mssql 전표 조회 */
+		
+		EXEC HIS_ACCT_SLIPM_SELECT
+		#{ISU_DT}, #{ISU_SQ}
+	</select>
+	
+	<select id="getVoucherDetail" parameterType="map" resultType="map">
+		/* budget.getVoucherDetail - mssql 전표 상세 조회 */
+		
+		EXEC HIS_ACCT_SLIPD_SELECT
+		#{ISU_DT}, #{ISU_SQ}
+	</select>
+
+	<select id="getResolutionAdocm" parameterType="map" resultType="map">
+		EXEC HIS_ACCT_ADOCM_SELECT
+		#{ISU_DT}, #{ISU_SQ}
+	</select>
+	
+	<select id="getResolutionAdocb" parameterType="map" resultType="map">
+		EXEC HIS_ACCT_ADOCB_SELECT
+		#{ISU_DT}, #{ISU_SQ}
+	</select>
+	
+	<select id="getResolutionAdoct" parameterType="map" resultType="map">
+		EXEC HIS_ACCT_ADOCT_SELECT
+		#{ISU_DT}, #{ISU_SQ}, #{BG_SQ}
+	</select>
+	
+	<select id="getAccountTitleList" parameterType="map" resultType="map">
+		EXEC HIS_ACCTCD_SELECT1 #{NAME}
+	</select>
+	
+	<select id="getCustomerList" parameterType="map" resultType="map">
+		EXEC dbo.HIS_TRCD_SELECT1 #{NAME}
+	</select>
+	
+	<select id="resolutionDeptComboList" parameterType="map" resultType="map">
+		EXEC HIS_DEPTCD_SELECT1 ''
+	</select>
+	
+	<select id="purchaseLedgerList" parameterType="map" resultType="map">
+		EXEC HIS_TAX_AMT_SELECT1
+		#{division}, #{from_period}, #{to_period}, #{accounting_unit}, #{resolution_dept}  
+	</select>
+	
+	<select id="salesLedgerList" parameterType="map" resultType="map">
+		EXEC HIS_TAX_AMT_SELECT2
+		#{division}, #{from_period}, #{to_period}, #{accounting_unit}, #{resolution_dept}  
+	</select>
+	
+	<select id="IndividualExpenditureResolutionList" parameterType="map" resultType="map">
+		EXEC TPF_GUL_SELECT1
+		#{fromMonth}, #{toMonth}, #{erpEmpSeq}
+	</select>
+	
+	<select id="expenditureResolutionStatusList" parameterType="map" resultType="map">
+		EXEC TPF_GUL_SELECT2
+		#{fromMonth}, #{toMonth}, #{erpDeptSeq}, #{erpEmpSeq}, #{rmkDc}
+	</select>
+	
+	<select id="projectPreparationList" parameterType="map" resultType="map">
+		EXEC HIS_BUDGET_SELECT3
+		#{MONTH}, #{DIV_CD}, #{PJT_CD_FR}, #{PJT_CD_TO}
+	</select>
+	
+	<select id="budgetListAjax" parameterType="map" resultType="map">
+	
+		EXEC dbo.HIS_BGTCD_SELECT1 #{fiscal_year} , #{to_project}, #{from_project}, ''
+	
+	</select>
+	
+	<select id="budgetMs.getErpBgInfo" parameterType="map" resultType="map">
+		/*budgetMs.getErpBgInfo*/
+		select
+			b.fill_dt
+			, b.fill_nb
+			, b.isu_dt
+			, b.isu_sq
+			, '확정' AS useName
+			, (b.fill_dt + '-' + right(cast(b.fill_nb + 100000 AS CHAR(6)),5)) AS fill_num
+		from abdocu_b a
+		join adocuh b
+		on a.co_cd = b.co_cd
+		and a.isu_dt = b.isu_dt
+		and a.isu_sq = b.isu_sq
+		where a.co_cd = #{erpCompSeq}
+		and a.gisu_dt = #{erpGisuDate}
+		and a.gisu_sq = #{erpGisuSq}
+		and a.bg_sq = #{erpBgSq}
+		and b.fill_dt != '00000000'
+		and b.fill_nb != 0
+	</select>
+	
+	<select id="budgetMs.getAdocuList" parameterType="map" resultType="map">
+		/*budgetMs.getAdocuList*/
+		select 
+			a.* 
+			, a.fill_dt + replicate(0, 5 - len(a.fill_nb)) + convert(nvarchar(5), a.fill_nb)  as fill_seq
+			, a.isu_dt + replicate(0, 5 - len(a.isu_sq)) + convert(nvarchar(5), a.isu_sq)  as isu_seq
+		from(
+			select
+				 count(*) over() as totalCnt,
+			<choose>
+				<when test='field == "ISU_DT"'>
+				 row_number() over(order by isu_dt ${dir}, isu_sq ${dir}) rowNum,
+				</when>
+				<when test='field == "FILL_DT"'>
+				 row_number() over(order by fill_dt ${dir}, fill_nb ${dir}) rowNum,
+				</when>
+				<when test='field == "ADMIT_NAME"'>
+				 row_number() over(order by (select top 1 kor_nm from semp se where se.co_cd = ah.co_cd and se.emp_cd = ah.admit_id) ${dir}) rowNum,
+				</when>
+				<when test='field != null and field != ""'>
+				 row_number() over(order by ${field} ${dir}) rowNum,
+				</when>
+				<otherwise>
+				 row_number() over(order by isu_dt desc, isu_sq desc) rowNum,
+				</otherwise>
+			</choose>
+				 ah.* ,
+				 (select top 1 kor_nm from semp se where se.co_cd = ah.co_cd and se.emp_cd = ah.admit_id) as ADMIT_NAME
+			from adocuh ah
+			where ah.co_cd = #{coCd}
+			<choose>
+				<when test='dateType == "2"'>
+			and ah.fill_dt between #{frDt} and #{toDt}
+				</when>
+				<otherwise>
+			and ah.isu_dt between #{frDt} and #{toDt}
+				</otherwise>
+			</choose>
+			<if test='deptCd != null and deptCd != ""'>
+			and ah.dept_cd = #{deptCd}
+			</if>
+			<if test='empCd != null and empCd != ""'>
+			and ah.emp_cd = #{empCd}
+			</if>
+			and isu_doc like '%' + #{title} + '%'
+		) a
+		where rowNum between ((${page}-1)*${pageSize})+1 and (${page}*${pageSize})
+	</select>
+	
+	<select id="budgetMs.getErpDept" parameterType="map" resultType="map">
+		/*budgetMs.getErpDept*/
+		SELECT  
+			DEPT_CD  						AS dept_seq
+			, ISNULL(DEPT_NM, DEPT_NMK) 	AS dept_name  
+		FROM	SDEPT  
+		WHERE	CO_CD = #{coCd}
+		 AND (NULLIF(TO_DT,'') IS NULL 
+		 OR TO_DT = '00000000' 
+		 OR TO_DT >= SUBSTRING(REPLACE(CONVERT(VARCHAR,GETDATE(),120),'-',''),1, 8) )   
+	</select>
+	
+	<select id="budgetMs.getErpEmpList" parameterType="java.util.Map" resultType="java.util.Map">
+		/* budgetMs.getErpEmpList */
+		/* ERP 사원정보 조회 */
+		/* 원본프로시저 [1.0] -  [dbo].[P_GWG20_COMMON_EMP_LIST] / [dbo].[P_GWG20_COMMON_USER_INFO]  */
+		/* params[  erpCompSeq, subUseYN, erpEmpSeq, toDate, erpDivSeq, erpDeptSeq, baseDate, empName  ] */
+		
+		DECLARE @CO_CD			NVARCHAR(4)
+				, @EMP_CD		NVARCHAR(10)
+				, @DIV_CD		NVARCHAR(10)
+				, @DEPT_CD		NVARCHAR(10)
+				, @TO_DT		NVARCHAR(8)
+				, @BASE_DT		NVARCHAR(8)
+				, @EMP_NM		NVARCHAR(10)
+		SELECT	@CO_CD			= '${erpCompSeq}'
+				, @EMP_CD		= '${erpEmpSeq}'
+				, @DIV_CD		= '${erpDivSeq}'
+				, @DEPT_CD		= '${erpDeptSeq}'
+				, @TO_DT		= '${toDate}'
+				, @BASE_DT		= '${baseDate}'
+				, @EMP_NM		= '${empName}'
+		
+		/************************************************************/
+		
+		SELECT     
+			COUNT(*) OVER() AS 'cnt'
+			, EMP_CD    		AS 'erpEmpSeq'
+			, KOR_NM		AS 'korName'
+			, ENLS_NM  		AS 'enlsName'
+			, DEPT_CD  		AS 'erpDeptSeq'
+			, DEPT_NM  		AS 'erpDeptName'
+			, DIV_CD		AS 'erpDivSeq'
+			, DIV_NM		AS 'erpDivName'
+			, ( CASE IN_TAX WHEN '1' THEN '0' ELSE '1' END ) AS 'vatControl'
+			, BANK_CD		AS 'btrSeq'
+			, BANK_NM		AS 'btrName'
+			, ACCT_NO		AS 'baNb'
+			, DPST_NM		AS 'deposit'
+			, PRTT_CD		AS 'prttSeq'
+			, HTYP_CD		AS 'htypSeq'
+			, CO_CD
+		FROM (    
+			SELECT	E.PRTY_CD 
+				AS PRTT_CD
+				, E.HTYP_CD
+				, E.EMP_CD
+				, E.KOR_NM
+				, E.KOR_NMK
+				, E.ENLS_NM
+				, D.DEPT_CD
+				, D.DEPT_NM
+				, D.DEPT_NMK
+				, V.DIV_CD
+				, V.DIV_NM
+				, V.DIV_NMK
+				, V.IN_TAX
+				, B.BANK_CD
+				, B.BANK_NM
+				, B.BANK_NMK
+				, E.ACCT_NO
+				, E.DPST_NM    
+				,ISNULL(NULLIF(E.RTR_DT,''),'99991231') AS RTR_DT   /* 퇴사일(값이 없는 경우,조회를 위해서 발생할 수 없는 일자로 변경) */    
+				, E.USE_FG 
+				, E.CO_CD
+			FROM	SEMP E WITH(NOLOCK)    
+				LEFT OUTER JOIN SDEPT D WITH(NOLOCK) 
+				 ON (D.CO_CD	= E.CO_CD  AND D.DEPT_CD = E.DEPT_CD )
+				LEFT OUTER JOIN SDIV V WITH(NOLOCK)
+				 ON (D.CO_CD	= V.CO_CD AND D.DIV_CD = V.DIV_CD )
+				LEFT OUTER JOIN SBANK B WITH(NOLOCK) 
+				 ON (E.PYTB_CD	= B.BANK_CD)    
+				
+			WHERE 	E.CO_CD =  @CO_CD
+			<![CDATA[
+			AND E.EMPL_FG <> '002' 
+			AND E.ENRL_FG <> 'J05'
+			]]>
+			AND (NULLIF( D.TO_DT,'') IS NULL OR D.TO_DT = '00000000' OR D.TO_DT &gt;= ISNULL( @TO_DT,''))  
+		) A 
+		<![CDATA[   
+		WHERE	RTR_DT	>= @BASE_DT
+		]]>
+		 AND	(NULLIF( @EMP_NM,'')	IS NULL 
+			 OR	KOR_NM	LIKE '%' + @EMP_NM + '%'  
+			 OR	ENLS_NM	LIKE '%' + @EMP_NM + '%' 
+		 )      
+		ORDER BY EMP_CD 
+	</select>
+	
+	<select id="budgetMs.getAbdocuInfo" parameterType="map" resultType="map">
+		/*budgetMs.getAbdocuInfo*/
+		select 
+			top 1
+			gisu_dt as gisu_dt
+			, gisu_sq as gisu_sq
+		from abdocu_b
+		where isu_dt = #{isu_dt}
+		and isu_sq = #{isu_sq}
+	</select>
+	
+	<select id="budgetMs.getAdocuHInfo" parameterType="map" resultType="map">
+		/*budgetMs.getAdocuHInfo*/
+		select top 1 a.* 
+			, (select top 1 dept_nm from sdept b where a.co_cd = b.co_cd and a.dept_cd = b.dept_cd) as DEPT_NM
+			, (select top 1 kor_nm from semp b where a.co_cd = b.co_cd and a.emp_cd = b.emp_cd) as EMP_NM
+		from adocuh a
+		where a.isu_dt = #{isu_dt}
+		and a.isu_sq = #{isu_sq} 
+	</select>
+	
+	<select id="budgetMs.getAdocuDInfo" parameterType="map" resultType="map">
+		/*budgetMs.getAdocuDInfo*/
+		select a.* 
+			, (select top 1 acct_nm from sacct b where a.co_cd = b.co_cd and a.acct_cd = b.acct_cd) as ACCT_NM
+		from adocud a
+		where a.isu_dt = #{isu_dt}
+		and a.isu_sq = #{isu_sq} 
+		order by ln_sq
+	</select>
+	
+	<select id="budgetMs.getParentDept" parameterType="map" resultType="map">
+	/* budgetMs.getParentDept */
+	EXEC HIS_HDEPT_SELECT 
+		@V_IN_DEPT_NM = #{deptName}
+	</select>
+
+<select id="budgetMs.parentDeptCancel" parameterType="map" resultType="map" statementType="CALLABLE">
+	/* budgetMs.parentDeptCancel */
+	EXEC HIS_HDEPT_CANCEL
+		@V_IN_DEPT_CD = #{deptSeq},
+		@V_IN_ID = #{empSeq},
+		@V_IN_IP = #{ip},
+		@V_OUT_YN=#{OUT_YN, mode = OUT, jdbcType=VARCHAR},
+		@V_OUT_MSG=#{OUT_MSG, mode = OUT, jdbcType=VARCHAR}
+</select>
+
+<select id="budgetMs.searchDeptList" parameterType="map" resultType="map">
+	/* budgetMs.searchDeptList */
+	EXEC HIS_DEPTCD_SELECT2
+		@V_IN_NAME = #{deptName}
+</select>
+
+<select id="budgetMs.searchDeptList2" parameterType="map" resultType="map">
+	/* budgetMs.searchDeptList2 */
+	EXEC HIS_DEPTCD_SELECT3
+		@V_IN_YEAR = #{year},
+		@V_IN_NAME = #{deptName}
+</select>
+
+<select id="budgetMs.searchDeptList6" parameterType="map" resultType="map">
+	/* budgetMs.searchDeptList6 */
+	EXEC HIS_DEPTCD_SELECT6
+		@V_IN_YEAR = #{year},
+		@V_IN_NAME = #{deptName}
+</select>
+
+<select id="budgetMs.saveSelDept" parameterType="map" resultType="map" statementType="CALLABLE">
+	/* budgetMs.saveSelDept */
+	EXEC HIS_HDEPT_SAVE
+		@V_IN_DEPT_CD = #{deptSeq},
+		@V_IN_HDEPT_CD = #{parentDeptSeq},
+		@V_IN_ID = #{empSeq},
+		@V_IN_IP = #{ip},
+		@V_OUT_YN=#{OUT_YN, mode = OUT, jdbcType=VARCHAR},
+		@V_OUT_MSG=#{OUT_MSG, mode = OUT, jdbcType=VARCHAR}
+</select>
+
+<select id="budgetMs.projectSetDeptCancel" parameterType="map" resultType="map" statementType="CALLABLE">
+	/* budgetMs.projectSetDeptCancel */
+	EXEC HIS_PJTBGT_DEPT_CANCEL
+		@V_IN_CO_CD = #{coCd},
+		@V_IN_PJT_CD = #{pjtCd},
+		@V_IN_BGT_CD = #{bgtCd},
+		@V_IN_ID = #{empSeq},
+		@V_IN_IP = #{ip},
+		@V_OUT_YN=#{OUT_YN, mode = OUT, jdbcType=VARCHAR},
+		@V_OUT_MSG=#{OUT_MSG, mode = OUT, jdbcType=VARCHAR}
+</select>
+
+<select id="budgetMs.getProjectList" parameterType="map" resultType="map">
+	/* budgetMs.getProjectList */
+	EXEC HIS_PJTBGT_DEPT_SELECT
+		@V_IN_YEAR = #{year},
+		@V_IN_PJT_CD = #{pjtCd}
+</select>
+
+<select id="budgetMs.saveProjectDept" parameterType="map" resultType="map" statementType="CALLABLE">
+	/* budgetMs.saveProjectDept */
+	EXEC HIS_PJTBGT_DEPT_SAVE
+		@V_IN_CO_CD = #{coCd},
+		@V_IN_PJT_CD = #{pjtCd},
+		@V_IN_BGT_CD = #{bgtCd},
+		@V_IN_BGT_NM = #{bgtNm},
+		@V_IN_HBGT_NM = #{parentBgtNm},
+		@V_IN_DEPT_CD = #{deptSeq},
+		@V_IN_BSNSYEAR = #{bsnsYear},
+		@V_IN_ID = #{empSeq},
+		@V_IN_IP = #{ip},
+		@V_OUT_YN=#{OUT_YN, mode = OUT, jdbcType=VARCHAR},
+		@V_OUT_MSG=#{OUT_MSG, mode = OUT, jdbcType=VARCHAR}
+</select>
+
+<select id="budgetMs.getYesilDaebi" parameterType="map" resultType="map">
+	/* budgetMs.getYesilDaebi */
+	EXEC HIS_BUDGET_SELECT4
+		@V_IN_MONTH = #{month}
+</select>
+
+<select id="budgetMs.getBonbuYesilDaebi" parameterType="map" resultType="map">
+	/* budgetMs.getBonbuYesilDaebi */
+	EXEC HIS_BUDGET_SELECT5
+		@V_IN_MONTH = #{month}
+</select>
+
+<select id="budgetMs.getBonbuInfo" parameterType="map" resultType="map">
+	/* budgetMs.getBonbuInfo */
+	EXEC HIS_HDEPTCD_SELECT1
+		@V_IN_YEAR = #{year},
+		@V_IN_NAME = #{bonbuNm}
+</select>
+
+<select id="budgetMs.getBonbuDeptYesilDaebi" parameterType="map" resultType="map">
+	/* budgetMs.getBonbuDeptYesilDaebi */
+	EXEC HIS_BUDGET_SELECT6
+		@V_IN_MONTH = #{month},
+		@V_IN_HDEPT_CD = #{bonbuCd}
+</select>
+
+<select id="budgetMs.getProjectDeptYeasilDaebi" parameterType="map" resultType="map">
+	/* budgetMs.getProjectDeptYeasilDaebi */
+	EXEC HIS_BUDGET_SELECT7
+		@V_IN_MONTH = #{month},
+		@V_IN_DEPT_CD = #{deptSeq},
+		@V_IN_PJT_CD = #{pjtCd}
+</select>
+
+<select id="budgetMs.getBgtYeasilDaebi" parameterType="map" resultType="map">
+	/* budgetMs.getBgtYeasilDaebi */
+	EXEC HIS_BUDGET_SELECT8
+		@V_IN_MONTH = #{month},
+		@V_IN_DEPT_CD = #{deptSeq},
+		@V_IN_PJT_CD_FR = #{pjtFrom},
+		@V_IN_PJT_CD_TO = #{pjtTo}
+</select>
+
+<select id="budgetMs.getDeptBgt" parameterType="map" resultType="map">
+	/* budgetMs.getDeptBgt */
+	EXEC HIS_DEPT_BGT_SELECT1
+		@V_IN_MONTH = #{month},
+		@V_IN_DEPT_CD = #{deptSeq},
+		@V_IN_PJT_CD = #{pjtCd}
+</select>
+
+<select id="budgetMs.saveDeptBgt" parameterType="map" statementType="CALLABLE">
+	/* budgetMs.saveDeptBgt */
+	EXEC HIS_DEPT_BGT_SAVE1
+		@V_IN_CO_CD = #{coCd},
+		@V_IN_DEPT_CD = #{deptSeq},
+		@V_IN_PJT_CD = #{pjtCd},
+		@V_IN_BGT_CD = #{bgtCd},
+		@V_IN_BGT_MONTH = #{bgtMonth},
+		@V_IN_BGT_NM = #{bgtNm},
+		@V_IN_HBGT_NM = #{parentBgtNm},
+		@V_IN_BGT_AMT = #{bgtAmt},
+		@V_IN_ID = #{empSeq},
+		@V_IN_IP = #{ip},
+		@V_OUT_YN=#{OUT_YN, mode = OUT, jdbcType=VARCHAR},
+		@V_OUT_MSG=#{OUT_MSG, mode = OUT, jdbcType=VARCHAR}
+</select>
+
+<select id="budgetMs.cancelDeptBgt" parameterType="map" statementType="CALLABLE">
+	/* budgetMs.cancelDeptBgt */
+	EXEC HIS_DEPT_BGT_CANCEL1
+		@V_IN_CO_CD = #{coCd},
+		@V_IN_DEPT_CD = #{deptSeq},
+		@V_IN_PJT_CD = #{pjtCd},
+		@V_IN_BGT_CD = #{bgtCd},
+		@V_IN_BGT_MONTH = #{bgtMonth},
+		@V_IN_ID = #{empSeq},
+		@V_IN_IP = #{ip},
+		@V_OUT_YN=#{OUT_YN, mode = OUT, jdbcType=VARCHAR},
+		@V_OUT_MSG=#{OUT_MSG, mode = OUT, jdbcType=VARCHAR}
+</select>
+
+<select id="budgetMs.saveDeptBgt2" parameterType="map" statementType="CALLABLE">
+	/* budgetMs.saveDeptBgt2 */
+	EXEC HIS_DEPT_BGT_SAVE2
+		@V_IN_CO_CD = #{coCd},
+		@V_IN_DEPT_CD = #{deptSeq},
+		@V_IN_PJT_CD = #{pjtCd},
+		@V_IN_BGT_MONTH = #{bgtMonth},
+		@V_IN_ID = #{empSeq},
+		@V_IN_IP = #{ip},
+		@V_OUT_YN=#{OUT_YN, mode = OUT, jdbcType=VARCHAR},
+		@V_OUT_MSG=#{OUT_MSG, mode = OUT, jdbcType=VARCHAR}
+</select>
+
+<select id="budgetMs.getApplyStatus" parameterType="map" resultType="map">
+	/* budgetMs.getApplyStatus */
+	EXEC HIS_DEPT_BGT_STAT_SELECT
+</select>
+
+<select id="budgetMs.getDeptBgtStatus" parameterType="map" resultType="map">
+	/* budgetMs.getDeptBgtStatus */
+	EXEC HIS_DEPT_BGT_SELECT2
+		@V_IN_MONTH = #{month},
+		@V_IN_DEPT_CD = #{deptSeq},
+		@V_IN_BGT_STAT = #{bgtStatus},
+		@V_IN_PJT_CD = #{pjtCd}
+</select>
+
+<select id="budgetMs.saveDeptBgt3" parameterType="map" statementType="CALLABLE">
+	/* budgetMs.saveDeptBgt3 */
+	EXEC HIS_DEPT_BGT_SAVE3
+		@V_IN_CO_CD = #{coCd},
+		@V_IN_DEPT_CD = #{deptSeq},
+		@V_IN_PJT_CD = #{pjtCd},
+		@V_IN_BGT_CD = #{bgtCd},
+		@V_IN_BGT_MONTH = #{bgtMonth},
+		@V_IN_ID = #{empSeq},
+		@V_IN_IP = #{ip},
+		@V_OUT_YN=#{OUT_YN, mode = OUT, jdbcType=VARCHAR},
+		@V_OUT_MSG=#{OUT_MSG, mode = OUT, jdbcType=VARCHAR}
+</select>
+
+<select id="budgetMs.cancelDeptBgt2" parameterType="map"  statementType="CALLABLE">
+	/* budgetMs.cancelDeptBgt2 */
+	EXEC HIS_DEPT_BGT_CANCEL2
+		@V_IN_CO_CD = #{coCd},
+		@V_IN_DEPT_CD = #{deptSeq},
+		@V_IN_PJT_CD = #{pjtCd},
+		@V_IN_BGT_CD = #{bgtCd},
+		@V_IN_BGT_MONTH = #{bgtMonth},
+		@V_IN_ID = #{empSeq},
+		@V_IN_IP = #{ip},
+		@V_OUT_YN=#{OUT_YN, mode = OUT, jdbcType=VARCHAR},
+		@V_OUT_MSG=#{OUT_MSG, mode = OUT, jdbcType=VARCHAR}
+</select>
+
+<select id="budgetMs.getDeptPjtBgt" parameterType="map" resultType="map">
+	/* budgetMs.getDeptPjtBgt */
+	EXEC HIS_DEPT_PJTBGT_SELECT1
+		@V_IN_YEAR = #{year},
+		@V_IN_DEPT_CD = #{deptSeq},
+		@V_IN_PJT_CD = #{pjtCd}
+</select>
+
+<select id="budgetMs.saveDeptPjtBgt" parameterType="map" statementType="CALLABLE">
+	/* budgetMs.saveDeptPjtBgt */
+	EXEC HIS_DEPT_PJTBGT_SAVE1
+		@V_IN_CO_CD = #{coCd},
+		@V_IN_DEPT_CD = #{deptSeq},
+		@V_IN_PJT_CD = #{pjtCd},
+		@V_IN_BGT_YEAR = #{bgtYear},
+		@V_IN_PJT_INFO = #{pjtInfo},
+		@V_IN_FROM_MONTH = #{fromMonth},
+		@V_IN_TO_MONTH = #{toMonth},
+		@V_IN_BGT_AMT1 = #{bgtAtm1},
+		@V_IN_BGT_AMT2 = #{bgtAtm2},
+		@V_IN_BGT_AMT3 = #{bgtAtm3},
+		@V_IN_BGT_AMT4 = #{bgtAtm4},
+		@V_IN_BGT_AMT5 = #{bgtAtm5},
+		@V_IN_BGT_AMT6 = #{bgtAtm6},
+		@V_IN_BGT_AMT7 = #{bgtAtm7},
+		@V_IN_BGT_AMT8 = #{bgtAtm8},
+		@V_IN_BGT_AMT9 = #{bgtAtm9},
+		@V_IN_BGT_AMT10 = #{bgtAtm10},
+		@V_IN_BGT_AMT11 = #{bgtAtm11},
+		@V_IN_BGT_AMT12 = #{bgtAtm12},
+		@V_IN_BGT_AMT13 = #{bgtAtm13},
+		@V_IN_BGT_AMT14 = #{bgtAtm14},
+		@V_IN_BGT_AMT15 = #{bgtAtm15},
+		@V_IN_BGT_AMT16 = #{bgtAtm16},
+		@V_IN_BGT_AMT17 = #{bgtAtm17},
+		@V_IN_ID = #{empSeq},
+		@V_IN_IP = #{ip},
+		@V_OUT_YN=#{OUT_YN, mode = OUT, jdbcType=VARCHAR},
+		@V_OUT_MSG=#{OUT_MSG, mode = OUT, jdbcType=VARCHAR}
+</select>
+
+<select id="budgetMs.cancelDeptPjtBgt" parameterType="map"  statementType="CALLABLE">
+	/* budgetMs.cancelDeptPjtBgt */
+	EXEC HIS_DEPT_PJTBGT_CANCEL1
+		@V_IN_CO_CD = #{coCd},
+		@V_IN_DEPT_CD = #{deptSeq},
+		@V_IN_PJT_CD = #{pjtCd},
+		@V_IN_BGT_YEAR = #{bgtYear},
+		@V_IN_ID = #{empSeq},
+		@V_IN_IP = #{ip},
+		@V_OUT_YN=#{OUT_YN, mode = OUT, jdbcType=VARCHAR},
+		@V_OUT_MSG=#{OUT_MSG, mode = OUT, jdbcType=VARCHAR}
+</select>
+
+<select id="budgetMs.getDeptPjtBgt2" parameterType="map" resultType="map">
+	/* budgetMs.getDeptPjtBgt2 */
+	EXEC HIS_DEPT_PJTBGT_SELECT2
+		@V_IN_YEAR = #{year},
+		@V_IN_DEPT_CD = #{deptSeq},
+		@V_IN_PJT_CD = #{pjtCd}
+</select>
+
+<select id="budgetMs.getProjectYesilDaebi" parameterType="map" resultType="map">
+	/* budgetMs.getProjectYesilDaebi */
+	EXEC HIS_BUDGET_SELECT9
+		@V_IN_MONTH = #{date},
+		@V_IN_PJT_CD_FR = #{pjtFrom},
+		@V_IN_PJT_CD_TO = #{pjtTo}
+</select>
+
+<select id="budgetMs.getBgtPlanGrid" parameterType="map" resultType="map">
+	/* budgetMs.getBgtPlanGrid */
+	EXEC HIS_PJT_BGT_SELECT1
+		@V_IN_MONTH = #{date},
+		@V_IN_DEPT_CD = #{deptCd}
+</select>
+
+<select id="budgetMs.saveBgtPlan" parameterType="map" resultType="map" statementType="CALLABLE">
+	/* budgetMs.saveBgtPlan */
+	EXEC HIS_PJT_BGT_SAVE1
+	   @V_IN_CO_CD = #{coCd},                 
+	   @V_IN_DEPT_CD = #{deptCd},               
+	   @V_IN_PJT_CD = #{pjtCd},                
+	   @V_IN_BGT_MONTH = #{bgtMonth},      
+	   @V_IN_BGT_AMT = #{bgtAmt},        
+	   @V_IN_FILE_ID = #{fileId},        
+	   @V_IN_BGT_STAT = #{bgtStat},
+	   @V_IN_BGT_FLAG = #{bgtFlag},       
+	   @V_IN_ID = #{empSeq},
+  	 	@V_IN_IP = #{ip},
+   		@V_OUT_YN=#{OUT_YN, mode = OUT, jdbcType=VARCHAR},
+   		@V_OUT_MSG=#{OUT_MSG, mode = OUT, jdbcType=VARCHAR} 
+</select>
+
+<select id="budgetMs.saveBgtPlanDept" parameterType="map" resultType="map" statementType="CALLABLE">
+	/* budgetMs.saveBgtPlanDept */
+	EXEC HIS_PJT_BGT_SAVE5
+	   @V_IN_CO_CD = #{coCd},                 
+	   @V_IN_DEPT_CD = #{deptCd},               
+	   @V_IN_PJT_CD = #{pjtCd},                
+	   @V_IN_BGT_MONTH = #{bgtMonth},      
+	   @V_IN_FILE_ID2 = #{fileId},        
+	   @V_IN_ID = #{empSeq},
+  	 	@V_IN_IP = #{ip},
+   		@V_OUT_YN=#{OUT_YN, mode = OUT, jdbcType=VARCHAR},
+   		@V_OUT_MSG=#{OUT_MSG, mode = OUT, jdbcType=VARCHAR} 
+</select>
+
+<select id="budgetMs.cancelBgtPlan" parameterType="map" resultType="map" statementType="CALLABLE">
+	/* budgetMs.cancelBgtPlan */
+	EXEC HIS_PJT_BGT_CANCEL1
+	   @V_IN_CO_CD = #{coCd},                 
+	   @V_IN_DEPT_CD = #{deptCd},               
+	   @V_IN_PJT_CD = #{pjtCd},                
+	   @V_IN_BGT_MONTH = #{bgtMonth},      
+	   @V_IN_ID = #{empSeq},
+    	@V_IN_IP = #{ip},
+	    @V_OUT_YN=#{OUT_YN, mode = OUT, jdbcType=VARCHAR},
+	    @V_OUT_MSG=#{OUT_MSG, mode = OUT, jdbcType=VARCHAR} 
+</select>
+
+<select id="budgetMs.copyBgtPlan" parameterType="map" resultType="map" statementType="CALLABLE">
+	/* budgetMs.copyBgtPlan */
+	EXEC HIS_PJT_BGT_SAVE2
+	   @V_IN_CO_CD = #{coCd},                 
+	   @V_IN_DEPT_CD = #{deptCd},               
+	   @V_IN_BGT_MONTH = #{bgtMonth},      
+	   @V_IN_ID = #{empSeq},
+    	@V_IN_IP = #{ip},
+	    @V_OUT_YN=#{OUT_YN, mode = OUT, jdbcType=VARCHAR},
+	    @V_OUT_MSG=#{OUT_MSG, mode = OUT, jdbcType=VARCHAR} 
+</select>
+
+<select id="budgetMs.callGetPjtBudget" parameterType="map" resultType="String">
+	/* budgetMs.callGetPjtBudget */
+	SELECT DBO.FN_GET_PJT_BUDGET (#{div}, #{coCd}, #{month}, #{pjtCd}) AMT
+</select>
+
+<select id="budgetMs.saveEndProcess" parameterType="map" resultType="map" statementType="CALLABLE">
+	/* budgetMs.saveEndProcess */
+	EXEC HIS_PJT_BGT_SAVE3
+	   @V_IN_CO_CD = #{coCd},                 
+	   @V_IN_DEPT_CD = #{deptCd},
+	   @V_IN_PJT_CD = #{pjtCd},               
+	   @V_IN_BGT_MONTH = #{bgtMonth},
+	   @V_IN_BF_AMT = #{bfAmt},
+	   @V_IN_RE_AMT = #{reAmt},      
+	   @V_IN_ID = #{empSeq},
+    	@V_IN_IP = #{ip},
+	    @V_OUT_YN=#{OUT_YN, mode = OUT, jdbcType=VARCHAR},
+	    @V_OUT_MSG=#{OUT_MSG, mode = OUT, jdbcType=VARCHAR}
+</select>
+
+<select id="budgetMs.cancelEndProcess" parameterType="map" resultType="map" statementType="CALLABLE">
+	/* budgetMs.cancelEndProcess */
+	EXEC HIS_PJT_BGT_CANCEL2
+	   @V_IN_CO_CD = #{coCd},                 
+	   @V_IN_DEPT_CD = #{deptCd},
+	   @V_IN_PJT_CD = #{pjtCd},               
+	   @V_IN_BGT_MONTH = #{bgtMonth},
+	   @V_IN_ID = #{empSeq},
+    	@V_IN_IP = #{ip},
+	    @V_OUT_YN=#{OUT_YN, mode = OUT, jdbcType=VARCHAR},
+	    @V_OUT_MSG=#{OUT_MSG, mode = OUT, jdbcType=VARCHAR}
+</select>
+
+<select id="budgetMs.searchDeptList3" parameterType="map" resultType="map">
+	/* budgetMs.searchDeptList3 */
+	EXEC HIS_DEPTCD_SELECT4
+		@V_IN_YEAR = #{year},
+		@V_IN_NAME = #{deptName}
+</select>
+
+<select id="budgetMs.getPjtStatus" parameterType="map" resultType="map">
+	/* budgetMs.getPjtStatus */
+	EXEC HIS_PJT_BGT_STAT_SELECT
+</select>
+
+<select id="budgetMs.getBgtConfirmGrid" parameterType="map" resultType="map">
+	/* budgetMs.getBgtConfirmGrid */
+	EXEC HIS_PJT_BGT_SELECT2
+		@V_IN_MONTH = #{date},
+		@V_IN_DEPT_CD = #{deptCd},
+		@V_IN_BGT_STAT = #{bgtStat}
+</select>
+
+<select id="budgetMs.confirmBgtPlan" parameterType="map" resultType="map" statementType="CALLABLE">
+	/* budgetMs.confirmBgtPlan */
+	EXEC HIS_PJT_BGT_SAVE4
+	   @V_IN_CO_CD = #{coCd},                 
+	   @V_IN_DEPT_CD = #{deptCd},
+	   @V_IN_PJT_CD = #{pjtCd},               
+	   @V_IN_BGT_MONTH = #{bgtMonth},
+	   @V_IN_ID = #{empSeq},
+       @V_IN_IP = #{ip},
+	   @V_OUT_YN=#{OUT_YN, mode = OUT, jdbcType=VARCHAR},
+	   @V_OUT_MSG=#{OUT_MSG, mode = OUT, jdbcType=VARCHAR}
+</select>
+
+<select id="budgetMs.cancelConfirmBgtPlan" parameterType="map" resultType="map" statementType="CALLABLE">
+	/* budgetMs.cancelConfirmBgtPlan */
+	EXEC HIS_PJT_BGT_CANCEL3
+	   @V_IN_CO_CD = #{coCd},                 
+	   @V_IN_DEPT_CD = #{deptCd},
+	   @V_IN_PJT_CD = #{pjtCd},               
+	   @V_IN_BGT_MONTH = #{bgtMonth},
+	   @V_IN_ID = #{empSeq},
+    	@V_IN_IP = #{ip},
+	    @V_OUT_YN=#{OUT_YN, mode = OUT, jdbcType=VARCHAR},
+	    @V_OUT_MSG=#{OUT_MSG, mode = OUT, jdbcType=VARCHAR}
+</select>
+
+<select id="budgetMs.selectBudgetList" parameterType="map" resultType="map">
+	EXEC dbo.HIS_BGTCD_SELECT3 #{gb}, #{bgtName}
+</select>
+
+<select id="budgetMs.selectDailySchedule" parameterType="map" resultType="map">
+	/* budgetMs.selectDailySchedule */
+	EXEC HIS_FS_SELECT3 #{baseDate}, #{div}
+</select>
+
+<select id="budgetMs.saveHighDept" parameterType="map" resultType="map" statementType="CALLABLE">
+	/* budgetMs.saveHighDept */
+	EXEC HIS_HDEPT_SAVE2
+		@V_IN_DEPT_CD = #{DEPT_CD},
+		@V_IN_DEPT_SORT = #{DEPT_SORT},
+		@V_IN_ID = #{empSeq},
+    	@V_IN_IP = #{ip},
+	    @V_OUT_YN=#{OUT_YN, mode = OUT, jdbcType=VARCHAR},
+	    @V_OUT_MSG=#{OUT_MSG, mode = OUT, jdbcType=VARCHAR}
+</select>
+
+<select id="budgetMs.selectBgtFinish" parameterType="map" resultType="String">
+	/* budgetMs.selectBgtFinish */
+	SELECT DBO.FN_HIS_GET_BGT_CLOSE (#{coCd}, #{bgtMonth}) STATUS
+</select>
+
+<select id="budgetMs.saveBgtFinish" parameterType="map" resultType="map" statementType="CALLABLE">
+	/* budgetMs.saveBgtFinish */
+	EXEC HIS_BGT_CLS
+		@V_IN_CO_CD = #{coCd},
+		@V_IN_BGT_MONTH = #{bgtMonth},
+		@V_IN_ID = #{empSeq},
+    	@V_IN_IP = #{ip},
+	    @V_OUT_YN=#{OUT_YN, mode = OUT, jdbcType=VARCHAR},
+	    @V_OUT_MSG=#{OUT_MSG, mode = OUT, jdbcType=VARCHAR}
+</select>
+
+<select id="budgetMs.cancelBgtFinish" parameterType="map" resultType="map" statementType="CALLABLE">
+	/* budgetMs.cancelBgtFinish */
+	EXEC HIS_BGT_CLS_CANCEL
+		@V_IN_CO_CD = #{coCd},
+		@V_IN_BGT_MONTH = #{bgtMonth},
+	    @V_OUT_YN=#{OUT_YN, mode = OUT, jdbcType=VARCHAR},
+	    @V_OUT_MSG=#{OUT_MSG, mode = OUT, jdbcType=VARCHAR}
+</select>
+
+<select id="budgetMs.selectBgtPlanRecord" parameterType="map" resultType="map">
+	/* budgetMs.selectBgtPlanRecord */
+	EXEC HIS_PJT_BGT_HIST_SELECT1
+		@V_IN_PJT_CD = #{projectCd}
+</select>
+
+<select id="budgetMs.selectBgtStatus" parameterType="map" resultType="map">
+	/* budgetMs.selectBgtStatus */
+	EXEC HIS_PJT_BGT_SELECT3
+		@V_IN_MONTH = #{month},
+		@V_IN_PJT_CD = #{projectCd}
+</select>
+
+<select id="budgetMs.selectPjtBgtStatus" parameterType="map" resultType="map">
+	/* budgetMs.selectPjtBgtStatus */
+	EXEC HIS_DEPT_PJTBGT_SELECT3
+		@V_IN_YEAR = #{year},
+		@V_IN_DEPT_CD = #{deptCd}
+</select>
+
+<select id="budgetMs.selectMonthSaupBgt" parameterType="map" resultType="map">
+	/* budgetMs.selectMonthSaupBgt */
+	EXEC HIS_DEPT_PJTBGT_SELECT4
+		@V_IN_YEAR = #{year},
+		@V_IN_PJT_CD = #{pjtCd}
+</select>
+
+<select id="budgetMs.getSumAmtByDate" parameterType="map" resultType="String">
+	/* budgetMs.getSumAmtByDate */
+	SELECT DBO.FN_GET_FS_AMT8('1', '5000', '', #{standardDate}) AA
+</select>
+
+</mapper>
+
+
+

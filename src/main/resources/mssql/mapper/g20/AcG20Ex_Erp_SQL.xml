@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- iCUBE mssql -->
+<mapper namespace="AcG20ExErp">
+
+    <!-- 마감여부체크 -->
+	<select id="AcG20ExErp.chkErpBgtClose" parameterType="java.util.Map" resultType="java.util.Map">
+		/* AcG20ExErp.chkErpBgtClose - mssql */
+		EXECUTE P_GWG20_COMMON_BCLOSE_CHECK @CO_CD='${CO_CD}',@DATE='${GISU_DT}', @DIV_CD='${DIV_CD}'
+	</select>
+	
+	<!-- 기수정보 가져오기 -->
+	<select id="AcG20ExErp.getErpGisuInfo" parameterType="java.util.Map" resultType="java.util.Map">
+		/* AcG20ExErp.getErpGisuInfo - mssql */
+		EXEC P_GWG20_COMMON_GISU_INFO @CO_CD='${CO_CD}',@DATE='${GISU_DT}'
+	</select>	
+		
+    <select id="AcG20ExErp.getErpBudgetInfo" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+        /* AcG20ExErp.getErpBudgetInfo - mssql */
+        EXEC P_GWG20_COMMON_BUDGET_INFO @CO_CD='${CO_CD}',@DIV_CD='${DIV_CD}',@BGT_CD='${BGT_CD}',@MGT_CD='${MGT_CD}',@GISU_DT='${GISU_DT}',@SUM_CT_AM='${SUM_CT_AM}',@BOTTOM_CD='${BOTTOM_CD}',@LANGKIND='${LANGKIND}'
+    </select>		
+    
+    <select id="AcG20ExErp.getErpTaxConifg" parameterType="java.util.Map" resultType="java.util.Map" >
+		/* mssql/iCUBE/common/procedure/G20ProcedureSQL - g20Procedure.selectAbsdocuInfo */
+		/* 회사별 결의서 환경설정 정보 조회 */
+		/* 원본프로시저 [1.0] -  [dbo].[P_GWG20_COMMON_ABSDOCU_INFO] */	
+		/* params[  erpCompSeq  ] */
+		
+		DECLARE	@CO_CD		NVARCHAR(4)
+		SELECT	@CO_CD 		= '${CO_CD}'
+		
+		/************************************************************/
+		
+		SELECT	A.NDEP_RT		AS 'NDEP_RT'	/* 필요경비율 */    
+    			, A.STA_RT		AS 'STA_RT'	/* 기타소득세율 */    
+			    , A.JTA_RT		AS 'JTA_RT'	/* 주민세율 */    
+			    , A.MTAX_AM		AS 'MTAX_AM'	/* 과세최저한 */  
+				, A.TAX_TY		AS 'TAX_TY'	/* 급여 상세입력 여부 */
+     	FROM	ABSDOCU	A 
+     	 INNER JOIN	SCO S 
+     	 ON		A.CO_CD	= S.CO_CD 
+     	 AND	A.ACCTDEF_FG = S.ACCT_FG    
+  		WHERE	A.CO_CD = @CO_CD
+	</select>
+    
+<!--     <select id="AcG20ExErp.getErpTaxConifg" parameterType="java.util.HashMap" resultType="java.util.HashMap"> -->
+<!--         /* AcG20ExErp.getErpTaxConifg - mssql */ -->
+<!--         EXEC P_GWG20_COMMON_ABSDOCU_INFO @CO_CD='${CO_CD}'     -->
+<!--     </select> -->
+    
+<!--     <select id="AcG20ExErp.getErpPermission" parameterType="java.util.HashMap" resultType="java.util.HashMap"> -->
+<!--         /* AcG20ExErp.getErpTaxConifg - mssql */     -->
+<!--         EXECUTE USP_SYA0065_USABLE_MENU_SELECT	@LANGKIND=N'KOR', @CO_CD='${CO_CD}', @EMP_CD='${EMP_CD}',  -->
+<!-- 													@MODULE_CD=N'4', @MOD_CD=N'', @USABLE_MOD_CDS=N'4|'     -->
+<!--     </select> -->
+
+    <select id="AcG20ExErp.getErpACardSunginList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+    <![CDATA[
+        exec P_GWG20_ACARD_SUNGIN_SELECT @CO_CD='${CO_CD}',@EMP_NO='${EMP_CD}', @LANGKIND=N'KR', @CARD_NB ='${CARD_NB}', 
+                                         @ISS_DT_FROM='${ISS_DT_FROM}', @ISS_DT_TO='${ISS_DT_TO}', @GW_STATE=NULL,@TR_CD='${TR_CD}',@TR_NM='${TR_NM}'
+     ]]>
+    </select>
+    
+    <select id="AcG20ExErp.getErpETCDUMMY1_Info" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+    <![CDATA[
+         SELECT CO_CD, CTRL_CD, MODULE_CD, CTD_CD, CTD_NM FROM SCTRL_D 
+         WHERE  MODULE_CD ='H'
+         AND    CO_CD = '${CO_CD}'
+         AND    CTRL_CD = '${DATA_CD}'
+         AND    CTD_CD = '${ETCDUMMY1}'
+         AND    USE_YN = '1'
+    ]]>
+    </select>  
+    
+    <!-- 급여자료 조회 -->
+    <select id="AcG20ExErp.getErpPayData" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+        EXEC USP_ANA0005_BY_HPOMNPY_PAYDATA_SELECT @LANGKIND=N'KOR',@CO_CD=N'${CO_CD}',@DIV_CD=N'${DIV_CD}',@RVRS_YM_FROM=N'${RVRS_YM_FROM}',@RVRS_YM_TO=N'${RVRS_YM_TO}',@PAY_DT_FROM=N'${PAY_DT_FROM}',@PAY_DT_TO=N'${PAY_DT_TO}',@PJT_CD_STR=N''
+    </select> 
+    
+    <select id="AcG20ExErp.chkErpAcExDocState"  parameterType="Abdocu_H" resultType="java.lang.Integer">
+        /* AcG20ExErp.chkErpAcExDocState */
+        <![CDATA[
+		SELECT	SUM(T)
+		FROM	(
+			SELECT	COUNT(*)	'T' 
+			FROM	ABDOCU_B 
+			WHERE  CO_CD = '${erp_co_cd}'
+	         AND    GISU_DT = '${erp_gisu_dt}'
+	         AND    GISU_SQ = '${erp_gisu_sq}'
+			 AND ISNULL(ISU_DT,'') > ''
+			UNION ALL
+			SELECT	COUNT(*)	'T'
+			FROM	AB_PAYLIST 
+			WHERE  CO_CD = '${erp_co_cd}'
+	         AND    GISU_DT = '${erp_gisu_dt}'
+	         AND    GISU_SQ = '${erp_gisu_sq}'
+			 AND	SET_FG	IN ('3', '4')
+		)	TAB     
+        ]]>
+      <!--           AND (ISU_DT <> NULL  or ISU_DT <> '') -->
+    </select>                 
+
+	<select id="AcG20ExErp.getFixAm" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+    <![CDATA[
+SELECT 
+E.EMP_CD, DPST_NM, PYTB_CD, ACCT_NO, ACCT_NO3, B.BANK_NM, CASE WHEN H.FIX_AM IS NULL THEN 0 ELSE ROUND((H.FIX_AM+100000)/209, 0) END AS FIX_AM, H.CTST_YM
+FROM  SEMP E LEFT JOIN SBANK B ON E.PYTB_CD = B.BANK_CD 
+         JOIN (SELECT * FROM HPHFXPD WHERE FIXP_CD = 'F02') H ON E.EMP_CD = H.EMP_CD
+
+    ]]>
+     <!-- CTST_YM = '${CTST_YM}'  AND-->
+    <!-- WHERE E.EMP_CD =  '${EMP_CD}' -->
+    </select> 
+    
+    	<select id="AcG20ExErp.getFixAm2" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+    	<![CDATA[
+    		SELECT 
+      TOP 1 
+      E.EMP_CD, DPST_NM, PYTB_CD, ACCT_NO2 AS ACCT_NO, ACCT_NO3, B.BANK_NM, 
+     (SELECT CEILING((MAX(T.FIX_AM) + 100000)/209) FROM HPHFXPD T WHERE T.EMP_CD = E.EMP_CD AND T.FIXP_CD = 'F02' AND T.CTST_YM <= SUBSTRING(#{apply_start_date}, 1, 6)) FIX_AM
+      FROM  SEMP E LEFT JOIN SBANK B ON E.PYTB_CD2 = B.BANK_CD 
+             WHERE E.EMP_CD = #{apply_erp_cd}
+             ]]>
+    </select>   
+    
+    <select id="AcG20ExErp.getErpSalaryInfo" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+    <![CDATA[
+SELECT 
+E.EMP_CD, E.JOIN_DT, CONVERT(CHAR(4), E.JOIN_DT, 112) AS JOIN_YEAR, DPST_NM, PYTB_CD, ACCT_NO, ACCT_NO3, B.BANK_NM, E.KOR_NM, E.EMGC_TEL, E.RSRG_ADD, E.RSRD_ADD, CASE WHEN H.FIX_AM IS NULL THEN 0 ELSE H.FIX_AM END AS FIX_AM, H.CTST_YM
+        , CASE WHEN (SELECT COUNT(*) FROM HPHFXPD T1 WHERE T1.CO_CD = E.CO_CD AND T1.EMP_CD = E.EMP_CD AND SUBSTRING(T1.CTST_YM, 1, 4) = SUBSTRING(E.JOIN_DT, 1, 4) AND T1.FIXP_CD = 'F01') >= 1 AND
+              (SELECT MIN(T1.CTST_YM) FROM HPHFXPD T1 WHERE T1.CO_CD = E.CO_CD AND T1.EMP_CD = E.EMP_CD AND SUBSTRING(T1.CTST_YM, 1, 4) = SUBSTRING(E.JOIN_DT, 1, 4) AND T1.FIXP_CD = 'F01') = H.CTST_YM
+         THEN E.JOIN_DT ELSE H.CTST_YM + '01' 
+    END AS START_DATE
+  , SUBSTRING(H.CTST_YM, 1, 4) + '1231' AS END_DATE
+FROM SEMP E LEFT JOIN SBANK B  ON E.PYTB_CD = B.BANK_CD 
+         JOIN (SELECT * FROM HPHFXPD WHERE CTST_YM LIKE '${CTST_YM}%' AND FIXP_CD = 'F01') H ON E.EMP_CD = H.EMP_CD
+		
+    ]]>
+    <if test='EMP_CD != "empty"'>WHERE E.EMP_CD+H.CTST_YM NOT IN (${EMP_CD})</if>
+     
+    </select>  
+    <select id="payCmsList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+			SELECT C.EMPLOYEEID
+					  ,C.EMPLOYEENM
+					  ,C.CHECKDATE	 
+					  ,SUM(C.PLUS) AS PLUS
+					  ,SUM(C.PLUS2) AS PLUS2
+					  ,D.PYTB_NM
+					  ,D.PYTB_NM2
+					  ,D.ACCT_NO
+					  ,D.ACCT_NO2
+					  ,REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(C.PLUS) - SUM(C.PLUS2)),1), '.00', '') AS PAY_AMT  
+					  ,'${remarkMonth}' + '월 급여' AS REMARK 
+			FROM   (SELECT A.EMPLOYEEID
+								  ,A.EMPLOYEENM
+								  ,A.CHECKDATE
+								  ,A.PAY_CD
+								  ,A.PAY_NM
+								  ,SUM(A.PAY_AM) AS PLUS
+								  ,0 AS PLUS2
+							FROM   DZICUBE.dbo.TKP_EPAY_D A
+							WHERE  1=1			
+						    <if test='payNm != "" and payNm != null'>
+						    AND A.PAY_NM  IN (${payNm}) 
+							</if>
+						    <if test='payCd != "" and payNm != null'>
+						    AND A.PAY_CD  IN (${payCd}) 
+							</if>
+								
+							GROUP BY EMPLOYEEID,EMPLOYEENM,CHECKDATE,PAY_CD,PAY_NM
+				
+							UNION
+				
+							SELECT B.EMPLOYEEID
+									  ,B.EMPLOYEENM
+									  ,B.CHECKDATE
+									  ,B.PAY_CD
+									  ,B.PAY_NM
+									  ,0 AS PLUS
+									  ,SUM(B.PAY_AM) AS PLUS2
+							<!-- 							FROM   DZICUBE.dbo.TKP_DDCT_D B	 -->
+						FROM   (SELECT T.EMPLOYEEID
+                                 ,T.EMPLOYEENM
+                                 ,T.CHECKDATE
+                                 ,T.PAY_CD
+                                 ,T.PAY_NM 
+                                ,T.PAY_AM
+                           FROM   DZICUBE.dbo.TKP_DDCT_D T
+                           UNION  ALL
+                           SELECT T.EMPLOYEEID
+                                 ,T.EMPLOYEENM
+                                 ,T.CHECKDATE
+                                 ,T.PAY_CD
+                                 ,T.PAY_NM 
+                                ,T.PAY_AM
+                           FROM   DZICUBE.dbo.TKP_TAX_D T) B	
+							WHERE  1=1			
+						    <if test='payNmD != "" and payNmD != null'>
+						    AND B.PAY_NM  IN (${payNmD}) 
+							</if>
+						    <if test='payCdD != "" and payCdD != null'>
+						    AND B.PAY_CD  IN (${payCdD}) 
+							</if>
+							
+							GROUP BY EMPLOYEEID,EMPLOYEENM,CHECKDATE,PAY_CD,PAY_NM
+						   )C
+						 , DZICUBE.dbo.TKP_EMPLOYEE D
+			WHERE  C.EMPLOYEEID = D.EMPLOYEEID
+			AND    C.CHECKDATE = ${payDt}			
+			<if test='emplNm != "" and emplNm != null'>
+			AND    D.HTYP_CD IN (${emplNm})
+			</if>
+			GROUP BY C.EMPLOYEEID
+						 ,C.EMPLOYEENM
+						 ,C.CHECKDATE	 
+						 ,D.PYTB_NM
+						 ,D.PYTB_NM2
+						 ,D.ACCT_NO
+						 ,D.ACCT_NO2
+						 
+					<!-- SELECT * FROM DZICUBE.dbo.TKP_EPAY_D -->
+    </select> 
+    
+        <select id="paySctrlD" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	    <![CDATA[
+		SELECT CTD_CD	
+				  ,CTD_NM
+		FROM    DZICUBE.dbo.SCTRL_D A
+		WHERE  CO_CD =  ${coCd}
+		AND      MODULE_CD = 'H'
+	    AND      CTRL_CD = 'G2'	 
+	    AND 	   USE_YN = 1   
+		]]>
+    </select> 
+    
+    <select id="tkpPayCd" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	    <![CDATA[
+		SELECT PAY_CD
+			      ,PAY_NM
+		FROM   DZICUBE.dbo.TKP_PAY_CD
+		WHERE  PAYYY = ${payYy}
+		AND      PYDD_FG = ${pyddFg}
+ 		]]>
+    </select>
+    
+    <select id="tkpPayYm" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	    <![CDATA[
+		SELECT PAYDT
+		FROM   DZICUBE.dbo.TKP_PAY_DT
+		WHERE  PAYYM = ${payYm}
+ 		]]>
+    </select> 
+    
+    <select id="getBtrInfo" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+    	SELECT TOP 1 B.TR_CD, B.ATTR_NM, B.BA_NB 
+		FROM SPJT A, STRADE B
+		WHERE A.TR_CD = B.TR_CD
+		AND A.CO_CD = B.CO_CD
+		AND A.PJT_CD = #{mgtCd}
+		AND A.CO_CD = #{erpCoCd}
+    </select>
+    
+</mapper>

@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="PurcContDAO">
+
+	<update id="PurcContDAO.updateDocId" parameterClass="Map">
+		/*PurcContDAO.updateDocId*/
+		UPDATE dj_PURC_CONT
+		SET C_DIKEYCODE = #docId#
+		WHERE PURC_CONT_ID = #approKey#
+	</update>
+	
+	<update id="PurcContDAO.updateDocSts" parameterClass="Map">
+		/*PurcContDAO.updateDocSts*/
+		UPDATE dj_PURC_CONT
+		SET CONT_STEP = #docState#
+		WHERE PURC_CONT_ID = #approKey#
+	</update>
+	
+	<select id="PurcContDAO.checkPurcContComplete" parameterClass="Map" resultClass="Integer">
+		/*PurcContDAO.checkPurcContComplete*/
+		SELECT COUNT(D.PURC_REQ_T_ID)
+		FROM dj_PURC_REQ A, dj_PURC_REQ_H B, dj_PURC_REQ_B C, dj_PURC_REQ_T D
+		WHERE A.PURC_REQ_ID = B.PURC_REQ_ID
+		AND B.PURC_REQ_H_ID = C.PURC_REQ_H_ID
+		AND C.PURC_REQ_B_ID = D.PURC_REQ_B_ID
+		AND A.PURC_REQ_ID IN
+		(
+			SELECT E.PURC_REQ_ID 
+		    FROM dj_PURC_CONT E
+		    WHERE E.PURC_CONT_ID = #approKey#
+		)
+		AND D.PURC_REQ_T_ID NOT IN
+		(
+			SELECT A.PURC_REQ_T_ID
+			FROM dj_PURC_CONT_T A, dj_PURC_CONT B
+			WHERE A.PURC_CONT_ID = B.PURC_CONT_ID
+			AND B.C_DIKEYCODE IS NOT NULL
+			AND B.CONT_STEP IS NOT NULL
+			AND B.CONT_STEP NOT IN ('001','002')
+			AND A.PURC_REQ_T_ID IN
+			(
+				SELECT D.PURC_REQ_T_ID 
+				FROM dj_PURC_REQ A, dj_PURC_REQ_H B, dj_PURC_REQ_B C, dj_PURC_REQ_T D
+				WHERE A.PURC_REQ_ID = B.PURC_REQ_ID
+				AND B.PURC_REQ_H_ID = C.PURC_REQ_H_ID
+				AND C.PURC_REQ_B_ID = D.PURC_REQ_B_ID
+				AND A.PURC_REQ_ID IN
+				(
+					SELECT E.PURC_REQ_ID 
+					FROM dj_PURC_CONT E
+					WHERE E.PURC_CONT_ID = #approKey#
+				)
+			)
+		)
+	</select>
+
+	<update id="PurcContDAO.updateAbdocuT" parameterClass="Map">
+		/*PurcContDAO.updateAbdocuT*/
+		UPDATE 
+			NEOS.G20_ABDOCU_T A, 
+			(
+				SELECT A.ABDOCU_T_NO, A.ITEM_NM,  A.ITEM_CNT, A.ITEM_AM, A.UNIT_AM, A.SUP_AM, A.VAT_AM, A.REMARK
+				FROM dj_PURC_CONT_T A, dj_PURC_CONT B, dj_PURC_REQ_B C
+				WHERE A.PURC_CONT_ID = B.PURC_CONT_ID
+				AND B.C_DIKEYCODE IS NOT NULL
+				AND B.CONT_STEP NOT IN ('001','002')
+				AND A.PURC_REQ_ID IN (SELECT C.PURC_REQ_ID FROM dj_PURC_CONT_T C WHERE C.PURC_CONT_ID = #approKey#)
+				AND C.RETURN_YN = 'Y'
+	    		AND A.PURC_REQ_B_ID = C.PURC_REQ_B_ID
+			) B
+		SET
+			A.ITEM_CNT = B.ITEM_CNT,
+			A.ITEM_AM = B.ITEM_AM,
+			A.UNIT_AM = B.UNIT_AM,
+			A.SUP_AM = B.SUP_AM,
+			A.VAT_AM = B.VAT_AM
+		WHERE A.ABDOCU_T_NO = B.ABDOCU_T_NO
+	</update>
+
+	<update id="PurcContDAO.updateAbdocuB_ApplyAm" parameterClass="Map">
+	    /* PurcContDAO.updateAbdocuB_ApplyAm - mariaDB */
+	    UPDATE
+	    	NEOS.G20_ABDOCU_B A,
+	    	(
+	    		SELECT
+	    			AA.ABDOCU_B_NO
+	    		FROM dj_PURC_CONT_B AA, dj_PURC_REQ_B BB
+	    		WHERE AA.PURC_CONT_ID = #approKey#
+	    		AND BB.RETURN_YN = 'Y'
+	    		AND AA.PURC_REQ_B_ID = BB.PURC_REQ_B_ID
+	    	) B
+	    SET		A.APPLY_AM = (SELECT SUM(UNIT_AM) FROM NEOS.G20_ABDOCU_T WHERE ABDOCU_B_NO = B.ABDOCU_B_NO)
+	    WHERE A.ABDOCU_B_NO	= B.ABDOCU_B_NO
+	</update>
+
+	<update id="PurcContDAO.updateReqDocSts" parameterClass="Map">
+		/*PurcContDAO.updateReqDocSts*/
+		UPDATE dj_PURC_REQ
+		SET REQ_STATE = #reqDocState#
+		WHERE PURC_REQ_ID IN (SELECT PURC_REQ_ID FROM dj_PURC_CONT WHERE PURC_CONT_ID = #approKey#)
+	</update>
+	
+	<select id="PurcContDAO.checkPurcReqType" parameterClass="Map" resultClass="String">
+		/*PurcContDAO.checkPurcReqType*/
+		SELECT PURC_REQ_TYPE_CODE_ID
+		FROM dj_PURC_REQ A, dj_PURC_CONT B
+		WHERE A.PURC_REQ_ID = B.PURC_REQ_ID
+		AND B.PURC_CONT_ID = #approKey#
+	</select>
+	
+	<select id="PurcContDAO.purcContAppSelect" parameterClass="Map" resultClass="egovMap">
+		/*PurcContDAO.purcContAppSelect*/
+		SELECT CONT_TITLE, CONT_CONTENT
+		FROM dj_PURC_CONT
+		WHERE PURC_CONT_ID = #approKey#
+	</select>
+	
+	<select id="PurcContDAO.purcContInspAppSelect" parameterClass="Map" resultClass="egovMap">
+		/*PurcContDAO.purcContInspAppSelect*/
+		SELECT DOC_CONTENT
+		FROM dj_PURC_CONT_INSP
+		WHERE PURC_CONT_INSP_ID = #approKey#
+	</select>
+	
+	<update id="PurcContDAO.updateInspDocId" parameterClass="Map">
+		/*PurcContDAO.updateInspDocId*/
+		UPDATE dj_PURC_CONT_INSP
+		SET C_DIKEYCODE = #docId#
+		WHERE PURC_CONT_INSP_ID = #approKey#
+	</update>
+	
+	<update id="PurcContDAO.updateInspDocSts" parameterClass="Map">
+		/*PurcContDAO.updateInspDocSts*/
+		UPDATE dj_PURC_CONT_INSP
+		SET INSP_STATE = #docState#
+		WHERE PURC_CONT_INSP_ID = #approKey#
+	</update>
+	
+	<select id="PurcContDAO.checkPurcInspComplete" parameterClass="Map" resultClass="Integer">
+		/*PurcContDAO.checkPurcInspComplete*/
+		SELECT 
+			A.CONT_AM
+            -
+		    (
+				SELECT IFNULL(SUM(AA.UNIT_AM),0)
+		        FROM dj_PURC_CONT_INSP_T AA, dj_PURC_CONT_INSP BB
+		        WHERE A.PURC_CONT_ID = AA.PURC_CONT_ID 
+		        AND AA.PURC_CONT_INSP_ID = BB.PURC_CONT_INSP_ID
+		        AND C_DIKEYCODE IS NOT NULL
+		        AND INSP_STATE NOT IN ('001','002')		        
+			) AS LEFT_AM
+		FROM dj_PURC_CONT A
+		WHERE A.C_DIKEYCODE IS NOT NULL
+		AND A.PURC_CONT_ID = #approKey#
+	</select>
+	
+	<select id="PurcContDAO.selectPurcReqContId" parameterClass="Map" resultClass="String">
+		/*PurcContDAO.selectPurcReqContId*/
+		SELECT PURC_CONT_ID FROM dj_PURC_CONT_INSP WHERE PURC_CONT_INSP_ID = #approKey#
+	</select>
+	
+	<update id="PurcContDAO.updateDocDate" parameterClass="Map">
+		/*PurcContDAO.updateDocDate*/
+		UPDATE dj_PURC_CONT
+		SET
+			CONT_DATE2 = REPLACE(CAST(NOW() AS DATE),'-',''),
+			CONT_START_DATE2 = REPLACE(CAST(NOW() AS DATE),'-',''),
+			CONT_END_DATE2 = (
+											CASE
+												WHEN CONT_TERM IS NOT NULL AND CONT_TERM <![CDATA[<>]]> ''
+										        THEN REPLACE(CAST(DATE_ADD(NOW(), INTERVAL + CONT_TERM DAY) AS DATE),'-','')
+										        ELSE CONT_END_DATE
+											END
+										)
+		WHERE PURC_CONT_ID = #approKey#
+	</update>
+	
+	<update id="PurcContDAO.updatePayDocId" parameterClass="Map">
+		/*PurcContDAO.updatePayDocId*/
+		UPDATE dj_PURC_CONT_PAY
+		SET C_DIKEYCODE = #docId#
+		WHERE ABDOCU_NO = #approKey#
+	</update>
+	
+	<update id="PurcContDAO.updatePayDocSts" parameterClass="Map">
+		/*PurcContDAO.updatePayDocSts*/
+		UPDATE dj_PURC_CONT_PAY
+		SET DOC_STATE = #docState#
+		WHERE ABDOCU_NO = #approKey#
+	</update>
+	
+	<select id="PurcContDAO.purcContPayAppSelect" parameterClass="Map" resultClass="egovMap">
+		/*PurcContDAO.purcContPayAppSelect*/
+		SELECT CONTENTS, TITLE
+		FROM dj_PURC_CONT_PAY
+		WHERE ABDOCU_NO = #approKey#
+		LIMIT 1
+	</select>
+	
+	<select id="PurcContDAO.getAbdocuInfo" parameterClass="String" resultClass="egovMap">
+		/*PurcContDAO.getAbdocuInfo*/
+		SELECT DOCU_MODE, ABDOCU_NO_REFFER, SESSIONID
+		FROM NEOS.G20_ABDOCU_H
+		WHERE ABDOCU_NO = #approKey#
+	</select>
+	
+	<select id="PurcContDAO.getPurcContId_contPay" parameterClass="String" resultClass="String">
+		/*PurcContDAO.getPurcContId_contPay*/
+		SELECT PURC_CONT_ID FROM dj_PURC_CONT_PAY WHERE ABDOCU_NO = #approKey#
+	</select>
+	
+	<select id="PurcContDAO.checkPurcContPayComplete" parameterClass="String" resultClass="Integer">
+		/*PurcContDAO.checkPurcContPayComplete*/
+		SELECT 
+			(SELECT CONT_AM FROM dj_PURC_CONT WHERE (PURC_CONT_ID = #purcContId# OR PURC_CONT_ID_ORG = #purcContId#) ORDER BY MOD_ORDER_NO DESC LIMIT 1)
+			-
+			IFNULL(SUM(C.UNIT_AM),0) AS UNIT_AM
+		FROM dj_PURC_CONT_T A
+		LEFT OUTER JOIN dj_PURC_CONT_PAY_T B
+		ON A.PURC_CONT_T_ID = B.PURC_CONT_T_ID
+		LEFT OUTER JOIN NEOS.G20_ABDOCU_T C
+		ON B.ABDOCU_T_NO = C.ABDOCU_T_NO
+		LEFT OUTER JOIN dj_PURC_CONT_PAY D
+		ON B.PURC_CONT_PAY_ID = D.PURC_CONT_PAY_ID
+		AND D.C_DIKEYCODE IS NOT NULL
+		AND D.DOC_STATE IN ('003')
+		WHERE (D.PURC_CONT_ID = #purcContId# OR A.PURC_CONT_ID = #purcContId#)
+	</select>
+	
+	<select id="PurcContDAO.selectDocNum" parameterClass="String" resultClass="String" >
+        /* PurcContDAO.selectDocNum - mariaDB */
+        SELECT  C_RIDOCFULLNUM DOCNUM FROM NEOS.A_RECORDINFO WHERE C_DIKEYCODE = #docId#
+    </select>
+    
+   	<!-- G20 2.0 Start -->
+    	
+    <update id="PurcContDAO.updateAbdocuT2" parameterClass="Map">
+		/*PurcContDAO.updateAbdocuT2*/
+		UPDATE 
+			NEOS.t_exnp_constrade A, 
+			(
+				SELECT A.ABDOCU_T_NO, A.ITEM_NM,  A.ITEM_CNT, A.ITEM_AM, A.UNIT_AM, A.SUP_AM, A.VAT_AM, A.REMARK, A.TR_CD, A.TR_NM, A.REG_NB, A.CEO_NM
+				FROM dj_PURC_CONT_T A, dj_PURC_CONT B, dj_PURC_REQ_B C
+				WHERE A.PURC_CONT_ID = B.PURC_CONT_ID
+				AND B.C_DIKEYCODE IS NOT NULL
+				AND B.CONT_STEP NOT IN ('001','002')
+				AND A.PURC_REQ_ID IN (SELECT C.PURC_REQ_ID FROM dj_PURC_CONT_T C WHERE C.PURC_CONT_ID = #approKey#)
+				AND C.RETURN_YN = 'Y'
+	    		AND A.PURC_REQ_B_ID = C.PURC_REQ_B_ID
+			) B
+		SET
+			A.item_cnt = '1',
+			A.trade_unit_amt = B.UNIT_AM,
+			A.trade_std_amt = B.SUP_AM,
+			A.trade_vat_amt = B.VAT_AM,
+			A.tr_seq = B.TR_CD,
+			A.tr_name = B.TR_NM,
+			A.ceo_name = B.CEO_NM
+		WHERE A.trade_seq = B.ABDOCU_T_NO
+	</update>
+	
+	<update id="PurcContDAO.updateAbdocuB_ApplyAm2" parameterClass="Map">
+	    /* PurcContDAO.updateAbdocuB_ApplyAm2 - mariaDB */
+	    UPDATE
+	    	NEOS.t_exnp_consbudget A,
+	    	(
+	    		SELECT
+	    			AA.ABDOCU_B_NO
+	    		FROM dj_PURC_CONT_B AA, dj_PURC_REQ_B BB
+	    		WHERE AA.PURC_CONT_ID = #approKey#
+	    		AND BB.RETURN_YN = 'Y'
+	    		AND AA.PURC_REQ_B_ID = BB.PURC_REQ_B_ID
+	    	) B
+	    SET		A.budget_amt = (SELECT SUM(trade_unit_amt) FROM NEOS.t_exnp_constrade WHERE budget_seq = B.ABDOCU_B_NO),
+	    		A.budget_std_amt = (SELECT SUM(trade_std_amt) FROM NEOS.t_exnp_constrade WHERE budget_seq = B.ABDOCU_B_NO),
+	    		A.budget_tax_amt = (SELECT SUM(trade_vat_amt) FROM NEOS.t_exnp_constrade WHERE budget_seq = B.ABDOCU_B_NO)
+	    WHERE A.budget_seq	= B.ABDOCU_B_NO
+	</update>
+	
+	<!-- G20 2.0 End -->
+</sqlMap>

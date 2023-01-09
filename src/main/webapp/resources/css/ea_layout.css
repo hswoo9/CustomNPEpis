@@ -1,0 +1,250 @@
+﻿/**************************************************
+   [수정내역]
+   20160411 - .div_form_bind h1 // 모바일 양식 타이틀사용 (허정명)
+   20160908 - .pop_tb_btn // float 추가, input.input-text // margin-left 추가 (허정명)
+   20161013 - 결재양식_지출결의 전표 테이블 // 추가되거나 수정되면 suite도 변경, 날짜갱신 (이준혁)
+   20161202 - 결재라인 비영리 stryle추가, 양식로고 수정 (이정미)
+   20161205 - 양식로고 추가된 파일에 첨부파일 border라인 문제발생/ 인쇄미리보기 시 오류 (이정미)
+   20161209 - 팝업_문서작성 테스트 비영리 (허정명)
+   20161212 - 본문내용 클경우 틀어지는 현상 주석 / 마이그레이션 결재라인 css 수정 (이정미)
+   20161212 - .divTextSign에 min-width 추가 (허정명)
+   20161214 - 본문내용 클경우 틀어지는 현상 (알파양식 문제점 오류 처리) (이정미)
+   20161221 - .df05 .da 결재라인 크롬브라우저 오류 요청 건 (이정미)
+   20161230 - div.area_sign table:first-child  본문이 클경우 UI단 틀어지는 현상 건 (이정미)
+   20170105 - #divFormContents padding:3px 20px 3px 3px; 삭제 (이준혁)
+   20170207 - div.area_sign table:first-child table  백송전자 본문스타일 suite와 동일하게 스타일 추가적용 - 양식가로사이즈보다 작을경우 본문창에 적용 (이정미)
+   20170419 - .form_logo img 양식로고 사이즈 추가 (이정미)
+   20170419 - .div_form_bind select 패딩,텍스트인덴트 삭제 (이준혁)
+   20170420 - 비영리 서식관리 결재라인 사인이미지 css 추가 // .non_profit.sign_img(이정미)
+   20170622 - 양식타이틀 겹침현상으로 height 수정(이정미)
+   20170703 - 비영리 html 제작 시 타이틀(h1) 겹침현상 오류 (이정미)
+   20170829 - 비영리 영리 non_profit, #divFormContents 의 테이블 100%겹침 오류로 인해 나온 문제 수정 (이준혁)
+   20170929 - .div_form_bind h1 폰트사이즈 및 폰트체 지정 (이정미)
+**************************************************/
+
+/* Padding, Margin style */ 
+.mT6{margin-top:6px;}
+.pdL5{padding-left:5px;}
+.pdr5{padding-right:5px;}
+.p10{padding:10px;}
+.mt-1{margin-top:-1px;}
+
+/* Align */
+.al {text-align:left !important;}
+.ac {text-align:center !important;}
+.ar {text-align:right !important;}
+.textL{text-align:left !important;} 
+.textC{text-align:center !important;} 
+.textR{text-align:right !important;}  
+
+/* border */
+.table_line {border:1px solid #b1b1b1;}
+.table_lineB_No{border-bottom:none;}
+.table_lineR_No{border-right:none;}
+
+
+/* 결재양식_기본양식 */
+.div_form_bind{padding:0;width:100%; height:auto; font-size:12px;color:#000000; font-family:"굴림", Gulim, "돋움", Dotum, sans-serif; text-align:-moz-center;text-align:center; /*overflow-x:hidden;*/}
+.div_form_bind h1{width:100%; font-size:30px !important; font-weight:bold; min-height:45px; margin-top:15px !important; text-align:center; padding-top:0px !important; font-family:"굴림", Gulim;}
+.div_form_bind table {font-size: 9pt;}
+.div_form_bind input,
+.div_form_bind select,
+.div_form_bind button,
+.div_form_bind img{vertical-align:middle}
+.div_form_bind textarea{resize:none;border:1px solid #c3c3c3;}
+.div_form_bind select{height:24px;border:1px solid #c3c3c3;font-size:11px;}
+.div_form_bind input[type="text"],
+.div_form_bind input[type="password"] {height:22px;line-height:22px;border:1px solid #c3c3c3 !important;padding:0;text-indent:8px}
+.div_form_bind button {display: inline-block;height:24px;margin: 0;padding:0px 12px;border:1px solid #c9cac9;border-radius:0px;font-family: inherit;font-size: 100%;color: #515967;vertical-align: middle;text-decoration: none;text-align: center;line-height:24px;box-shadow:none;background:#fff;cursor: pointer;outline:0;-webkit-appearance: none;}   
+.div_form_bind button:hover {border:1px solid #1088e3;background:#fff;}
+.div_form_bind button:active {border:1px solid #1088e3;background:#f4f9fe;}
+.div_form_bind button:focus {box-shadow:none;}
+.div_form_bind table,
+.div_form_bind tr,
+.div_form_bind td{border-collapse:collapse;border-spacing:0;}
+
+/*본문내용 클경우 틀어지는 현상*/
+table.area_sign:first-child{table-layout: fixed;}  /*alpha양식일 경우 필요*/
+table.area_sign table{table-layout: auto;}  /*suite양식일 경우 필요 - td영역안에 table을 감싸지 않은경우*/
+.area_sign:first-child table:nth-child(1) {table-layout:fixed;} /* 위딘- alpha form양식_1type */
+div.area_sign table:first-child {table-layout:fixed;} /* 위딘- alpha form양식_2type */
+div.area_sign table:first-child table {table-layout:inherit;} /* 백송전자- alpha form양식_1type//suite양식 본문과 스타일화면 동일하게 처리 */
+
+
+/* 결재양식_기본양식 결재라인 분리 */
+.area_sign {border-collapse: collapse;font-size: 9pt;border:2px solid #767676;table-layout:fixed; margin:auto; box-sizing:border-box; -moz-box-sizing:border-box; -webkit-box-sizing:border-box;} 
+.area_sign td input {border-color:#a1a1a1;}   /* 인풋박스 선 컬러 */  
+.area_sign .bd_color {height:28px; border-bottom:1px solid #b1b1b1; border-right:1px solid #767676;text-align:center; box-sizing:border-box;} /* 테이블 타이틀 부분 선 */
+.area_sign .bd_color01 {border-bottom:1px solid #b1b1b1;text-align:left;} /* 테이블 결재라인 부분 선*/
+.area_sign .bd_color02 {height:28px;border-top:1px solid #b1b1b1; border-left:1px solid #767676;} /* 테이블 참조문서 부분 선 */
+.area_sign .bd_color03 {border-bottom:2px solid #b1b1b1;} /* 제목 밑 2줄라인 */
+.area_sign .bd_color04 {border-top:1px solid #b1b1b1;}
+.area_sign .brbn {border-bottom:none !important;}
+.area_sign .bd_color02 {height:28px;border-top:1px solid #b1b1b1; border-left:1px solid #767676;} /* 테이블 참조문서 부분 선 */
+.area_sign .bd_color02:first-child{border-left:0;}
+.area_sign .td_line2{border-bottom:1px solid #b1b1b1;}
+.area_sign .tdp5{padding:5px 0;}
+
+.df05 {border-bottom:1px solid #b1b1b1;vertical-align:top;}
+.df05 table {border:none;width:inherit;}
+.df05 table tr {border-bottom:1px solid #787878;} /* 결재라인 칸 */   
+.df05 .td_line{border-bottom:1px solid #767676;border-left:1px solid #767676;}
+.df05 table td:first-child{border-right:1px solid #767676;}
+.df05 table td table td:first-child{border-right:none;}
+.df05 table td table {border-left:0px !important;} /* 결재라인 테이블 */
+
+.df05 table td.empty_sign_line{cursor:pointer;}
+.df05 table td table.sign_tbl{width:100%;table-layout:fixed; text-align:center;}
+.df05 table td table.sign_tbl tr.non_border{border:0;}
+.df05 table td table.sign_tbl tr td.org_txt{height:25px;}
+.df05 table td table.sign_tbl tr td.sign_bg{position:relative;height:56px;}
+.df05 table td table.sign_tbl tr td.b_name{vertical-align:top; height:16px;} /* 비영리 */
+.df05 table td table.sign_tbl tr td.b_day{vertical-align:bottom; height:18px;} /* 비영리 */
+.df05 table td table.sign_tbl tr td.b_sign{height:52px;} /* 비영리 */
+.df05 table td table.sign_tbl tr td.sign_bg .box_txt{position:absolute;top:3px;left:10px;right:10px;border:1px solid #b1b1b1;line-height:1;padding:3px 0;background:#e1e1e1;} /*전결,보류 등*/
+.df05 table td table.sign_tbl tr td.sign_bg .sign_txt{position:absolute;top:22px;left:0;right:0;text-align:center}
+.df05 table td table.sign_tbl tr td.sign_name{height:28px;vertical-align:middle;}
+.df05 table td table.sign_tbl tr td.sign_bg .sign_txt_tbl{position:absolute;top:0;left:0;right:0;bottom:0;text-align:center;width:100%;height:inherit;}
+.df05 table td table.sign_tbl tr td.sign_bg .sign_txt_tbl tr{border:none;}
+.df05 table td table.sign_tbl tr td.sign_bg img{margin:0 auto; display:table; vertical-align:middle;}
+
+.df05_new{clear:both; float:right; border:1px solid #787878; border-bottom:none;}
+.sign_num {position:absolute; z-index:10; width:25px; top:-1px; left:0px; border-right:1px solid #c0c0c0; border-bottom:1px solid #c0c0c0; text-align:center; line-height:15px; padding-top:3px; color:#6e6e6e;} 
+.df05 .day{letter-spacing:-2px;}
+/* @media screen and (-webkit-min-device-pixel-ratio:0) {.df05 .day{letter-spacing:-1px;}} */
+
+/* 결재라인 순번 */  
+.sign_tb_pop01 td {border-left:1px solid #b1b1b1;}     
+.sign_tb_pop02 td {border:1px solid #b1b1b1;}    
+.sign_tb_pop03 td {border:1px solid #b1b1b1;}  
+.form_logo{padding:10px 0; text-align:center;}
+.form_logo img{min-height:28px; min-width:160px; max-width:640px;}
+
+#divFormContents{clear:both; vertical-align:top; text-align:left; word-break:break-all; height:350px; font-weight:normal;}
+#divFormContents table{border-collapse:collapse; /*table-layout:auto; width:auto;*/} /*non_profit table 영향받아서 css 추가 했지만 오류로 주석하고 non_profit table 선택자변경*/
+#divFormContents table td p{padding:0px 2px 0px 0px;} 
+.non_profit #divFormContents table {table-layout:auto;}  /*비영리 본문표 사이즈 오류*/
+/*#divForm table{text-align:left;} */
+
+/* 결재양식_지출결의 전표 테이블*/
+table.statement{width:100%;}
+.statement{text-align:center; table-layout:fixed !important;} 
+.statement.bl{border-left:1px solid #b1b1b1;} 
+.statement.bt{border-top:1px solid #b1b1b1;} 
+.statement th{background:#e3e3e3; font-weight:normal; min-height:19px; padding:3px 0; border-bottom:1px solid #b1b1b1; border-right:1px solid #b1b1b1;word-break:break-all;} 
+.statement.fwb_th th {font-weight:bold;}
+.statement tr.Tline{border-top:1px solid #b1b1b1;}
+.statement td{height:25px; border-bottom:1px solid #b1b1b1; border-right:1px solid #b1b1b1; /*line-height:140%;*/ word-break:break-all;} 
+.statement td.ar{text-align:right; padding-right:5px;} 
+.statement td.al{text-align:left; padding-left:5px;} 
+.statement .button_ex{border:0px; width: 18px; height: 18px; padding:0px; cursor:pointer;}
+.statement_title{float:left; text-align:left; width:100%; height:19px; padding:6px 0 0 0;}
+.statement .blue_a {color:#058df5}
+.statement_days{padding: 9px 5px 0 0; text-align:right; height:24px;}
+
+/* 스마트 자금관리 */
+.smart_fund_info{float:left; width:100%; text-align:left; padding:10px 5px;}
+.smart_fund_info ul li{float:left; padding:0 15px 0 0;}
+.smart_fund_info ul li span{float:left; width:10px; height:10px; border:1px solid #b1b1b1; margin:0 4px 0 0;}
+
+.smart_fund .gray{background:#f9f9f9 !important;}
+.smart_fund .green{background:#f2f7e4 !important;}
+.smart_fund .orange{background:#fff2e2 !important;}
+.smart_fund .yellow{background:#fff7da !important;}
+.smart_fund .gray2{background:#f6f6f6  !important;}
+.smart_fund .green2{background:#e4ecce !important;}
+.smart_fund .orange2{background:#ffefdc  !important;}
+.smart_fund .yellow2{background:#fff1c0 !important;}
+.smart_fund .blue, .statement .blue th{background:#eef4f9 !important;}
+.smart_fund .detail{background:url('../Images/ico/ico_detail.png') no-repeat left top !important; background-position:13px 18px !important;}
+
+
+/* 2015.12.17- 전자결재양식 상단버튼 및 결재특이사항 - 커스터마이징 맞추기 위해 추가 */
+ #con_newpop {padding-left:0px !important;}  
+.sign_pop{margin-left:16px !important;}
+.newpop_top_area{margin-left:0px !important;}
+	 	 
+/* 팝업 테이블,폼 버튼 */
+.pop_tb_btn {z-index:999;float:left;}
+/*.pop_tb_btn a {display:inline-block;padding:4px 4px 0px 4px; font-size:11px; border: 1px solid #999; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 3px; background:url('../Images/btn/tb_btnbg.gif') repeat-x left top; color:#3c3c3c;}*/
+.pop_tb_btn a {display: inline-block;height:22px;margin: 0;padding:0px 12px;border:1px solid #c9cac9;border-radius:0px;font-family: inherit;font-size: 100%;color: #515967;vertical-align: middle;text-decoration: none;text-align: center;line-height:24px;box-shadow:none;background:#fff;cursor: pointer;outline:0;-webkit-appearance: none;}
+.pop_tb_btn a:hover {border:1px solid #1088e3;background:#fff;}
+.pop_tb_btn a:active {border:1px solid #1088e3;background:#f4f9fe;}
+.pop_tb_btn a:focus {box-shadow:none;}
+.pop_tb_btn a img  {vertical-align:middle; margin-top:-2px;}
+input.input-text{margin:0px 5px 0 0px !important;}/*양식 td 라인정렬을 위해 수정. 이후 스크립트로 처리 허정명*/
+.k-dropdown-wrap input.k-input, 
+.k-picker-wrap input.k-input{border:0px !important;}
+
+/* 결재양식 팝업 */
+.tb_addfile{margin-top:20px;}
+
+/* G20양식 스타일 */
+.document_table{border-top:2px solid #b1b1b1; font-size:12px;}
+.document_table th{background:#e0e9ef;}
+.document_table td{text-align:center; word-break:break-all;}
+.document_table th,.document_table td{border-bottom:1px solid #b1b1b1; border-right:1px solid #b1b1b1; padding-top:2px; height:23px;}
+.document_table td:last-child, .document_table th:last-child{border-right:none}
+
+.document_table2{font-size:12px;}
+.document_table2 thead th {border-top:1px solid #b1b1b1; border-right:1px solid #b1b1b1;  padding-top:2px; height:23px;}
+.document_table2 td {border-right:1px solid #b1b1b1; border-top:1px solid #b1b1b1; text-align:center; padding-top:2px; height:23px;}
+.document_table2 td:last-child, .document_table2 th:last-child {border-right:none}
+
+.sign_tb_popNew{font-size:12px;}
+.sign_tb_popNew thead th {border-top:1px solid #b1b1b1; border-right:1px solid #b1b1b1; border-bottom:1px solid #b1b1b1; padding-top:2px; height:23px;}
+.sign_tb_popNew td {border-right:1px solid #b1b1b1; border-bottom:1px solid #b1b1b1; border-left:none; text-align:center; padding-top:2px; height:23px;}
+.sign_tb_popNew td:last-child, .sign_tb_pop03 th:last-child {border-right:none}
+
+/* 발신명의 = 직인 +이름 테이블 */
+.sender{text-align:center; vertical-align:middle;}
+.sender .text{FONT-SIZE: 19pt; letter-spacing: 4px; font-family: 굴림; font-weight:bold;}
+.sender img{width:71px; height:71px;}
+
+/* 인쇄미리보기*/
+@media print
+{
+ #xmlExcontents table{clear:both !important;}
+ #divFormContents table{clear:both; /*float:inherit !important;*/border-collapse:collapse;border-spacing:0;} 
+ #divFormContents p{margin:0;}
+ /* #divFormContents img{display:block; border:0;}  이미지가 길경우 다음페이지에 이미지 안나오는 현상 오류처리  - pdf 이미지 정렬 문제로 주석처리*/
+}
+
+/*팝업_문서작성 테스트 비영리*/
+.non_profit > table{width:100%;}
+.non_profit table {table-layout:fixed;}
+.non_profit table td{height:28px;box-sizing:border-box;}
+.non_profit table td h1{font-size:30px;font-weight:bold;min-height:56px;/*line-height:56px;*/margin:0 0 0 0 !important;}
+.non_profit table td.le{text-align:left;padding-left:10px;}
+.non_profit table td.cen{text-align:center;}
+.non_profit table td.ri{text-align:right;padding-right:10px;}
+.non_profit table td.bg_color {background-color:#f1f1f1;}
+.non_profit table td.bd_color {border:1px solid #b1b1b1;}
+.non_profit table td.bd_top {border-top:1px solid #b1b1b1;}
+.non_profit table td.bd_bottom {border-bottom:1px solid #b1b1b1;}
+.non_profit table td.bd_bottom_none {border-bottom-color:transparent !important;}
+.non_profit table td.bd_right_none {border-right-color:transparent !important;}
+.non_profit.sign_img img{max-height:28px;}
+.sign_img img{max-height:28px;}
+.non_profit .text_dotum{font-size:9pt !important; font-family:dotum;}
+
+.divTextSign{display:inline-block;height:120px;line-height:120px;margin: 0 0 0 50px;padding: 0 50px 0 0;min-width:70px; font-size:40px;background-size:85px 85px;background-position:right;background-repeat:no-repeat;font-size:20.8pt;}
+
+.non_profit.border_on table td{height:28px; border:1px solid #b1b1b1;box-sizing:border-box;}
+.non_profit.border_on table td h1{font-size:30px;font-weight:bold;height:56px;line-height:56px;margin:0 0 0 0 !important;}
+.non_profit.border_on table td.le{text-align:left;padding-left:10px;}
+.non_profit.border_on table td.cen{text-align:center;}
+.non_profit.border_on table td.ri{text-align:right;padding-right:10px;}
+
+.non_profit h1{min-height:30px;line-height:1; text-align:center; margin-top:0px !important;}
+
+/* 비영리 테이블 - 한공회*/
+.bod_ta {}
+.bod_ta table {border:1px solid #555;}
+.bod_ta table .bdr {border-right:1px solid #555;}
+.bod_ta table .bdb {border-bottom:1px solid #555;}
+.bod_ta table tr.bdb_tr td {border-bottom:1px solid #555;}
+.bod_ta table .bdb2 {border-bottom:1px solid #dcdcdc;}
+.bod_ta table tr.bdb_tr2 td {border-bottom:1px solid #dcdcdc;}
+.pyo_ta table {width:100%;}
+.pyo_ta table td {border:1px solid #555;font-weight:normal;}

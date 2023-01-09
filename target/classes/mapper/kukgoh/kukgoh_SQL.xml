@@ -1,0 +1,333 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kukgohMaria">
+<insert id="kukgohMaria.insertFile" parameterType="map">
+		insert into cust_epis.kukgoh_attach_file
+		(
+		target_table_name, 
+		target_id,
+		file_seq,
+		file_name,
+		real_file_name,
+		file_extension,
+		file_path,
+		file_size
+		)
+		values
+		(
+		#{target_table_name},
+		#{target_id},
+		#{file_seq},
+		#{file_name},
+		#{real_file_name},
+		#{file_extension},
+		#{file_path},
+		#{file_size}
+		)
+  	  <selectKey resultType="int" keyProperty="attach_file_id" order="AFTER">
+        SELECT LAST_INSERT_ID()
+    </selectKey> 
+</insert>
+<select id="kukgohMaria.getAttachFile" parameterType="map" resultType="map">
+	SELECT * FROM cust_epis.kukgoh_attach_file 
+					where target_id = #{targetId} or c_dikeycode = #{C_DIKEYCODE}
+</select>
+<select id="kukgohMaria.getErpInfo" parameterType="map" resultType="map">
+	SELECT * FROM cust_epis.kukgoh_erp_info
+</select>
+<select id="kukgohMaria.getErpEmpSeq" parameterType="map" resultType="String">
+	SELECT cust_epis.fn_getERPEmpNo(#{erpEmpSeq}) AS erpEmpSeq
+</select>
+<select id="kukgohMaria.getErpDeptSeq" parameterType="map" resultType="String">
+	SELECT cust_epis.fn_getERPDeptCd(#{erpEmpSeq}) AS erpDeptSeq
+</select>
+<select id="kukgohMaria.getDocInfo"  parameterType="map" statementType="CALLABLE">
+	CALL cust_epis.SP_DOCINFO_SELECT1('5000', #{GISU_DT},#{GISU_SQ}, #{C_DIKEYCODE, mode=OUT, jdbcType=VARCHAR}, #{DOC_NUMBER, mode=OUT, jdbcType=VARCHAR},#{DOC_TITLE, mode=OUT, jdbcType=VARCHAR}, #{DOC_REGDATE, mode=OUT, jdbcType=VARCHAR},#{OUT_YN, mode=OUT, jdbcType=VARCHAR}, #{OUT_MSG, mode=OUT, jdbcType=VARCHAR})
+</select>
+<select id="kukgohMaria.getCommDir"  parameterType="map" resultType="map">
+	SELECT group_code, code, code_kr, code_val FROM cust_epis.common_code where group_code = #{group_code} and code = #{code}
+</select>
+<select id="kukgohMaria.getRcvEnaraInterfaceId"  parameterType="map" resultType="map">
+	SELECT * FROM cust_epis.common_code 
+	where group_code = 'ENARA_INTRFC'
+	<if test="code_desc != ''and group_code != null">
+		and code_desc = #{code_desc} 
+	</if>
+	<if test="code_val != '' and code_val != null">
+		and code_val = #{code_val} 
+	</if>
+	and code is not null
+</select>
+<select id="kukgohMaria.getRcvEnaraInterfaceId2"  parameterType="map" resultType="map">
+	SELECT * FROM cust_epis.common_code 
+	where group_code = 'ENARA_INTRFC'
+
+	<if test="code_val != '' and code_val != null">
+		and code_val = #{code_val} 
+	</if>
+	<if test="code != '' and code != null">
+		and code = #{code} 
+	</if>	
+	and code is not null
+</select>
+<insert id="kukgohMaria.saveLog" parameterType="map">
+		insert into cust_epis.kukgoh_save_log
+		(
+		  interface_id
+		  ,transaction_id
+		  ,table_nm
+		  ,file_name
+		  ,msg
+		  ,emp_seq
+		  ,ip
+		  ,create_date
+		)
+		values
+		(
+		#{exInterfaceId},
+		#{exTransactionId},
+		#{exTableNm},
+		#{exFileName},
+		#{msg},
+		#{empSeq},
+		#{ip},
+		NOW()
+		) 
+</insert>
+<insert id="kukgohMaria.transactionTest1" parameterType="map">
+		insert into cust_epis.kukgoh_test
+		(
+		  F2
+		)
+		values
+		(
+		#{name}
+		) 
+</insert>
+<insert id="kukgohMaria.transactionTest2" parameterType="map">
+		insert into cust_epis.kukgoh_test
+		(
+		  F2
+		)
+		values
+		(
+		#{name}
+		) 
+</insert>
+
+	<select id="kukgohMaria.getCommFileSeq" parameterType="map" resultType="Integer">
+		select ifnull(max(file_seq),0)+1 as fileSeq from  cust_epis.kukgoh_attach_file where target_table_name = #{targetTableName} and c_dikeycode = #{C_DIKEYCODE}
+	</select>
+	
+		<update id="kukgohMaria.commFileInfoUpdate" parameterType="map" >
+		UPDATE cust_epis.kukgoh_attach_file SET 
+		file_name = #{rstFileName}
+		,real_file_name = #{fileNm}		
+		, file_extension = #{ext}
+		, file_path = #{filePath}
+		, file_size = #{fileSize}
+		WHERE attach_file_id = #{attach_file_id}
+	</update>
+	<insert id="kukgohMaria.insertAttachFile" parameterType="map" useGeneratedKeys="true" keyProperty="attach_file_id">
+		insert into cust_epis.kukgoh_attach_file
+		(
+		target_table_name, 
+		target_id,
+		file_seq,
+		c_dikeycode
+		)
+		values
+		(
+		#{targetTableName}
+		,#{targetId}
+		,#{fileSeq}
+		,#{C_DIKEYCODE}
+		)
+	</insert>
+	<delete id="kukgohMaria.deleteFile" parameterType="map">
+		delete from cust_epis.kukgoh_attach_file 
+		where attach_file_id= #{attach_file_id}
+		<!-- and file_seq = #{fileSeq}  -->
+	</delete>
+			
+	<select id="kukgohMaria.getInterfaceGrid" parameterType="map" resultType="map">
+		select * from cust_epis.common_code where group_code = #{groupCode} and code_desc = 'rcv' order by order_no
+	</select>		
+	
+	<insert id="kukgohMaria.insertTrnscIdReadStatus" parameterType="map" >
+		insert into cust_epis.kukgoh_trnsc_id_read_status 
+		(intfc_id, trnsc_id, status, create_date)
+		values(#{intfcId}, #{trnscId}, #{status}, now())
+	</insert>
+		
+	<update id="kukgohMaria.updateTrnscIdReadStatus" parameterType="map" >
+		update cust_epis.kukgoh_trnsc_id_read_status
+		set
+		status = #{status}
+		, update_date = now()
+		where trnsc_id = #{trnscId} 
+	</update>
+		
+	<select id="kukgohMaria.ckeckTrnscIdReadStatus" parameterType="map" resultType="int">
+		select count(*) from cust_epis.kukgoh_trnsc_id_read_status 
+		where trnsc_id = #{trnscId} 
+	</select>
+		
+	<select id="kukgohMaria.getUrlInfo"  resultType="map">
+		select * from cust_epis.common_code where group_code = 'ENARA' and code ='URL'	
+	</select>
+	
+	<select id="kukgohMaria.fileDown" parameterType="map" resultType="map">
+		select
+		*
+		from
+		cust_epis.kukgoh_attach_file
+		WHERE attach_file_id = #{attach_file_id}
+		and file_seq = #{file_seq}
+	</select>
+		
+	<select id="kukgohMaria.getErpDeptSeq2" parameterType="map" resultType="String">
+		SELECT cust_epis.fn_getERPDeptCd2(#{deptSeq}) AS erpDeptSeq
+	</select>
+	
+	<select id="kukgohMaria.getDocInvoice"  parameterType="map" statementType="CALLABLE">
+		CALL cust_epis.SP_DOCINVOICE_SELECT(#{C_DIKEYCODE}, #{GISU_SQ},#{LN_SQ}, #{BG_SQ}, #{ETXBL_CONFM_NO, mode=OUT, jdbcType=VARCHAR}, #{OUT_MSG2, mode=OUT, jdbcType=VARCHAR})
+	</select>
+	
+	<select id="kukgohMaria.getInvoice" parameterType="map" resultType="map">
+		SELECT A.ERP_COMP_SEQ CO_CD
+		      ,SUBSTR(A.ERP_GISU_DATE, 1, 4) BSNSYEAR
+		      ,'' DDTLBZ_ID
+		      ,'' EXC_INSTT_ID
+		      ,E.ISS_NO ETXBL_CONFM_NO
+		      ,A.ERP_GISU_DATE GISU_DT
+		      ,A.ERP_GISU_SQ GISU_SQ
+		      ,C.ERP_BG_SQ BG_SQ
+		      ,C.ERP_LN_SQ LN_SQ
+		      ,F.C_RIAFTERTITLE RMK_DC
+		      ,A.ERP_DIV_NAME DIV_NM
+		      ,A.MGT_SEQ PJT_CD
+		      ,A.MGT_NAME PJT_NM
+		      ,A.ERP_EMP_NAME EMP_NM
+		      ,C.TR_NAME CUST_NM
+		      ,C.TRADE_AMT AMT
+		      ,'' ET_STATE
+		      ,'' STATE_NM
+		FROM   NEOS.T_EXNP_RESHEAD A
+		      ,NEOS.T_EXNP_RESBUDGET B
+		      ,NEOS.T_EXNP_RESTRADE C
+		      ,NEOS.T_EXNP_RESDOC D
+		      ,NEOS.T_EX_ETAX_AQ_TMP E
+		      ,NEOS.A_RECORDINFO F
+		WHERE  A.ERP_COMP_SEQ = '5000'
+		AND    A.ERP_GISU_DATE BETWEEN CONCAT(#{fromMonth}) AND CONCAT(#{endMonth})
+		AND    A.RES_DOC_SEQ = B.RES_DOC_SEQ
+		AND    A.RES_SEQ = B.RES_SEQ
+		AND    A.RES_DOC_SEQ = C.RES_DOC_SEQ
+		AND    A.RES_SEQ = C.RES_SEQ
+		AND    B.BUDGET_SEQ = C.BUDGET_SEQ
+		AND    A.RES_DOC_SEQ = D.RES_DOC_SEQ
+		AND    A.RES_DOC_SEQ = E.IF_M_ID
+		AND    C.TRADE_SEQ = E.IF_D_ID
+		AND    E.SEND_YN = 'Y'
+		AND    E.USE_YN = 'Y'
+		AND    D.DOC_SEQ = F.C_DIKEYCODE
+		ORDER  BY A.ERP_GISU_DATE DESC
+		         ,A.ERP_GISU_SQ DESC
+		         ,C.ERP_BG_SQ
+		         ,C.ERP_LN_SQ DESC
+	</select>
+		
+	<insert id="saveKorailCityInfo" parameterType="map">
+		INSERT INTO cust_epis.oa_korail_city (
+			CITYCODE, CITYNAME, ACTIVE, CREATE_DT, UPDAE_DT
+		) VALUES (
+			#{citycode}, #{cityname}, 'Y', now(), now()
+		)
+	</insert>
+	
+	<insert id="saveKorailNodeInfo" parameterType="map">
+		INSERT INTO cust_epis.oa_korail_node (
+			NODEID, CITYCODE, NODENAME, ACTIVE, CREATE_DT, UPDAE_DT
+		) VALUES (
+			#{nodeid}, #{citycode}, #{nodename}, 'Y', now(), now() 		
+		)
+	</insert>
+	
+	<insert id="saveKorailVehicleKind" parameterType="map">
+		INSERT INTO cust_epis.oa_korail_vehicle_kind (
+			VEHICLEKNDID, VEHICLEKNDNM, ACTIVE, CREATE_DT, UPDAE_DT
+		) VALUES (
+			#{vehiclekndid}, #{vehiclekndnm}, 'Y', now(), now()
+		)
+	</insert>
+	
+	<delete id="deleteKorailCityInfo">
+		delete from cust_epis.oa_korail_city
+	</delete>
+	
+	<delete id="deleteKorailNodeInfo">
+		delete from cust_epis.oa_korail_node
+	</delete>
+	
+	<delete id="deleteKorailVehicleKindInfo">
+		delete from cust_epis.oa_korail_vehicle_kind
+	</delete>
+		
+	<select id="getOneErpEmpNum" parameterType="map" resultType="String">
+		select MAX(B.erp_emp_num) from neos.t_co_emp_dept A
+		inner join NEOS.T_CO_EMP B
+        on A.emp_seq = B.emp_seq
+		where A.dept_seq = #{deptSeq} 
+		and A.use_yn = 'Y'
+        and B.use_yn = 'Y'
+	</select>
+	
+	<select id="getDocAttachPath" parameterType="map" resultType="map">
+		select * from neos.a_attachinfo A 
+		inner join neos.t_co_atch_file_detail B
+				on A.file_id = B.file_id and A.c_aiseqnum = B.file_sn
+		inner join neos.t_co_group_path C
+				on C.path_seq = B.path_seq and C.os_type = 'linux'
+        where c_dikeycode = #{C_DIKEYCODE}
+	</select>	
+		
+	<select id="getDocBankInfo" parameterType="map" resultType="map">
+		select * from neos.t_exnp_restrade 
+					where erp_gisu_date = #{GISU_DT} 
+						and erp_gisu_sq = #{GISU_SQ} 
+						and erp_bg_sq = #{BG_SQ}
+						and erp_ln_sq = #{LN_SQ}
+	</select>
+	
+	<select id="getTradeBojoInfo" parameterType="map" resultType="map">
+		select * from neos.t_exnp_restrade A
+				inner join cust_epis.res_bojo_mapping B
+						on A.trade_seq = B.tradeSeq
+				inner join neos.t_exnp_resdoc C
+						on C.doc_seq = #{C_DIKEYCODE} and C.res_doc_seq = B.resDocSeq
+					where A.erp_ln_sq =#{LN_SQ}
+						and A.erp_bg_sq = #{BG_SQ}
+						and A.erp_gisu_sq = #{GISU_SQ}
+	</select>
+	
+	<select id="getErpDeptNum" parameterType="map" resultType="map">
+		select * from neos.t_co_emp_dept A
+			inner join neos.t_co_emp B
+	        on B.emp_seq = A.emp_seq
+	        where A.dept_seq = #{deptSeq} and A.main_dept_yn = 'Y' and A.use_yn = 'Y' order by B.modify_date desc limit 1
+	</select>
+	
+	<select id="checkAttachPDF" parameterType="map" resultType="String">
+		select count(*) 
+			from cust_epis.c_pdf_duzon_appdoc
+			where rep_id = #{C_DIKEYCODE}
+	</select>	
+	
+	<select id="getRestradeInfo" parameterType="map" resultType="map">
+		select * from neos.t_exnp_restrade A 
+		inner join neos.t_exnp_resdoc B
+	    on A.res_doc_seq = B.res_doc_seq
+	    where B.doc_seq = #{C_DIKEYCODE} and erp_bg_sq = #{BG_SQ} and erp_ln_sq = #{LN_SQ} and erp_gisu_sq = #{GISU_SQ}
+	</select>
+</mapper>

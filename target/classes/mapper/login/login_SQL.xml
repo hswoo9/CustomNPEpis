@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="login">
+    
+    <select id="selectLoginHistoryList" parameterType="hashmap" resultType="egovMap">
+      select * from t_co_emp limit 10
+    </select>
+    
+    <insert id="insertLoginHistory" parameterType="hashmap">
+   	  -- login.insertLoginHistory
+      insert into t_login_history 
+		(
+			login_id, 
+			group_seq, 
+			comp_seq, 
+			comp_name, 
+			dept_seq, 
+			dept_name, 
+			emp_seq, 
+			emp_name, 
+			type, 
+			login_ip, 
+			create_date
+		)
+		values
+		(
+			#{loginId}, 
+			#{groupSeq}, 
+			#{compSeq}, 
+			#{compName}, 
+			#{deptSeq}, 
+			#{deptName}, 
+			#{empSeq}, 
+			#{empName}, 
+			#{type}, 
+			#{loginIp}, 
+			now()
+		);
+    </insert>
+    
+</mapper>    

@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- iCUBE mssql -->
+<mapper namespace="payCms">
+   <select id="payCms.payCmsList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+			SELECT C.EMPLOYEEID
+					  ,C.EMPLOYEENM
+					  ,C.CHECKDATE	 
+					  ,SUM(C.PLUS) AS PLUS
+					  ,SUM(C.PLUS2) AS PLUS2
+					  ,D.PYTB_NM
+					  ,D.PYTB_NM2
+					  ,D.ACCT_NO
+					  ,D.ACCT_NO2
+					  ,REPLACE(CONVERT(VARCHAR,CONVERT(MONEY,SUM(C.PLUS) - SUM(C.PLUS2)),1), '.00', '') AS PAY_AMT  
+					  ,'${remarkMonth}' + '월 급여' AS REMARK 
+			FROM   (SELECT A.EMPLOYEEID
+								  ,A.EMPLOYEENM
+								  ,A.CHECKDATE
+								  ,A.PAY_CD
+								  ,A.PAY_NM
+								  ,SUM(A.PAY_AM) AS PLUS
+								  ,0 AS PLUS2
+							FROM   DZICUBE.dbo.TKP_EPAY_D A
+							WHERE  1=1			
+						    <if test='payNm != ""'>
+						    AND A.PAY_NM  IN (${payNm}) 
+							</if>
+						    <if test='payCd != ""'>
+						    AND A.PAY_CD  IN (${payCd}) 
+							</if>
+								
+							GROUP BY EMPLOYEEID,EMPLOYEENM,CHECKDATE,PAY_CD,PAY_NM
+				
+							UNION
+				
+							SELECT B.EMPLOYEEID
+									  ,B.EMPLOYEENM
+									  ,B.CHECKDATE
+									  ,B.PAY_CD
+									  ,B.PAY_NM
+									  ,0 AS PLUS
+									  ,SUM(B.PAY_AM) AS PLUS2
+							<!-- 							FROM   DZICUBE.dbo.TKP_DDCT_D B	 -->
+						FROM   (SELECT T.EMPLOYEEID
+                                 ,T.EMPLOYEENM
+                                 ,T.CHECKDATE
+                                 ,T.PAY_CD
+                                 ,T.PAY_NM 
+                                ,T.PAY_AM
+                           FROM   DZICUBE.dbo.TKP_DDCT_D T
+                           UNION  ALL
+                           SELECT T.EMPLOYEEID
+                                 ,T.EMPLOYEENM
+                                 ,T.CHECKDATE
+                                 ,T.PAY_CD
+                                 ,T.PAY_NM 
+                                ,T.PAY_AM
+                           FROM   DZICUBE.dbo.TKP_TAX_D T) B
+							WHERE  1=1			
+						    <if test='payNmD != ""'>
+						    AND B.PAY_NM  IN (${payNmD}) 
+							</if>
+						    <if test='payCdD != ""'>
+						    AND B.PAY_CD  IN (${payCdD}) 
+							</if>
+							
+							GROUP BY EMPLOYEEID,EMPLOYEENM,CHECKDATE,PAY_CD,PAY_NM
+						   )C
+						 , DZICUBE.dbo.TKP_EMPLOYEE D
+			WHERE  C.EMPLOYEEID = D.EMPLOYEEID
+			AND    C.CHECKDATE = ${payDt}			
+			<if test='emplNm != ""'>
+			AND    D.HTYP_CD IN (${emplNm})
+			</if>
+			GROUP BY C.EMPLOYEEID
+						 ,C.EMPLOYEENM
+						 ,C.CHECKDATE	 
+						 ,D.PYTB_NM
+						 ,D.PYTB_NM2
+						 ,D.ACCT_NO
+						 ,D.ACCT_NO2	   
+    </select>  
+    
+    <select id="payCms.paySctrlD" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	    <![CDATA[
+		SELECT CTD_CD	
+				  ,CTD_NM
+		FROM    DZICUBE.dbo.SCTRL_D A
+		WHERE  CO_CD =  ${coCd}
+		AND      MODULE_CD = 'H'
+	    AND      CTRL_CD = 'G2'	    
+		]]>
+    </select>  
+
+    <select id="payCms.tkpPayCd" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	    <![CDATA[
+		SELECT PAY_CD
+			      ,PAY_NM
+		FROM   DZICUBE.dbo.TKP_PAY_CD
+		WHERE  PAYYY = ${payYy}
+		AND      PYDD_FG = ${pyddFg}
+ 		]]>
+    </select>  
+ 
+     <select id="payCms.tkpPayYm" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+	    <![CDATA[
+		SELECT PAYDT
+		FROM   DZICUBE.dbo.TKP_PAY_DT
+		WHERE  PAYYM = ${payYm}
+ 		]]>
+    </select>  
+</mapper>

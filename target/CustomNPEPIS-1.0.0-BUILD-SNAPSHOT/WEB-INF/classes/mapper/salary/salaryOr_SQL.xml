@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="salaryOr">
+
+<!-- 근태정보 -->	
+<select id="getSelectWorkingDays" parameterType="map" resultType="map">
+SELECT count(*) AS DAYS FROM(
+	SELECT 
+		A.*,
+		ROWNUM AS RNUM 
+	FROM(
+		SELECT
+			EAM.EP_NO
+			,EAM.ATT_DATE
+			,EAM.ATT_CODE
+			,EAM.ATT_SCH_CODE
+			,EAM.ATT_IN_TIME
+			,EAM.ATT_OUT_TIME
+			,EAM.REASON
+			,EAM.LATE_TIME
+			,EAM.EXT_WORK_TIME
+			,EAM.NIG_WORK_TIME
+			,EAM.HOL_WORK_TIME
+			,EAM.GET_OUT_TIME
+			,EAM.NORMAL_TIME
+			,EAM.ORG_CODE
+            ,DECODE(EAM.ATT_CODE,NULL,NULL,'B2003',NULL,'B2005',NULL
+            ,ROUND(((TO_DATE(NVL(EAM.ATT_OUT_TIME,DECODE(FLEX.DATE2,NULL,REPLACE(EAM.ATT_DATE,'-','')||'180000',REPLACE(FLEX.DATE2,'-','')||REPLACE(FLEX.OUT_TM,':','')||'00')), 'YYYYMMDDHH24MISS')
+            	-TO_DATE(NVL(EAM.ATT_IN_TIME ,DECODE(FLEX.DATE2,NULL,REPLACE(EAM.ATT_DATE,'-','')||'090000',REPLACE(FLEX.DATE2,'-','')||REPLACE(FLEX.IN_TM ,':','')||'00')), 'YYYYMMDDHH24MISS')
+                	)*24),2)
+            	- (CASE WHEN SUBSTR(NVL(EAM.ATT_OUT_TIME,DECODE(FLEX.DATE2,NULL,REPLACE(EAM.ATT_DATE,'-','')||'1800',REPLACE(FLEX.DATE2,'-','')||REPLACE(FLEX.OUT_TM,':',''))),9,2) > '13' THEN 1 ELSE 0 END)
+            ) AS REAL_WORK_TIME
+			,(SELECT DET_NAME FROM CD_COMMON_CODE WHERE TOT_CODE = EAM.ATT_CODE) AS ATT_CODE_NM
+			,(SELECT DET_NAME FROM CD_COMMON_CODE WHERE TOT_CODE = EAM.ATT_SCH_CODE) AS ATT_SCH_CODE_NM
+			,(SELECT DET_NAME FROM CD_COMMON_CODE WHERE TOT_CODE = EAM.PRIVATE_CODE) AS PRIVATE_CODE_NM
+			,EM.EP_NAME_KOR NAME_KOR
+		FROM EP_ATT_MANAGE EAM
+		INNER JOIN EP_MASTER EM 
+		   ON EAM.EP_NO = EM.EP_NO
+		INNER JOIN CD_ORG_CODE OG ON OG.ORG_CODE = EAM.ORG_CODE
+              LEFT OUTER JOIN (
+                              SELECT A.EP_NO
+                                    ,TO_CHAR((TO_DATE(A.APP_PERIOD_FR_DAY,'YYYY-MM-DD') + X.NUM -1),'YYYY-MM-DD') DATE2
+                                    ,TO_CHAR((TO_DATE(A.APP_PERIOD_FR_DAY,'YYYY-MM-DD') + X.NUM -1),'D') DAY2
+                                    ,DECODE(TO_CHAR((TO_DATE(A.APP_PERIOD_FR_DAY,'YYYY-MM-DD') + X.NUM -1),'D'),'2',W_TIME_MON_01,'3',W_TIME_TUE_01,'4',W_TIME_WED_01,'5',W_TIME_THU_01,'6',W_TIME_FRI_01) IN_TM
+                                    ,DECODE(TO_CHAR((TO_DATE(A.APP_PERIOD_FR_DAY,'YYYY-MM-DD') + X.NUM -1),'D'),'2',W_TIME_MON_02,'3',W_TIME_TUE_02,'4',W_TIME_WED_02,'5',W_TIME_THU_02,'6',W_TIME_FRI_02) OUT_TM
+                                    ,DECODE(TO_CHAR((TO_DATE(A.APP_PERIOD_FR_DAY,'YYYY-MM-DD') + X.NUM -1),'D'),'2',W_TIME_MON_98,'3',W_TIME_TUE_98,'4',W_TIME_WED_98,'5',W_TIME_THU_98,'6',W_TIME_FRI_98) MEAL_YN
+                                    ,DECODE(TO_CHAR((TO_DATE(A.APP_PERIOD_FR_DAY,'YYYY-MM-DD') + X.NUM -1),'D'),'2',W_TIME_MON_99,'3',W_TIME_TUE_99,'4',W_TIME_WED_99,'5',W_TIME_THU_99,'6',W_TIME_FRI_99) WORK_RM
+                                    ,A.WORK_TYPE_CODE,A.WOK_FORM_CODE,A.APP_MONTH_TIME,A.SANC_EX,A.WEEK_TYPE,A.MEMO1
+                              FROM   EP_FLEX_WORK A
+                                    ,(SELECT ROWNUM NUM FROM DUAL CONNECT BY ROWNUM &lt; 32) X 
+                              WHERE  A.SANCTION = '3'
+                              AND    TO_DATE(A.APP_PERIOD_TO_DAY,'YYYY-MM-DD') - TO_DATE(A.APP_PERIOD_FR_DAY,'YYYY-MM-DD') + 1 >= X.NUM
+                              ) FLEX 
+                  ON FLEX.EP_NO = EAM.EP_NO AND FLEX.DATE2 = EAM.ATT_DATE AND FLEX.DAY2 NOT IN ('1','7')
+		WHERE 1=1
+		<if test="searchYear != null and searchYear != ''">
+			<![CDATA[ AND ATT_DATE LIKE #{searchYear} || '-' || #{searchMonth} || '%']]>
+		</if>
+		AND EAM.ATT_CODE in ('B2001', 'B2006')
+		AND EM.HOLD_OF_CODE NOT IN ('A1202')
+		AND EAM.EP_NO = #{erpNoEmp}
+			ORDER BY ATT_DATE DESC, EM.JOB_LEV ASC, EM.INC_DATE
+		) A
+)
+</select>
+
+<select id="getSelectYetWorkingDays" parameterType="map" resultType="map">
+SELECT count(*) AS DAYS FROM(
+	SELECT 
+		A.*,
+		ROWNUM AS RNUM 
+	FROM(
+		SELECT
+			EAM.EP_NO
+			,EAM.ATT_DATE
+			,EAM.ATT_CODE
+			,EAM.ATT_SCH_CODE
+			,EAM.ATT_IN_TIME
+			,EAM.ATT_OUT_TIME
+			,EAM.REASON
+			,EAM.LATE_TIME
+			,EAM.EXT_WORK_TIME
+			,EAM.NIG_WORK_TIME
+			,EAM.HOL_WORK_TIME
+			,EAM.GET_OUT_TIME
+			,EAM.NORMAL_TIME
+			,EAM.ORG_CODE
+            ,DECODE(EAM.ATT_CODE,NULL,NULL,'B2003',NULL,'B2005',NULL
+            ,ROUND(((TO_DATE(NVL(EAM.ATT_OUT_TIME,DECODE(FLEX.DATE2,NULL,REPLACE(EAM.ATT_DATE,'-','')||'180000',REPLACE(FLEX.DATE2,'-','')||REPLACE(FLEX.OUT_TM,':','')||'00')), 'YYYYMMDDHH24MISS')
+            	-TO_DATE(NVL(EAM.ATT_IN_TIME ,DECODE(FLEX.DATE2,NULL,REPLACE(EAM.ATT_DATE,'-','')||'090000',REPLACE(FLEX.DATE2,'-','')||REPLACE(FLEX.IN_TM ,':','')||'00')), 'YYYYMMDDHH24MISS')
+                	)*24),2)
+            	- (CASE WHEN SUBSTR(NVL(EAM.ATT_OUT_TIME,DECODE(FLEX.DATE2,NULL,REPLACE(EAM.ATT_DATE,'-','')||'1800',REPLACE(FLEX.DATE2,'-','')||REPLACE(FLEX.OUT_TM,':',''))),9,2) > '13' THEN 1 ELSE 0 END)
+            ) AS REAL_WORK_TIME
+			,(SELECT DET_NAME FROM CD_COMMON_CODE WHERE TOT_CODE = EAM.ATT_CODE) AS ATT_CODE_NM
+			,(SELECT DET_NAME FROM CD_COMMON_CODE WHERE TOT_CODE = EAM.ATT_SCH_CODE) AS ATT_SCH_CODE_NM
+			,(SELECT DET_NAME FROM CD_COMMON_CODE WHERE TOT_CODE = EAM.PRIVATE_CODE) AS PRIVATE_CODE_NM
+			,EM.EP_NAME_KOR NAME_KOR
+		FROM EP_ATT_MANAGE EAM
+		INNER JOIN EP_MASTER EM 
+		   ON EAM.EP_NO = EM.EP_NO
+		INNER JOIN CD_ORG_CODE OG ON OG.ORG_CODE = EAM.ORG_CODE
+              LEFT OUTER JOIN (
+                              SELECT A.EP_NO
+                                    ,TO_CHAR((TO_DATE(A.APP_PERIOD_FR_DAY,'YYYY-MM-DD') + X.NUM -1),'YYYY-MM-DD') DATE2
+                                    ,TO_CHAR((TO_DATE(A.APP_PERIOD_FR_DAY,'YYYY-MM-DD') + X.NUM -1),'D') DAY2
+                                    ,DECODE(TO_CHAR((TO_DATE(A.APP_PERIOD_FR_DAY,'YYYY-MM-DD') + X.NUM -1),'D'),'2',W_TIME_MON_01,'3',W_TIME_TUE_01,'4',W_TIME_WED_01,'5',W_TIME_THU_01,'6',W_TIME_FRI_01) IN_TM
+                                    ,DECODE(TO_CHAR((TO_DATE(A.APP_PERIOD_FR_DAY,'YYYY-MM-DD') + X.NUM -1),'D'),'2',W_TIME_MON_02,'3',W_TIME_TUE_02,'4',W_TIME_WED_02,'5',W_TIME_THU_02,'6',W_TIME_FRI_02) OUT_TM
+                                    ,DECODE(TO_CHAR((TO_DATE(A.APP_PERIOD_FR_DAY,'YYYY-MM-DD') + X.NUM -1),'D'),'2',W_TIME_MON_98,'3',W_TIME_TUE_98,'4',W_TIME_WED_98,'5',W_TIME_THU_98,'6',W_TIME_FRI_98) MEAL_YN
+                                    ,DECODE(TO_CHAR((TO_DATE(A.APP_PERIOD_FR_DAY,'YYYY-MM-DD') + X.NUM -1),'D'),'2',W_TIME_MON_99,'3',W_TIME_TUE_99,'4',W_TIME_WED_99,'5',W_TIME_THU_99,'6',W_TIME_FRI_99) WORK_RM
+                                    ,A.WORK_TYPE_CODE,A.WOK_FORM_CODE,A.APP_MONTH_TIME,A.SANC_EX,A.WEEK_TYPE,A.MEMO1
+                              FROM   EP_FLEX_WORK A
+                                    ,(SELECT ROWNUM NUM FROM DUAL CONNECT BY ROWNUM &lt; 32) X 
+                              WHERE  A.SANCTION = '3'
+                              AND    TO_DATE(A.APP_PERIOD_TO_DAY,'YYYY-MM-DD') - TO_DATE(A.APP_PERIOD_FR_DAY,'YYYY-MM-DD') + 1 >= X.NUM
+                              ) FLEX 
+                  ON FLEX.EP_NO = EAM.EP_NO AND FLEX.DATE2 = EAM.ATT_DATE AND FLEX.DAY2 NOT IN ('1','7')
+		WHERE 1=1
+		<if test="searchYear != null and searchYear != ''">
+			<![CDATA[ AND ATT_DATE LIKE #{searchYear} || '-' || #{searchMonth} || '%']]>
+		</if>
+		AND EAM.ATT_CODE in ('B2001', 'B2006')
+		AND EM.HOLD_OF_CODE NOT IN ('A1202')
+		AND EAM.EP_NO = #{erpNoEmp}
+			ORDER BY ATT_DATE DESC, EM.JOB_LEV ASC, EM.INC_DATE
+		) A
+)
+</select>
+
+<select id="getSelectAnnualDays" parameterType="map" resultType="map">
+SELECT count(*) AS DAYS FROM(
+	SELECT 
+		A.*,
+		ROWNUM AS RNUM 
+	FROM(
+		SELECT
+			EAM.EP_NO
+			,EAM.ATT_DATE
+			,EAM.ATT_CODE
+			,EAM.ATT_SCH_CODE
+			,EAM.ATT_IN_TIME
+			,EAM.ATT_OUT_TIME
+			,EAM.REASON
+			,EAM.LATE_TIME
+			,EAM.EXT_WORK_TIME
+			,EAM.NIG_WORK_TIME
+			,EAM.HOL_WORK_TIME
+			,EAM.GET_OUT_TIME
+			,EAM.NORMAL_TIME
+			,EAM.ORG_CODE
+            ,DECODE(EAM.ATT_CODE,NULL,NULL,'B2003',NULL,'B2005',NULL
+            ,ROUND(((TO_DATE(NVL(EAM.ATT_OUT_TIME,DECODE(FLEX.DATE2,NULL,REPLACE(EAM.ATT_DATE,'-','')||'180000',REPLACE(FLEX.DATE2,'-','')||REPLACE(FLEX.OUT_TM,':','')||'00')), 'YYYYMMDDHH24MISS')
+            	-TO_DATE(NVL(EAM.ATT_IN_TIME ,DECODE(FLEX.DATE2,NULL,REPLACE(EAM.ATT_DATE,'-','')||'090000',REPLACE(FLEX.DATE2,'-','')||REPLACE(FLEX.IN_TM ,':','')||'00')), 'YYYYMMDDHH24MISS')
+                	)*24),2)
+            	- (CASE WHEN SUBSTR(NVL(EAM.ATT_OUT_TIME,DECODE(FLEX.DATE2,NULL,REPLACE(EAM.ATT_DATE,'-','')||'1800',REPLACE(FLEX.DATE2,'-','')||REPLACE(FLEX.OUT_TM,':',''))),9,2) > '13' THEN 1 ELSE 0 END)
+            ) AS REAL_WORK_TIME
+			,(SELECT DET_NAME FROM CD_COMMON_CODE WHERE TOT_CODE = EAM.ATT_CODE) AS ATT_CODE_NM
+			,(SELECT DET_NAME FROM CD_COMMON_CODE WHERE TOT_CODE = EAM.ATT_SCH_CODE) AS ATT_SCH_CODE_NM
+			,(SELECT DET_NAME FROM CD_COMMON_CODE WHERE TOT_CODE = EAM.PRIVATE_CODE) AS PRIVATE_CODE_NM
+			,EM.EP_NAME_KOR NAME_KOR
+		FROM EP_ATT_MANAGE EAM
+		INNER JOIN EP_MASTER EM 
+		   ON EAM.EP_NO = EM.EP_NO
+		INNER JOIN CD_ORG_CODE OG ON OG.ORG_CODE = EAM.ORG_CODE
+              LEFT OUTER JOIN (
+                              SELECT A.EP_NO
+                                    ,TO_CHAR((TO_DATE(A.APP_PERIOD_FR_DAY,'YYYY-MM-DD') + X.NUM -1),'YYYY-MM-DD') DATE2
+                                    ,TO_CHAR((TO_DATE(A.APP_PERIOD_FR_DAY,'YYYY-MM-DD') + X.NUM -1),'D') DAY2
+                                    ,DECODE(TO_CHAR((TO_DATE(A.APP_PERIOD_FR_DAY,'YYYY-MM-DD') + X.NUM -1),'D'),'2',W_TIME_MON_01,'3',W_TIME_TUE_01,'4',W_TIME_WED_01,'5',W_TIME_THU_01,'6',W_TIME_FRI_01) IN_TM
+                                    ,DECODE(TO_CHAR((TO_DATE(A.APP_PERIOD_FR_DAY,'YYYY-MM-DD') + X.NUM -1),'D'),'2',W_TIME_MON_02,'3',W_TIME_TUE_02,'4',W_TIME_WED_02,'5',W_TIME_THU_02,'6',W_TIME_FRI_02) OUT_TM
+                                    ,DECODE(TO_CHAR((TO_DATE(A.APP_PERIOD_FR_DAY,'YYYY-MM-DD') + X.NUM -1),'D'),'2',W_TIME_MON_98,'3',W_TIME_TUE_98,'4',W_TIME_WED_98,'5',W_TIME_THU_98,'6',W_TIME_FRI_98) MEAL_YN
+                                    ,DECODE(TO_CHAR((TO_DATE(A.APP_PERIOD_FR_DAY,'YYYY-MM-DD') + X.NUM -1),'D'),'2',W_TIME_MON_99,'3',W_TIME_TUE_99,'4',W_TIME_WED_99,'5',W_TIME_THU_99,'6',W_TIME_FRI_99) WORK_RM
+                                    ,A.WORK_TYPE_CODE,A.WOK_FORM_CODE,A.APP_MONTH_TIME,A.SANC_EX,A.WEEK_TYPE,A.MEMO1
+                              FROM   EP_FLEX_WORK A
+                                    ,(SELECT ROWNUM NUM FROM DUAL CONNECT BY ROWNUM &lt; 32) X 
+                              WHERE  A.SANCTION = '3'
+                              AND    TO_DATE(A.APP_PERIOD_TO_DAY,'YYYY-MM-DD') - TO_DATE(A.APP_PERIOD_FR_DAY,'YYYY-MM-DD') + 1 >= X.NUM
+                              ) FLEX 
+                  ON FLEX.EP_NO = EAM.EP_NO AND FLEX.DATE2 = EAM.ATT_DATE AND FLEX.DAY2 NOT IN ('1','7')
+		WHERE 1=1
+		<if test="searchYear != null and searchYear != ''">
+			<![CDATA[ AND ATT_DATE LIKE #{searchYear} || '-' || #{searchMonth} || '%']]>
+		</if>
+		AND EAM.ATT_CODE in ('B2005')
+		AND EM.HOLD_OF_CODE NOT IN ('A1202')
+		AND EAM.EP_NO = #{erpNoEmp}
+			ORDER BY ATT_DATE DESC, EM.JOB_LEV ASC, EM.INC_DATE
+		) A
+)
+</select>
+
+<!-- 초과근무 테이블 -->	
+<select id="getSelectOverWork" parameterType="map" resultType="map">
+	SELECT * FROM EP_OT_WORK
+	WHERE 1=1
+		AND EP_NO = #{erpNoEmp}
+		<if test="searchYear != null and searchYear != ''">
+			<![CDATA[ AND APPLY_DATE LIKE #{searchYear} || '-' || #{searchMonth} || '%']]>
+		</if>
+		AND OT_TYPE_CODE in ('A1502', 'A1501', 'A1503', 'A1504')
+</select>
+
+<!-- 근태정보 월간집계 -->	
+<select id="getSelectDalmMonthList" parameterType="map" resultType="map">
+	SELECT * FROM(
+		SELECT 
+			A.*,
+			ROWNUM AS RNUM 
+              ,MONTH2||'-01' SRT_DATE
+              ,TO_CHAR(ADD_MONTHS(TO_DATE(MONTH2||'-01','YYYY-MM-DD'),1)-1,'YYYY-MM-DD') END_DATE
+		FROM(
+               SELECT A.EP_NO
+                     ,A.NAME_KOR
+                     ,SUBSTR(A.ATT_DATE,1,7) MONTH2
+                     ,NVL(SUM(TO_NUMBER(A.REAL_WORK_TIME)),0) ATT_TIME8
+                     ,SUM(DECODE(A.WEEK,'1',A.REAL_WORK_TIME,0)) ATT_TIME1
+                     ,SUM(DECODE(A.WEEK,'2',A.REAL_WORK_TIME,0)) ATT_TIME2
+                     ,SUM(DECODE(A.WEEK,'3',A.REAL_WORK_TIME,0)) ATT_TIME3
+                     ,SUM(DECODE(A.WEEK,'4',A.REAL_WORK_TIME,0)) ATT_TIME4
+                     ,SUM(DECODE(A.WEEK,'5',A.REAL_WORK_TIME,0)) ATT_TIME5
+               FROM   (
+               SELECT
+				 EAM.EP_NO EP_NO
+				,EAM.ATT_DATE ATT_DATE
+                   ,TO_CHAR(TO_DATE(EAM.ATT_DATE,'YYYY-MM-DD'),'W') WEEK 
+				,EAM.ATT_CODE
+				,EAM.ATT_SCH_CODE
+                   ,DECODE(EAM.ATT_CODE,NULL,NULL,'B2003',NULL
+                   		,ROUND(((TO_DATE(NVL(EAM.ATT_OUT_TIME,DECODE(FLEX.DATE2,NULL,REPLACE(EAM.ATT_DATE,'-','')||'180000',REPLACE(FLEX.DATE2,'-','')||REPLACE(FLEX.OUT_TM,':','')||'00')), 'YYYYMMDDHH24MISS')
+                                   -TO_DATE(NVL(EAM.ATT_IN_TIME ,DECODE(FLEX.DATE2,NULL,REPLACE(EAM.ATT_DATE,'-','')||'090000',REPLACE(FLEX.DATE2,'-','')||REPLACE(FLEX.IN_TM ,':','')||'00')), 'YYYYMMDDHH24MISS')
+                                 )*24),2)
+                            - (CASE WHEN SUBSTR(NVL(EAM.ATT_OUT_TIME,DECODE(FLEX.DATE2,NULL,REPLACE(EAM.ATT_DATE,'-','')||'1800',REPLACE(FLEX.DATE2,'-','')||REPLACE(FLEX.OUT_TM,':',''))),9,2) > '13' THEN 1 ELSE 0 END)
+                           ) AS REAL_WORK_TIME
+				,(SELECT DET_NAME FROM CD_COMMON_CODE WHERE TOT_CODE = EAM.ATT_CODE) AS ATT_CODE_NM
+				,(SELECT DET_NAME FROM CD_COMMON_CODE WHERE TOT_CODE = EAM.ATT_SCH_CODE) AS ATT_SCH_CODE_NM
+				,EM.EP_NAME_KOR NAME_KOR
+			FROM EP_ATT_MANAGE EAM
+			INNER JOIN EP_MASTER EM 
+			   ON EAM.EP_NO = EM.EP_NO
+			INNER JOIN CD_ORG_CODE OG ON OG.ORG_CODE = EAM.ORG_CODE
+               LEFT OUTER JOIN (
+                               select A.EP_NO
+                                     ,TO_CHAR((TO_DATE(A.APP_PERIOD_FR_DAY,'YYYY-MM-DD') + X.NUM -1),'YYYY-MM-DD') DATE2
+                                     ,TO_CHAR((TO_DATE(A.APP_PERIOD_FR_DAY,'YYYY-MM-DD') + X.NUM -1),'D') DAY2
+                                     ,DECODE(TO_CHAR((TO_DATE(A.APP_PERIOD_FR_DAY,'YYYY-MM-DD') + X.NUM -1),'D'),'2',W_TIME_MON_01,'3',W_TIME_TUE_01,'4',W_TIME_WED_01,'5',W_TIME_THU_01,'6',W_TIME_FRI_01) IN_TM
+                                     ,DECODE(TO_CHAR((TO_DATE(A.APP_PERIOD_FR_DAY,'YYYY-MM-DD') + X.NUM -1),'D'),'2',W_TIME_MON_02,'3',W_TIME_TUE_02,'4',W_TIME_WED_02,'5',W_TIME_THU_02,'6',W_TIME_FRI_02) OUT_TM
+                                     ,DECODE(TO_CHAR((TO_DATE(A.APP_PERIOD_FR_DAY,'YYYY-MM-DD') + X.NUM -1),'D'),'2',W_TIME_MON_98,'3',W_TIME_TUE_98,'4',W_TIME_WED_98,'5',W_TIME_THU_98,'6',W_TIME_FRI_98) MEAL_YN
+                                     ,DECODE(TO_CHAR((TO_DATE(A.APP_PERIOD_FR_DAY,'YYYY-MM-DD') + X.NUM -1),'D'),'2',W_TIME_MON_99,'3',W_TIME_TUE_99,'4',W_TIME_WED_99,'5',W_TIME_THU_99,'6',W_TIME_FRI_99) WORK_RM
+                                     ,A.WORK_TYPE_CODE,A.WOK_FORM_CODE,A.APP_MONTH_TIME,A.SANC_EX,A.WEEK_TYPE,A.SANCTION,A.MEMO1
+                               from   EP_FLEX_WORK A
+                                     ,(SELECT ROWNUM NUM FROM DUAL CONNECT BY ROWNUM &lt; 32) X 
+                               where  TO_DATE(A.APP_PERIOD_TO_DAY,'YYYY-MM-DD') - TO_DATE(A.APP_PERIOD_FR_DAY,'YYYY-MM-DD') + 1 >= X.NUM
+                               AND    A.SANCTION = '3'
+                               ) FLEX 
+                   ON FLEX.EP_NO = EAM.EP_NO AND FLEX.DATE2 = EAM.ATT_DATE AND FLEX.DAY2 NOT IN ('1','7')
+               WHERE 1=1
+			<if test="searchYear != null and searchYear != ''">
+				<![CDATA[ AND EAM.ATT_DATE LIKE #{searchYear} || '-' || #{searchMonth} || '%']]>
+			</if>
+			AND EAM.EP_NO = #{erpNoEmp}
+			AND EM.HOLD_OF_CODE NOT IN ('A1202')
+                     ) A
+               GROUP BY A.EP_NO
+                     ,A.NAME_KOR
+                     ,SUBSTR(A.ATT_DATE,1,7)
+				ORDER BY 4 DESC
+			) A
+	)
+</select>
+
+
+
+</mapper>

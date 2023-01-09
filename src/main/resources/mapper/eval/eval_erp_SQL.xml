@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="eval_erp">
+
+	<select id="evalStradeListSearch" parameterType="map" resultType="map">
+	/*evalStradeListSearch*/
+		SELECT 
+		TR_CD AS company_seq
+		, TR_NM AS title
+		, REG_NB AS biz_reg_no
+		, 'A' AS company_type
+		FROM DZICUBE.DBO.STRADE 
+		WHERE co_cd = '5000' 
+		AND USE_YN = 1
+		AND REG_NB IS NOT NULL
+		
+		<if test="search_title != ''">
+			AND TR_NM LIKE '%' + #{search_title} +'%'
+		</if>
+
+		<if test="search_biz_reg_no != ''">
+			AND REG_NB LIKE '%' + #{search_biz_reg_no} +'%'
+		</if>
+		
+	</select>
+
+	<select id="getErpUserInfo" parameterType="map" resultType="map">
+	/*getErpUserInfo*/
+		SELECT 
+		A.EMP_CD
+		, B.TR_CD 
+		, B.TR_NM
+		, A.RSRG_NO
+		, ISNULL(B.DIV_ADDR1,'') +' ' + ISNULL(B.ADDR2, '') AS ADDR
+		, ISNULL(B.CEO_NM,'') AS CEO_NM
+		, ISNULL(B.REG_NB, '') AS REG_NB
+		FROM SEMP A
+		JOIN STRADE B
+		ON  A.RSRG_NO = B.PPL_NB 
+		AND A.RSRG_NO = #{birth_date}
+		AND A.CO_CD = '5000'
+		AND B.CO_CD = '5000'
+		JOIN SBANK C
+		ON B.JIRO_CD = C.BANK_CD
+			
+	
+	
+	</select>
+
+
+</mapper>    

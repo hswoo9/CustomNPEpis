@@ -1,0 +1,856 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd" >
+<sqlMap namespace="FormManage">
+    
+    <typeAlias  alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+    <typeAlias  alias="formVO"  type="admin.form.vo.FormVO"/>
+    <typeAlias  alias="folderVO" type="admin.form.vo.FolderVO"/>
+    
+    <select id="FormManage.FormTreeList" resultClass="java.util.HashMap"  parameterClass="java.util.HashMap">
+	    /* FormManage.FormTreeList - mariadb */
+	    SELECT T.*  /* , LEVEL */
+	    FROM
+	    (
+			SELECT		LPAD('0',17,'0') AS CODE, LPAD('9',17,'9') AS UPPER_CODE, '서식' AS CODE_NM
+						, CONVERT(0, INT) AS ORD, 'A' AS CONTENTTYPE
+						, 'open' AS STATE, 'A' REL
+						, 'rootfolder' AS SPRITECSSCLASS
+						, '0' AS COMP_SEQ
+						, 'Y' AS Visible
+			FROM	DUAL
+			UNION	ALL		
+			SELECT		a. C_FIKEYCODE AS CODE, LPAD('0',17,'0') AS UPPER_CODE
+			            , neos.FN_GetLanguageName(#loginVO.langCode#, C_FINAME, C_FINAME_en, C_FINAME_jp, C_FINAME_cn) AS CODE_NM
+						, CONVERT(IFNULL(C_FIORD, 9999), INT)  AS ORD, 'F' AS CONTENTTYPE
+						, 'open' AS STATE, 'F' AS REL
+						, 'folder' AS SPRITECSSCLASS
+					    , C_FIORGCODE AS COMP_SEQ
+					    , C_FIVISIBLE AS Visible
+			FROM	neos.A_FOLDERINFO a
+			<isEqual property="loginVO.userSe" compareValue="USER">
+			INNER JOIN (SELECT C_FIKEYCODE FROM neos.A_FOLDERAUTH 
+						WHERE     (ORGGUBUN = 'g') 
+						       or (ORGGUBUN = 'c' AND orgSEQ = #loginVO.compSeq#) 
+						       or (ORGGUBUN = 'd' AND orgSEQ = #loginVO.orgnztId#)
+						GROUP BY C_FIKEYCODE
+			) b ON      a.C_FIKEYCODE = b.C_FIKEYCODE
+			</isEqual>
+			WHERE	1=1
+			AND		IFNULL(C_FIUSEFLAG, '000') <![CDATA[<> ]]>'999'
+			AND     IFNULL(C_FIUSEFLAG, 'Y') <![CDATA[<> ]]> 'N'
+			UNION	ALL
+			SELECT	a.C_TIKEYCODE AS CODE, COALESCE(PARENT,LPAD('0',17,'0')) AS UPPER_CODE
+			        , neos.FN_GETLANGUAGENAME(#loginVO.langCode#, C_TINAME, C_TINAME_EN, C_TINAME_JP, C_TINAME_CN ) AS CODE_NM
+					, CONVERT(IFNULL(a.C_ORD, 9999), INT)  AS ORD, TYPE AS CONTENTTYPE
+					, 'close' AS STATE, 'T' AS REL
+					, 'file'  AS SPRITECSSCLASS
+					, C_TIORGCODE AS COMP_SEQ
+					, C_TIVISIBLE AS Visible 
+			FROM	neos.A_TEMPLATEINFO a
+			<isEqual property="loginVO.userSe" compareValue="USER">
+			INNER JOIN (SELECT C_TIKEYCODE FROM neos.A_TEMPLATEAUTH 
+						WHERE     (ORGGUBUN = 'g' ) 
+						       or (ORGGUBUN = 'c' AND orgSEQ = #loginVO.compSeq#) 
+						       or (ORGGUBUN = 'd' AND orgSEQ = #loginVO.orgnztId#)
+						GROUP BY C_TIKEYCODE
+			) b ON      a.C_TIKEYCODE = b.C_TIKEYCODE
+			</isEqual>
+			INNER JOIN neos.A_FOLDERINFO c
+			ON      a.PARENT  = c.C_FIKEYCODE
+			AND     IFNULL(C_FIUSEFLAG, 'Y') <![CDATA[<> ]]> 'N'
+			AND		IFNULL(C_FIUSEFLAG, '000')  <![CDATA[<> ]]> '999' 			
+			WHERE	1=1
+			AND		C_CIKIND     <![CDATA[<]]> '920'
+			AND		IFNULL(C_TIUSEFLAG, '000')  <![CDATA[<> ]]> '999' 
+			AND     IFNULL(C_TIUSE, 'Y')     =  'Y'   
+	    )T
+	    WHERE	1=1
+		<isNotEqual property="loginVO.userSe" compareValue="MASTER">
+		AND     COMP_SEQ in ('0', #loginVO.compSeq#)
+		</isNotEqual>
+		<isNotEmpty property="tiVisible">
+		AND     Visible = #tiVisible#
+		</isNotEmpty>		
+		ORDER BY REL , LPAD (ORD, 10, 0) , LPAD (CODE, 10, 0)
+	</select>
+	
+	<select id="FormManage.getFormInfo" parameterClass="formVO" resultClass="java.util.HashMap">
+	    /* FormManage.getFormInfo - mariadb */
+	    SELECT	   C_TIKEYCODE 
+		         , C_TINAME
+		         , C_TINAME_EN
+		         , C_TINAME_JP
+		         , C_TINAME_CN
+		         , neos.FN_GETLANGUAGENAME(#loginVO.langCode#, C_TINAME, C_TINAME_EN, C_TINAME_JP, C_TINAME_CN ) TINAME
+		         , C_TIUSEORGCODE
+		         , C_TIORGCODE
+		         , C_TIUSERKEY
+		         , C_TIDATE
+		         , C_TIMEMO
+		         , C_CIKIND
+		         , neos.GET_CODE_DETAIL_Info('0', 'COM089', c_cikind, #loginVO.langCode#) AS C_CIKIND_NM
+		         , C_TIUSEFLAG
+		         , C_TITEMPLATEFLAGCODE
+		         , C_TIJUNKYULJAEFLAG
+		         , neos.GET_CODE_DETAIL_Info('0', 'COM079', C_TIJUNKYULJAEFLAG, #loginVO.langCode#) AS C_TIJUNKYULJAEFLAG_KO
+		         , C_TIHEADER
+		         , C_TIFOOTER
+		         , C_TILASTUSERKEY
+		         , DATE_FORMAT(C_TILASTDATE, '%Y-%m-%d')  C_TILASTDATE
+		         , C_TISYMBOL
+		         , (SELECT CONCAT(ORIGNL_FILE_NAME , '.' , b.file_extsn) FROM neos.t_co_atch_file a, neos.t_co_atch_file_detail b WHERE a.file_id = b.file_id AND a.use_yn = 'Y' AND b.use_yn = 'Y' AND a.file_id = C_TISYMBOL AND b.file_sn = '0') C_TISYMBOL_NM
+		         , C_TILOGO
+		         , (SELECT CONCAT(ORIGNL_FILE_NAME , '.' , b.file_extsn) FROM neos.t_co_atch_file a, neos.t_co_atch_file_detail b WHERE a.file_id = b.file_id AND a.use_yn = 'Y' AND b.use_yn = 'Y' AND a.file_id = C_TILOGO AND b.file_sn = '0') C_TILOGO_NM
+		         , C_TIFORM
+		         , (SELECT CONCAT(ORIGNL_FILE_NAME , '.' , b.file_extsn) FROM neos.t_co_atch_file a, neos.t_co_atch_file_detail b WHERE a.file_id = b.file_id AND a.use_yn = 'Y' AND b.use_yn = 'Y' AND a.file_id = C_TIFORM AND b.file_sn = '0') C_TIFORM_NM
+		         , C_TIFLAG
+		         , C_TILISTCODE
+		         , C_TISORTOPTION
+		         , RECEIVEDEPT
+		         , ( SELECT DEPT_NAME FROM neos.t_co_DEPT_MULTI WHERE DEPT_SEQ = T1.RECEIVEDEPT AND LANG_CODE = #loginVO.langCode#) AS RECEIVEDEPT_NM
+		         , CASE WHEN C_LNKCODE = 'LNK002' THEN  IFNULL(APPLY_API, C_TIREGISTPAGEURL) ELSE C_TIREGISTPAGEURL END AS C_TIREGISTPAGEURL
+<!-- 		         , C_TICHGPAGEURL -->
+		         , C_ORD
+		         , PARENT
+		         , TYPE
+		         , IFNULL(CHILDCODE, '') AS CHILDCODE
+		         , CHILDCODEDETAIL
+		         , C_SERVICENAME
+		         , C_TICHGPAGE
+		         , C_TIDETAILPAGE
+<!-- 		         , C_ISURLDIRECT -->
+		         , C_ISURLPOP AS C_ISURLPOP
+		         , C_ISURLWIDTH
+		         , C_ISURLHEIGHT
+		         , C_URLPARAM
+		         , C_ARCCOMNCODE
+		         , IFNULL(C_TIVISIBLE, 'Y') AS C_TIVISIBLE
+		         , C_LNKCODE
+		         , IFNULL(C_TIAPPROVER, '001') AS C_TIAPPROVER
+		         , C_TISECRETGRADE
+		         , IFNULL(C_TIFORMGB, '0') AS C_TIFORMGB
+		         , C_TIBODYFORM
+		         , C_TIUSE
+		         , CONCAT(fd.ORIGNL_FILE_NAME , '.' , fd.file_extsn) AS C_TIBODYFORM_NM
+		         , CASE WHEN C_LNKCODE = 'LNK002' THEN CASE WHEN IFNULL(B.detail_code_div,'') <![CDATA[<>]]> '' THEN B.detail_code_div ELSE T1.form_tp END ELSE '' END AS FORM_TP
+		         , CASE WHEN C_LNKCODE = 'LNK002' THEN FORM_D_TP ELSE '' END AS FORM_D_TP
+		         , IFNULL(C_TIFORMWIDTH, '700') AS C_TIFORMWIDTH          
+        FROM    neos.A_TEMPLATEINFO T1 LEFT OUTER JOIN neos.t_co_atch_file_detail fd ON T1.C_TIBODYFORM = fd.file_id
+        LEFT OUTER JOIN  neos.teag_out_process B ON T1.form_d_tp = B.out_process_id
+		WHERE	C_TIKEYCODE		= #c_tikeycode#
+	</select>	
+	
+	<!-- 양식 권한리스트  -->
+	<select id="FormManage.getFormAuthList" parameterClass="formVO" resultClass="egovMap"  >
+	    /* FormManage.getFormAuthList - mariadb */
+	    SELECT ORGSEQ AS ORG_SEQ 
+	         , ORGGUBUN AS ORG_GUBUN
+	         , neos.GET_CODE_DETAIL_Info('0', 'option0005', '1', #loginVO.langCode#) AS ORG_NM
+	         , '' AS selected
+	    FROM   neos.A_TEMPLATEAUTH a
+	    WHERE  ORGGUBUN = 'g'
+	    AND    a.C_TIKEYCODE		= #c_tikeycode#	    
+	    UNION ALL
+	    <!-- 회사  -->
+	    SELECT ORGSEQ AS ORG_SEQ 
+	         , ORGGUBUN AS ORG_GUBUN
+	         , neos.FN_GetMultiLang(#loginVO.langCode#, COMP_NAME_MULTI) AS ORG_NM
+	         , CONCAT(b.GROUP_SEQ , '|' , b.comp_seq , '|0|0|c') AS selected
+	    FROM   neos.A_TEMPLATEAUTH a
+	    INNER  JOIN v_org_chart b
+	    ON     a.orgseq = b.seq
+	    AND    a.ORGGUBUN = b.GBN_ORG
+	    INNER  JOIN v_t_co_comp_multi c
+	    ON     b.seq = c.comp_seq
+	    WHERE  ORGGUBUN = 'c'
+	    AND    C_TIKEYCODE		= #c_tikeycode#
+	    UNION ALL
+	    <!-- 부서 -->
+	    SELECT ORGSEQ AS ORG_SEQ 
+	         , ORGGUBUN AS ORG_GUBUN
+	         , neos.FN_GetMultiLang(#loginVO.langCode#, DEPT_NAME_MULTI) AS ORG_NM
+	         , CONCAT(b.GROUP_SEQ , '|' , b.comp_seq , '|' , b.DEPT_SEQ , '|0|d') AS selected
+	    FROM   neos.A_TEMPLATEAUTH a
+	    INNER  JOIN v_org_chart b
+	    ON     a.orgseq = b.seq
+	    AND    a.ORGGUBUN = b.GBN_ORG
+	    INNER  JOIN v_t_co_dept_multi c
+	    ON     b.seq = c.dept_seq
+	    WHERE  ORGGUBUN = 'd'
+	    AND    a.C_TIKEYCODE		= #c_tikeycode#
+	</select>
+		
+    <select id="FormManage.getFormReaderList" parameterClass="formVO" resultClass="egovMap"  >
+	    /* FormManage.getFormReaderList - mariadb */
+	    SELECT * FROM (
+		    <!-- 회사  -->
+		    SELECT neos.FN_GetMultiLang(#loginVO.langCode#, COMP_NAME_MULTI) AS ORG_NM
+		         , reader_seq AS selected
+		         , a.order_num
+		    FROM   neos.A_TEMPLATE_READER a
+		    INNER  JOIN v_org_chart b
+		    ON     a.group_seq = b.group_seq
+		    AND    a.comp_seq = b.comp_seq
+		    AND    a.GBN_ORG = b.GBN_ORG
+		    INNER  JOIN v_t_co_comp_multi c
+		    ON     b.comp_seq = c.comp_seq
+		    WHERE  a.gbn_org = 'c'
+		    AND    C_TIKEYCODE		= #c_tikeycode#
+		    UNION ALL
+		    <!-- 부서 -->
+		    SELECT 
+		           neos.FN_GetMultiLang(#loginVO.langCode#, DEPT_NAME_MULTI) AS ORG_NM
+		         , reader_seq AS selected
+		         , a.order_num
+		    FROM   neos.A_TEMPLATE_READER a
+		    INNER  JOIN v_org_chart b
+		    ON     a.group_seq = b.group_seq
+		    AND    a.comp_seq = b.comp_seq
+		    AND    a.dept_seq = b.dept_seq
+		    AND    a.GBN_ORG = b.GBN_ORG
+		    INNER  JOIN v_t_co_dept_multi c
+		    ON     b.dept_seq = c.dept_seq
+		    WHERE  a.gbn_org = 'd'
+		    AND    a.C_TIKEYCODE		= #c_tikeycode#
+		    UNION ALL
+		    <!-- 사원 -->
+		    SELECT 
+		           neos.FN_GetMultiLang(#loginVO.langCode#, EMP_NAME_MULTI) AS ORG_NM
+		         , reader_seq AS selected
+		         , a.order_num
+		    FROM   neos.A_TEMPLATE_READER a
+		    INNER  JOIN v_user_info b
+		    ON     a.group_seq = b.group_seq
+		    AND    a.comp_seq = b.comp_seq
+		    AND    a.dept_seq = b.dept_seq
+		    AND    a.emp_seq = b.emp_seq
+		    WHERE  a.gbn_org = 'u'
+		    AND    a.C_TIKEYCODE		= #c_tikeycode#
+	    ) a
+	    ORDER BY LPAD (a.order_num, 10, 0)	    
+    </select>
+	
+	<!-- 폴더 권한리스트  -->
+	<select id="FormManage.getFolderAuthList" parameterClass="folderVO" resultClass="egovMap"  >
+	    /* FormManage.getFolderAuthList - mariadb */
+	    SELECT ORGSEQ AS ORG_SEQ 
+	         , ORGGUBUN AS ORG_GUBUN
+	         , neos.GET_CODE_DETAIL_Info('0', 'option0005', '1', #loginVO.langCode#) AS ORG_NM
+	         , '' AS selected
+	    FROM   neos.A_FOLDERAUTH a
+	    WHERE  ORGGUBUN = 'g'
+	    AND    C_FIKEYCODE		= #c_fikeycode#
+	    UNION ALL
+	    <!-- 회사  -->
+	    SELECT ORGSEQ AS ORG_SEQ 
+	         , ORGGUBUN AS ORG_GUBUN
+	         , neos.FN_GetMultiLang(#loginVO.langCode#, COMP_NAME_MULTI) AS ORG_NM
+	         , CONCAT(b.GROUP_SEQ , '|' , b.comp_seq , '|0|0|c') AS selected
+	    FROM   neos.A_FOLDERAUTH a
+	    INNER  JOIN v_org_chart b
+	    ON     a.orgseq = b.seq
+	    AND    a.ORGGUBUN = b.GBN_ORG
+	    INNER  JOIN v_t_co_comp_multi c
+	    ON     b.seq = c.comp_seq
+	    WHERE  ORGGUBUN = 'c'
+	    AND    C_FIKEYCODE		= #c_fikeycode#
+	    UNION ALL
+	    <!-- 부서 -->
+	    SELECT ORGSEQ AS ORG_SEQ 
+	         , ORGGUBUN AS ORG_GUBUN
+	         , neos.FN_GetMultiLang(#loginVO.langCode#,DEPT_NAME_MULTI) AS ORG_NM
+	         , CONCAT(b.GROUP_SEQ , '|' , b.comp_seq , '|' , b.DEPT_SEQ , '|0|d') AS selected
+	    FROM   neos.A_FOLDERAUTH a
+	    INNER  JOIN v_org_chart b
+	    ON     a.orgseq = b.seq
+	    AND    a.ORGGUBUN = b.GBN_ORG
+	    INNER  JOIN v_t_co_dept_multi c
+	    ON     b.seq = c.dept_seq
+	    WHERE  ORGGUBUN = 'd'
+	    AND    C_FIKEYCODE		= #c_fikeycode#
+	</select>
+			
+	<select id="FormManage.getFolderList" resultClass="java.util.HashMap"  parameterClass="java.util.HashMap">
+	    /* FormManage.getFolderList - mariadb */
+	    SELECT	C_FIKEYCODE AS C_FIKEYCODE
+	         ,  neos.FN_GetLanguageName(#loginVO.langCode#, C_FINAME, C_FINAME_en, C_FINAME_jp, C_FINAME_cn) C_FINAME
+	         ,  CASE WHEN IFNULL(C_FIORGCODE, '0') = '0' 
+	                THEN neos.GET_CODE_DETAIL_Info('0', 'option0005', '1', #loginVO.langCode#) 
+	                ELSE (SELECT neos.FN_GetMultiLang(#loginVO.langCode#, COMP_NAME_MULTI) FROM v_t_co_comp_multi WHERE comp_Seq = C_FIORGCODE) END AS COMP_NAME
+	         ,  neos.GET_CODE_DETAIL_Info('0','COM521', IFNULL(C_FIUSEFLAG, 'Y'),  #loginVO.langCode#) AS C_FIUSEFLAG
+	         ,  C_FIVISIBLE AS C_FIVISIBLE
+	    FROM	neos.A_FOLDERINFO 
+	    WHERE	IFNULL(C_FIUSEFLAG, '000')	<![CDATA[	<> ]]>'999'
+	    <isNotEmpty property="c_tiorgcode">
+	    AND     C_FIORGCODE IN ('0',  #c_tiorgcode#)
+	    </isNotEmpty>
+	    <isEmpty property="c_tiorgcode">
+	        <isNotEmpty property="compSeq">
+		    AND     C_FIORGCODE = #compSeq#
+		    </isNotEmpty>
+		    <isEmpty property="compSeq">
+		      <isNotEqual property="loginVO.userSe" compareValue="MASTER">
+		    AND     C_FIORGCODE IN ('0',  #loginVO.compSeq#)
+		      </isNotEqual>	    
+		    </isEmpty>	    
+	    </isEmpty>
+	    <isNotEmpty property="txtSearch">
+	    AND     C_FINAME like CONCAT('%', #txtSearch#, '%')
+	    </isNotEmpty>	    
+	    <isNotEmpty property="fiVisible">
+	    AND     IFNULL(C_FIVISIBLE, 'Y') = #fiVisible#
+	    </isNotEmpty>
+	    <isNotEmpty property="useYn">
+	    AND     IFNULL(C_FIUSEFLAG, 'Y') = #useYn#
+	    </isNotEmpty>	    
+	    ORDER BY LPAD (IFNULL(C_FIORD, '9999'), 10, 0) ,  LPAD (C_FIKEYCODE, 10, 0)
+	</select>	
+	
+	<update id="FormManage.deleteForm" parameterClass="formVO">
+	    /* FormManage.deleteForm - mariaDb */
+		UPDATE neos.A_TEMPLATEINFO
+		SET    C_TIUSEFLAG = '999'
+	         , C_TILASTDATE = SYSDATE()		
+		WHERE  C_TIKEYCODE = #c_tikeycode#
+	</update>
+
+	<select id="FormManage.getFormKey" resultClass="String">
+	    /* FormManage.getFormKey - mariaDB */
+        SELECT nextval('eaFormKey') as c_fikeycode from dual
+    </select>	
+    
+    <!-- 양식 등록  -->
+	<insert id="FormManage.insertForm" parameterClass="java.util.HashMap">
+        /* FormManage.insertForm - mariaDb */
+        INSERT INTO neos.A_TEMPLATEINFO
+        (
+		    C_TIKEYCODE, C_TINAME, C_TINAME_EN, C_TINAME_JP, C_TINAME_CN, C_TIUSEORGCODE, C_TIORGCODE, C_TIUSERKEY,
+		    C_TIMEMO, C_CIKIND, C_TIUSEFLAG, C_TIJUNKYULJAEFLAG,
+		    C_TIHEADER, C_TIFOOTER, C_TILASTUSERKEY, C_TILASTDATE,
+		    C_TISYMBOL, C_TILOGO, C_TIFORM, C_TIFLAG, C_TILISTCODE, C_TISORTOPTION, RECEIVEDEPT,
+		    TYPE, PARENT, C_ORD, CHILDCODE, CHILDCODEDETAIL, 
+		    C_ISURLWIDTH, C_ISURLHEIGHT,<!--  C_ISURLDIRECT, --> 
+		    C_ISURLPOP, C_TIREGISTPAGEURL, <!-- C_TICHGPAGEURL, --> 
+		    C_SERVICENAME, C_TICHGPAGE, <!-- C_TIDETAILPAGE, -->
+		    C_URLPARAM, C_TIVISIBLE, C_LNKCODE, C_TIAPPROVER, C_TIFORMGB, C_TIBODYFORM, C_TIUSE, form_tp, form_d_tp, C_TIFORMWIDTH 
+        )
+        VALUES
+        (
+		    #c_tikeycode#, #c_tiname#, #c_tiname_en#, #c_tiname_jp#, #c_tiname_cn#, #c_tiuseorgcode#, #c_tiorgcode#, #c_tiuserkey#,
+		    #c_timemo#, COALESCE(#c_cikind#, '0'), '000', '0', 
+		    #c_tiheader#, #c_tifooter#, #loginVO.uniqId#, SYSDATE(),
+		    #c_tisymbol#, #c_tilogo#, #c_tiform#, 
+		    #c_tiflag#, #c_tilistcode#, #c_tisortoption#, #receivedept#, 
+		    'T', #parent#,  #c_ord#, #childcode#, #childcodedetail#, 
+		    #c_isurlwidth#, #c_isurlheight#, <!-- #c_isurldirect#,  -->
+		    #c_isurlpop#, #c_tiregistpageurl#, <!-- #c_tichgpageurl#, --> 
+		    #c_servicename#, #c_tichgpage#, <!-- #c_tidetailpage#, -->
+		    #c_urlparam#, #c_tivisible#, #c_lnkcode#, #c_tiapprover#, #c_tiformgb#, #c_tibodyform#, #c_tiuse#, #form_tp#, #form_d_tp#, #c_tiformwidth# 
+        )
+	</insert>
+	
+	<!-- 양식 수정 -->
+	<update id="FormManage.updateForm" parameterClass="java.util.HashMap">
+        /* FormManage.updateForm - mariadb */
+        UPDATE neos.A_TEMPLATEINFO
+        SET    C_TIORGCODE       = #c_tiorgcode#
+             , C_TINAME          = #c_tiname#
+             , C_TINAME_EN       = #c_tiname_en#
+             , C_TINAME_JP       = #c_tiname_jp#
+             , C_TINAME_CN       = #c_tiname_cn#        
+             , C_TILASTUSERKEY   = #loginVO.uniqId#
+             , C_TIMEMO          = #c_timemo#
+             , C_CIKIND          = #c_cikind#
+             , C_TIHEADER        = #c_tiheader#
+             , C_TIFOOTER        = #c_tifooter#
+             , C_TILASTDATE      = SYSDATE()
+             , C_TISYMBOL        = #c_tisymbol#
+             , C_TILOGO          = #c_tilogo#
+             , C_TIBODYFORM      = #c_tibodyform#
+             <isNotEmpty property="c_tiform">
+             , C_TIFORM          = #c_tiform#
+             </isNotEmpty>  
+             , RECEIVEDEPT       = #receivedept#
+<!--              , RECEIVEDEPT_KO = #receivedept_ko# -->
+             , PARENT            = #parent#
+             , CHILDCODE         = #childcode#
+             , CHILDCODEDETAIL   = #childcodedetail#
+             , C_ORD             = #c_ord#
+             , C_ISURLWIDTH      = #c_isurlwidth#
+             , C_ISURLHEIGHT     = #c_isurlheight#
+<!--              , C_ISURLDIRECT = #c_isurldirect# -->
+             , C_ISURLPOP        = #c_isurlpop#
+             , C_TIREGISTPAGEURL = #c_tiregistpageurl#
+<!--              , C_TICHGPAGEURL = #c_tichgpageurl# -->
+             , C_SERVICENAME     = #c_servicename#
+             , C_TICHGPAGE       = #c_tichgpage#
+<!--              , C_TIDETAILPAGE = #c_tidetailpage# -->
+             , C_TIVISIBLE       = #c_tivisible#
+             , C_URLPARAM        = #c_urlparam#
+             , C_LNKCODE         = #c_lnkcode#
+             , C_TIAPPROVER      = #c_tiapprover#
+             , C_TIFORMGB        = #c_tiformgb#
+             , C_TIUSE           = #c_tiuse#
+             , form_tp           = #form_tp#
+             , form_d_tp         = #form_d_tp#
+             , C_TIFORMWIDTH     = #c_tiformwidth#
+        WHERE C_TIKEYCODE        = #c_tikeycode#
+	</update> 
+	
+	<delete id="FormManage.deleteFormAuth" parameterClass="java.util.HashMap">
+	    /* FormManage.deleteFormAuth - mariadb */
+	    DELETE FROM neos.A_TEMPLATEAUTH
+	    WHERE C_TIKEYCODE  = #c_tikeycode# 
+	</delete>	
+	
+	<insert id="FormManage.insertFormAuth" parameterClass="java.util.HashMap">		
+		/* FormManage.insertFormAuth - mariadb */
+	   INSERT INTO neos.A_TEMPLATEAUTH  
+		(C_TIKEYCODE, ORGGUBUN, ORGSEQ, CREATE_SEQ, CREATE_DATE) 
+		VALUES
+	   <dynamic>
+	   	   <iterate property="orgArry" conjunction="," >
+		(#c_tikeycode#, #orgArry[].orgGubun#, #orgArry[].orgSeq#, #loginVO.uniqId#, SYSDATE())
+	       </iterate>
+	   </dynamic>
+	</insert>		
+	
+	
+    <!-- 폴더정보 가져오기 -->
+	<select id="FormManage.getFolderInfo" parameterClass="folderVO" resultClass="java.util.HashMap"  >
+	    /* FormManage.getForderInfo - mariadb */
+	    SELECT	C_FIKEYCODE 
+	         ,  C_FINAME
+	         ,  C_FINAME_EN
+	         ,  C_FINAME_JP
+	         ,  C_FINAME_CN
+	         ,  C_FIMEMO
+	         ,  C_FIORD
+	         ,  IFNULL(C_FIVISIBLE, 'Y') AS C_FIVISIBLE
+	         ,  C_FIORGCODE
+	         ,  IFNULL(C_FIUSEFLAG, 'Y') AS C_FIUSEFLAG 
+	    FROM	neos.A_FOLDERINFO T1
+	    WHERE	C_FIKEYCODE		= #c_fikeycode#
+	</select>		
+	
+	<!-- 폴더 등록  -->
+	<insert id="FormManage.insertFolder" parameterClass="hashMap">
+        /* FormManage.insertForder - mariadb */
+        INSERT INTO neos.A_FOLDERINFO
+        (
+		    C_FIKEYCODE, C_FINAME, C_FINAME_EN, C_FINAME_JP, C_FINAME_CN, C_FIMEMO, C_FIORD, C_FIVISIBLE,
+		    C_FIUSEFLAG, C_FIORGCODE, CREATE_SEQ, CREATE_DATE
+        )
+        VALUES
+        (
+		    #c_fikeycode#, #c_finame#, #c_finame_en#, #c_finame_jp#, #c_finame_cn#, #c_fimemo#, #c_fiord#, #c_fivisible#,
+		    #c_fiuseflag#, #c_fiorgcode#, #loginVO.uniqId#, sysdate()
+        )
+	</insert>
+	
+    <!-- 폴더 수정 -->
+	<update id="FormManage.updateFolder" parameterClass="hashMap">
+        /* FormManage.updateForder - mariadb */
+        UPDATE neos.A_FOLDERINFO
+        SET    C_FIORGCODE    = #c_fiorgcode#
+             , C_FINAME       = #c_finame#
+             , C_FINAME_EN    = #c_finame_en#
+             , C_FINAME_JP    = #c_finame_jp#
+             , C_FINAME_CN    = #c_finame_cn#
+             , C_FIMEMO       = #c_fimemo#
+             , C_FIORD        = #c_fiord#
+             , C_FIVISIBLE    = #c_fivisible#
+             , C_FIUSEFLAG    = #c_fiuseflag#
+             , MODIFY_SEQ     = #loginVO.uniqId#
+             , MODIFY_DATE    = sysdate()
+        WHERE C_FIKEYCODE     = #c_fikeycode#
+	</update>
+	
+	
+	<delete id="FormManage.deleteFolderAuth" parameterClass="hashMap">
+	    /* FormManage.deleteFolderAuth - mariadb */
+	    DELETE FROM neos.A_FOLDERAUTH
+	    WHERE C_FIKEYCODE  = #c_fikeycode# 
+	</delete>	
+	
+	<insert id="FormManage.insertFolderAuth" parameterClass="hashMap">		
+		/* FormManage.insertFolderAuth - mariadb */
+	   INSERT INTO neos.A_FOLDERAUTH  
+		(C_FIKEYCODE, ORGGUBUN, ORGSEQ, CREATE_SEQ, CREATE_DATE) 
+		VALUES
+	   <dynamic>
+	   	   <iterate property="orgArry" conjunction="," >
+		(#c_fikeycode#, #orgArry[].orgGubun#, #orgArry[].orgSeq#, #loginVO.uniqId#, SYSDATE())
+	       </iterate>
+	   </dynamic>	   
+	</insert>		
+	
+	<select id="FormManage.getChildFolderCnt" parameterClass="folderVO" resultClass="java.lang.Integer">
+	    /* FormManage.getChildFolderCnt - mariadb */
+	    SELECT COUNT(*) 
+	    FROM   neos.A_TEMPLATEINFO 
+	    WHERE  PARENT = #c_fikeycode#
+	    AND    IFNULL(C_TIUSEFLAG , '000') <![CDATA[<> ]]>'999'
+	</select>
+	
+	<select id="FormManage.getDraftDocCnt" parameterClass="formVO" resultClass="java.lang.Integer">
+	    /* FormManage.getDraftDocCnt - mariaDB */
+	    SELECT COUNT(*)
+	    FROM   neos.A_DOCINFO di, neos.A_draftinfo df, neos.A_recordinfo ri 
+	    WHERE  di.c_dikeycode = df.c_dikeycode
+	    AND    di.c_dikeycode = ri.c_dikeycode
+	    AND    C_TIKEYCODE    = #c_tikeycode#
+	    AND    ((IFNULL(c_distatus, '009') <![CDATA[<> ]]> 'd' AND IFNULL(c_ridocnum, '') = '') or c_ridocnum > ' ')
+	</select>
+		
+	<update id="FormManage.deleteFolder" parameterClass="folderVO">
+	/* FormManage.deleteFolder - oracle */
+	<![CDATA[
+		UPDATE neos.A_FOLDERINFO
+		SET    C_FIUSEFLAG = '999'
+		     , MODIFY_SEQ  = #loginVO.uniqId#
+	         , MODIFY_DATE = SYSDATE()		
+		WHERE  C_FIKEYCODE = #c_fikeycode#
+	]]>
+	</update>	
+	
+	<select id="FormManage.getTemplateKey" resultClass="String"  parameterClass="java.util.HashMap">
+	    /* FormManage.getTemplateKey - mariadb */
+		SELECT C_TIKEYCODE 
+		  FROM neos.A_TEMPLATEINFO 
+		  	<isNotEmpty property="tiUseOrgCode">
+			INNER JOIN (SELECT C_TIKEYCODE FROM neos.A_TEMPLATEAUTH 
+						WHERE     (ORGGUBUN = 'g' ) 
+						       or (ORGGUBUN = 'c' AND orgSEQ = #tiUseOrgCode#) 
+						       or (ORGGUBUN = 'd' AND orgSEQ = #tiUseOrgCode#)
+						GROUP BY C_TIKEYCODE
+			) b ON      a.C_TIKEYCODE = b.C_TIKEYCODE
+			</isNotEmpty>
+		 WHERE CHILDCODE = #childCode# 
+		   AND CHILDCODEDETAIL = #childCodeDetail# 
+<!-- 		  <isNotEmpty property="#tiUseOrgCode#"> -->
+<!-- 		   AND C_TIUSEORGCODE = #tiUseOrgCode#  -->
+<!-- 		  </isNotEmpty> -->
+		   AND TYPE  = 'T' 
+		   AND IFNULL(C_TIUSEFLAG, '000')  <![CDATA[<> ]]> '999'   
+		   LIMIT 1 		   
+	</select>	
+	
+	<!-- 외부연동 양식 여부확인 - 결재프로세스 proc_id 가져오기 -->
+	<select id="FormManage.getOutProcessDiv" parameterClass="hashMap" resultClass="String">
+	
+		<isEqual property="form_tp" compareValue="ea0000">
+			SELECT 'Y' AS OutProcessYN
+		</isEqual>
+		
+		<isNotEqual property="form_tp" compareValue="ea0000">
+			SELECT CASE WHEN out_process_count > 0 THEN 'Y' ELSE 'N' END AS OutProcessYN
+			FROM(
+				SELECT COUNT(*) AS out_process_count
+				FROM neos.teag_out_process
+				WHERE detail_code_div = #form_tp#
+			)OUTPROCESS
+		</isNotEqual>
+	
+	</select>
+	
+	<!-- 양식구분에 대한  양식상세구분 리스트 불러오기 -->
+	<select id="FormManage.getDetailCodeList" parameterClass="hashMap" resultClass="hashMap">
+
+	    SELECT 	detail_name AS CODE_NM , detail_code AS CODE 
+		FROM 	neos.t_co_code_detail_multi 
+		WHERE 	CODE = #form_tp# AND lang_code = #lang_code# AND use_yn ='Y'
+		
+	</select>
+	
+			<!-- 외부시스템 연동 url 불러오기 -->
+	<select id="FormManage.getOutProcessInterlock" parameterClass="hashMap" resultClass="hashMap">
+
+	    SELECT IFNULL(apply_api,'') AS apply_api 
+	         , IFNULL(detail_code_div,'') AS detail_code_div
+	         , out_process_id
+	    FROM 	neos.teag_out_process 
+	    WHERE 	out_process_id = #form_d_tp#
+		
+	</select>
+	
+	<delete id="FormManage.deleteConfigSet" parameterClass="hashMap">
+		
+	  DELETE 
+	    FROM neos.TITG_ITEMSET
+	   WHERE ITEM_GB = #item_gb#
+	     AND ITEM_D_GB = #item_d_gb#
+	
+	</delete>
+	
+	<select id="FormManage.GetFormTreeViewJT" parameterClass="HashMap" resultClass="HashMap">
+	    /* FormManage.GetFormTreeViewJT - mariaDB */
+		SELECT FORM_ID AS 'id', 
+		       UPPER_FORM_ID AS 'upper_id', 
+		       FORM_NM AS 'text', 
+		       SORT_ORDER, 
+		       STATE, 
+		       SPRITECSSCLASS, 
+		       EXPANDED, 
+		       CO_ID AS 'comp_seq',
+		       CASE WHEN UPPER_FORM_ID = '' THEN `FORM_ID`
+		       		WHEN UPPER_FORM_ID = '0' THEN (concat(`UPPER_FORM_ID`,'|',`FORM_ID`))
+		      		ELSE (concat('0','|',`UPPER_FORM_ID`,'|',`FORM_ID`))
+		      		END 'path',
+		       CASE WHEN UPPER_FORM_ID = '' THEN ''
+		       		WHEN UPPER_FORM_ID = '0' THEN (concat(`UPPER_FORM_ID`))
+		      		ELSE (concat('0','|',`UPPER_FORM_ID`))
+		      		END 'parent_path',
+  		       IF(CHILD_CNT='0','N','Y') AS CHILD_YN
+  		       , NODE_TYPE
+  		       , orderby
+	    FROM   (
+	            SELECT '0'          AS FORM_ID, 
+		               ''           AS UPPER_FORM_ID, 
+		               '전체'     AS FORM_NM, 
+		               '0'          AS SORT_ORDER, 
+		               'OPEN'       AS STATE, 
+		               'ROOTFOLDER' AS SPRITECSSCLASS, 
+		               'TRUE'       AS EXPANDED, 
+		               ''           AS CO_ID,
+		               '' 			AS CHILD_CNT 
+		               , 'R' NODE_TYPE
+		                , 0 orderby
+		        FROM   DUAL 
+		        UNION 
+		        SELECT	  CONCAT(C_FIKEYCODE, 'U') AS FORM_ID
+		                , 0                           AS UPPER_FORM_ID
+		                , neos.FN_GetLanguageName(#loginVO.langCode#, C_FINAME, C_FINAME_en, C_FINAME_jp, C_FINAME_cn) AS FORM_NM
+						, CONVERT(IFNULL(C_FIORD, 9999), INT)  AS SORT_ORDER
+						, 'OPEN'                      AS STATE
+						, 'FOLDER'                    AS SPRITECSSCLASS
+						, 'TRUE'                      AS EXPANDED
+					    , C_FIORGCODE AS CO_ID
+					    , (SELECT CONCAT(COUNT(*),'') FROM neos.A_TEMPLATEINFO A WHERE A.PARENT = F.C_FIKEYCODE AND IFNULL(A.C_TIORGCODE, '0') IN ('0' , #compSeq#)) AS CHILD_CNT
+					    , 'F' NODE_TYPE
+					    , 1 orderby
+		        FROM	neos.A_FOLDERINFO F
+		        WHERE	1=1
+		        AND     IFNULL(C_FIUSEFLAG, '000') <![CDATA[<> ]]>'999'
+		        AND     IFNULL(C_FIUSEFLAG, 'Y') <![CDATA[<> ]]> 'N' 
+			    AND     IFNULL(C_FIORGCODE, '0') in ( '0', #compSeq#)
+		       
+		        UNION 
+		        
+		        SELECT	  C_TIKEYCODE AS CODE
+		                , CONCAT(PARENT, 'U') AS UPPER_FORM_ID
+			            , neos.FN_GETLANGUAGENAME(#loginVO.langCode#, C_TINAME, C_TINAME_EN, C_TINAME_JP, C_TINAME_CN ) AS FORM_NM
+					    , CONVERT(IFNULL(a.C_ORD, 9999), INT)  AS SORT_ORDER
+					    , 'CLOSE' AS STATE
+					    , 'FILE' AS SPRITECSSCLASS
+					    , 'FALSE' AS EXPANDED
+					    , C_TIORGCODE AS CO_ID
+					    , '' AS CHILD_CNT
+					    , 'T' NODE_TYPE
+					    , 2 orderby
+		        FROM	neos.A_TEMPLATEINFO a
+		        INNER JOIN neos.A_FOLDERINFO c
+		        ON      a.PARENT  = c.C_FIKEYCODE
+		        AND     IFNULL(C_FIUSEFLAG, 'Y') <![CDATA[<> ]]> 'N'
+		        AND     IFNULL(C_FIUSEFLAG, '000')  <![CDATA[<> ]]> '999' 
+		        WHERE	1=1
+		        AND     C_CIKIND     <![CDATA[<]]> '920'
+		        AND     IFNULL(C_TIUSEFLAG, '000')  <![CDATA[<> ]]> '999'
+		        AND     IFNULL(C_TIUSE, 'Y') = 'Y'
+		        AND     IFNULL(C_TIORGCODE, '0') in ( '0', #compSeq#)
+			) A 
+	    ORDER  BY orderby, LPAD(SORT_ORDER, 10, 0), LPAD(FORM_ID, 10, 0)
+	</select>
+	
+	<select id="FormManage.getFormList" resultClass="java.util.HashMap"  parameterClass="java.util.HashMap">
+	    /* FormManage.getFormList - mariadb */
+	    SELECT	C_TIKEYCODE AS C_TIKEYCODE
+	         ,  neos.FN_GetLanguageName(#loginVO.langCode#, C_FINAME, C_FINAME_en, C_FINAME_jp, C_FINAME_cn) C_FINAME
+	         ,  neos.FN_GetLanguageName(#loginVO.langCode#, C_TINAME, C_tINAME_en, C_TINAME_jp, C_TINAME_cn) C_TINAME
+	         ,  CASE WHEN IFNULL(C_TIORGCODE, '0') = '0' 
+	                THEN neos.GET_CODE_DETAIL_Info('0', 'option0005', '1', #loginVO.langCode#) 
+	                ELSE (SELECT neos.FN_GetMultiLang(#loginVO.langCode#, COMP_NAME_MULTI) FROM v_t_co_comp_multi WHERE comp_Seq = C_TIORGCODE) END AS COMP_NAME
+	         ,  neos.GET_CODE_DETAIL_Info('0','COM521', IFNULL(C_TIUSE, 'Y'),  #loginVO.langCode#) AS C_TIUSE
+	         ,  C_TIVISIBLE AS C_TIVISIBLE
+	    FROM	neos.A_TEMPLATEINFO T
+	    INNER JOIN neos.A_FOLDERINFO F
+	    ON    F.C_FIKEYCODE = PARENT
+	    WHERE IFNULL(C_tIUSEFLAG, '000')	<![CDATA[	<> ]]>'999'
+	    AND   IFNULL(C_FIUSEFLAG, 'Y')	= 'Y'
+	    <isNotEmpty property="compSeq">
+	    AND     C_TIORGCODE = #compSeq#
+	    </isNotEmpty>
+	    <isEmpty property="compSeq">
+	      <isNotEqual property="loginVO.userSe" compareValue="MASTER">
+	      AND     C_TIORGCODE IN ('0',  #loginVO.compSeq#)
+	      </isNotEqual>	    
+	    </isEmpty>
+	    <isNotEmpty property="txtSearch">
+	    AND     C_TINAME like CONCAT('%', #txtSearch#, '%')
+	    </isNotEmpty>	    
+	    <isNotEmpty property="tiVisible">
+	    AND     IFNULL(C_TIVISIBLE, 'Y') = #tiVisible#
+	    </isNotEmpty>
+	    <isNotEmpty property="useYn">
+	    AND     IFNULL(C_TIUSE, 'Y') = #useYn#
+	    </isNotEmpty>	    
+	    ORDER BY LPAD (IFNULL(C_FIORD, '9999'), 10, 0) ,  LPAD (C_FIKEYCODE, 10, 0) , LPAD (IFNULL(C_ORD, '9999'), 10, 0), LPAD (C_TIKEYCODE, 10, 0)
+	</select>
+
+	<insert id="FormManage.insertFormReader" parameterClass="java.util.HashMap">		
+		/* FormManage.insertFormReader - mariadb */
+	   INSERT INTO neos.A_TEMPLATE_READER  
+		(C_TIKEYCODE, reader_seq, gbn_org, group_seq, comp_seq, dept_seq, emp_seq, edit_yn, order_num, CREATE_SEQ, CREATE_DATE) 
+		VALUES
+	   <dynamic>
+	   	   <iterate property="readerlist" conjunction="," >
+		(   #c_tikeycode#
+		  , #readerlist[].readerSeq#
+		  , #readerlist[].gbnOrg#, #readerlist[].groupSeq#, #readerlist[].compSeq#, #readerlist[].deptSeq#, #readerlist[].empSeq#
+		  , #readerlist[].editYn#, #readerlist[].orderNum#, #loginVO.uniqId#, SYSDATE()
+		 )
+	       </iterate>
+	   </dynamic>
+	</insert>
+	
+	<delete id="FormManage.deleteFormReader" parameterClass="java.util.HashMap">		
+		/* FormManage.deleteFormReader - mariadb */
+	    DELETE FROM neos.A_TEMPLATE_READER
+	    WHERE C_TIKEYCODE = #c_tikeycode#
+	</delete>
+	
+	<select id="FormManage.getDraftReaderList" parameterClass="java.util.HashMap" resultClass="egovMap"  >
+	    /* FormManage.getDraftReaderList - mariadb */
+	    SELECT t.group_seq
+	         , t.comp_seq
+	         , t.dept_seq
+	         , t.emp_seq
+	         , 'u' AS content_type
+	         , neos.FN_GetMultiLang(#langCode#, EMP_NAME_MULTI) AS emp_name
+	         , get_emp_duty_position_name(v.GROUP_SEQ, v.COMP_SEQ, v.DEPT_DUTY_CODE,'DUTY', #langCode#) AS DUTY_NAME
+	         , get_emp_duty_position_name(v.GROUP_SEQ, v.COMP_SEQ, v.DEPT_POSITION_CODE,'DUTY', #langCode#) AS POSITION_NAME
+	         , CONCAT(t.group_seq, '|', t.comp_seq , '|', t.dept_seq , '|' , t.emp_seq , '|', 'u') AS selected_Item
+	    FROM (
+<!-- 	         사원  -->
+	         SELECT group_seq, comp_Seq, dept_seq, emp_Seq
+	         FROM neos.A_TEMPLATE_READER t
+	         WHERE gbn_org = 'u'
+	         AND C_TIKEYCODE = #c_tikeycode#
+	         UNiON 
+	         SELECT group_seq, comp_Seq, dept_seq, emp_Seq FROM neos.t_co_emp_dept
+	         WHERE dept_seq IN (
+	             SELECT dept_seq FROM v_org_chart A
+	             INNER JOIN  (
+	                 SELECT path
+	                 FROM neos.A_TEMPLATE_READER t
+	                 INNER JOIN v_org_chart v
+	                 ON ((t.gbn_org = 'c' AND t.gbn_org =  v.gbn_org AND t.comp_seq = v.comp_Seq) 
+	                       OR (t.gbn_org = 'b' AND t.gbn_org =  v.gbn_org AND t.comp_seq = v.comp_Seq AND t.biz_seq = v.biz_seq) 
+	                        OR (t.gbn_org = 'd' AND t.gbn_org =  v.gbn_org AND t.comp_seq = v.comp_Seq AND t.dept_seq = v.dept_seq))
+	                 WHERE t.gbn_org <![CDATA[<> ]]> 'u'
+	                 AND C_TIKEYCODE = #c_tikeycode#
+	             ) B
+	             ON A.path LIKE CONCAT(B.path,'%')
+	             AND a.gbn_org = 'd'
+	         )
+	    ) t
+	    INNER JOIN V_USER_INFO v 
+	         ON t.group_seq = v.group_seq
+	         AND t.comp_Seq = v.comp_SEQ
+	         AND t.dept_seq = v.dept_seq
+	         AND t.emp_Seq = v.emp_Seq
+	    WHERE v.group_SEQ = #groupSeq#
+	    <isEqual property="orgChartIimit" compareValue="0">
+	    AND  v.comp_SEQ = #compSeq# 
+	    </isEqual>
+	    <isEqual property="orgChartIimit" compareValue="1">
+	    AND  v.comp_SEQ in (
+		           SELECT	GC.comp_seq
+		           FROM	t_co_groupping_comp	GC
+		           INNER JOIN	t_co_groupping	G
+		           ON 	GC.groupping_seq = G.groupping_seq
+		           INNER JOIN	t_co_groupping_comp	AG
+		           ON 	GC.groupping_seq = AG.groupping_seq	
+		           WHERE	GC.use_yn	= 'Y'
+		           AND	AG.use_yn	= 'Y'
+		           AND	G.use_yn	= 'Y'
+		           AND  AG.comp_seq = #compSeq#
+		           UNION ALL
+		           SELECT #compSeq# FROM DUAL 
+		    )
+	    </isEqual>
+	</select>	
+	
+	<insert id="FormManage.insertFormLine" parameterClass="java.util.HashMap">
+	    /* FormManage.insertFormLine - mariadb */
+	    INSERT INTO neos.A_TEMPLATE_Line  
+	    (C_TIKEYCODE, line_seq, line_kind, line_type, group_seq, comp_seq, dept_seq, emp_seq, edit_yn, order_num, CREATE_SEQ, CREATE_DATE) 
+	    VALUES
+	    <dynamic>
+	   	   <iterate property="linelist" conjunction="," >
+	    (   #c_tikeycode#
+	      , #linelist[].lineSeq#
+	      , #linelist[].lineKind#
+	      , #linelist[].lineType#
+	      , #linelist[].groupSeq#, #linelist[].compSeq#, #linelist[].deptSeq#, #linelist[].empSeq#, #linelist[].editYn#, #linelist[].orderNum#, #loginVO.uniqId#, SYSDATE()
+	    )
+	       </iterate>
+	   </dynamic>
+	</insert>
+	
+	<delete id="FormManage.deleteFormLine" parameterClass="java.util.HashMap">		
+		/* FormManage.deleteFormLine - mariadb */
+	    DELETE FROM neos.A_TEMPLATE_Line
+	    WHERE C_TIKEYCODE = #c_tikeycode#
+	</delete>
+	
+    <select id="FormManage.getFormLineList" parameterClass="formVO" resultClass="egovMap"  >
+	    /* FormManage.getFormLineList - mariaDB */
+	    <!-- 사용자  -->
+	    SELECT * FROM 
+	    (
+		    SELECT 
+		           LINE_SEQ
+		         , CONCAT(neos.FN_GetMultiLang(#loginVO.langCode#, EMP_NAME_MULTI) , '(' , b.LOGIN_ID, ')') AS LINE_NAME
+		         , LINE_KIND
+		         , LINE_TYPE
+		         , neos.GET_CODE_DETAIL_Info('0', 'COM093', (CASE WHEN LINE_TYPE = '002' THEN '003' ELSE LINE_TYPE END), #loginVO.langCode#) AS LINE_TYPE_NAME
+		         , neos.FN_GetMultiLang(#loginVO.langCode#, COMP_NAME_MULTI) AS COMP_NAME
+		         , neos.FN_GetMultiLang(#loginVO.langCode#, DEPT_NAME_MULTI) AS DEPT_NAME
+		         , EDIT_YN
+		         , neos.GET_CODE_DETAIL_Info('0', 'option0019', EDIT_YN , #loginVO.langCode#) AS EDIT_YN_NAME
+		         , a.order_num
+		    FROM   neos.A_TEMPLATE_Line a
+		    INNER  JOIN v_user_info b
+		    ON     a.group_seq = b.group_seq
+		    AND    a.comp_seq = b.comp_seq
+		    AND    a.dept_seq = b.dept_seq
+		    AND    a.emp_seq = b.emp_seq
+		    WHERE  a.line_kind = '001'
+		    AND    C_TIKEYCODE		= #c_tikeycode#
+		    UNION ALL
+		    SELECT 
+		           LINE_SEQ
+		         , neos.FN_GetLanguageName(#loginVO.langCode#, appgroup_name_kr, appgroup_name_en, appgroup_name_jp, appgroup_name_cn) AS LINE_NAME
+		         , LINE_KIND
+		         , LINE_TYPE
+		         , '-' AS LINE_TYPE_NAME
+		         , neos.FN_GetMultiLang(#loginVO.langCode#, COMP_NAME_MULTI) AS COMP_NAME
+		         , '-' AS DEPT_NAME
+		         , EDIT_YN
+		         , neos.GET_CODE_DETAIL_Info('0', 'option0019', EDIT_YN , #loginVO.langCode#) AS EDIT_YN_NAME
+		         , a.order_num
+		    FROM   neos.A_TEMPLATE_Line a
+		    INNER  JOIN neos.A_appgroup_info b
+		    ON     a.line_seq = b.appgroup_seq
+		    AND    b.delete_yn = 'N'
+	        AND    b.use_yn = 'Y'
+		    INNER  JOIN v_t_co_comp_multi m
+	        ON     b.group_seq = m.group_seq
+	        AND    b.comp_seq = m.comp_seq
+		    WHERE  a.line_kind = '002'
+		    AND    C_TIKEYCODE		= #c_tikeycode#
+	    ) a
+	    ORDER BY LPAD(a.order_num, 10, 0)  
+    </select>
+</sqlMap>

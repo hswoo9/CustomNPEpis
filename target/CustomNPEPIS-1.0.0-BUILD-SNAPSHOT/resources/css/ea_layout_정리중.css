@@ -1,0 +1,139 @@
+/* base */
+/*@charset "euc-kr";*/
+@charset "utf-8";
+
+/*20160318 허정명추가*/
+.div_form_bind{padding:0;width:100%; height:auto; font-size:12px;color:#000000; font-family:"굴림", Gulim, "돋움", Dotum, sans-serif; text-align:-moz-center;text-align:center; overflow-x:hidden;}
+.div_form_bind input,
+.div_form_bind select,
+.div_form_bind button,
+.div_form_bind img{vertical-align:middle}
+.div_form_bind textarea{resize:none;border:1px solid #c3c3c3;}
+.div_form_bind select{height:24px;border:1px solid #c3c3c3;padding:0;text-indent:3px;font-size:11px;}
+.div_form_bind input[type="text"],
+.div_form_bind input[type="password"] {height:22px;line-height:22px;border:1px solid #c3c3c3 !important;padding:0;text-indent:8px}
+.div_form_bind button {display: inline-block;height:24px;margin: 0;padding:0px 12px;border:1px solid #c9cac9;border-radius:0px;font-family: inherit;font-size: 100%;color: #515967;vertical-align: middle;text-decoration: none;text-align: center;line-height:24px;box-shadow:none;background:#fff;cursor: pointer;outline:0;-webkit-appearance: none;}      
+.div_form_bind button:hover {border:1px solid #1088e3;background:#fff;}
+.div_form_bind button:active {border:1px solid #1088e3;background:#f4f9fe;}
+.div_form_bind button:focus {box-shadow:none;}
+.div_form_bind table,
+.div_form_bind tr,
+.div_form_bind td{border-collapse:collapse;border-spacing:0;}
+
+/* 결재양식_기본양식 */
+h1{width:100%; font-size:30px; font-weight:bold; height:45px; margin-top:15px !important; text-align:center; padding-top:0px !important;}/*20160411 허정명 추가(모바일 양식 타이틀사용)*/
+.div_form_bind h1{width:100%; font-size:30px; font-weight:bold; height:45px; margin-top:15px !important; text-align:center; padding-top:0px !important;}
+.div_form_bind table {font-size: 9pt;}
+
+
+
+
+
+.area_sign {float:center; font-size: 9pt; border-collapse: collapse;font-size: 9pt;border:2px solid #767676;table-layout:fixed; margin:auto; box-sizing:border-box; -moz-box-sizing:border-box; -webkit-box-sizing:border-box;}    
+.area_sign td input {border-color:#a1a1a1;}   /* 인풋박스 선 컬러 */        
+.area_sign .bd_color {height:28px; border-bottom:1px solid #b1b1b1; border-right:1px solid #767676;text-align:center;} /* 테이블 타이틀 부분 선 */
+.area_sign .bd_color01 {border-bottom:1px solid #b1b1b1;text-align:left;} /* 테이블 결재라인 부분 선*/
+.area_sign .bd_color02 {height:28px;border-top:1px solid #b1b1b1; border-left:1px solid #767676;} /* 테이블 참조문서 부분 선 */
+.area_sign .bd_color03 {border-bottom:2px solid #b1b1b1;} /* 제목 밑 2줄라인 */
+
+
+
+.area_sign {border-collapse: collapse;font-size: 9pt;border:2px solid #767676;table-layout:fixed; margin:auto; box-sizing:border-box; -moz-box-sizing:border-box; -webkit-box-sizing:border-box;}    
+.area_sign td input {border-color:#a1a1a1;}   /* 인풋박스 선 컬러 */        
+.area_sign .bd_color {height:28px; border-bottom:1px solid #b1b1b1; border-right:1px solid #767676;text-align:center;} /* 테이블 타이틀 부분 선 */
+.area_sign .bd_color01 {border-bottom:1px solid #b1b1b1;text-align:left;} /* 테이블 결재라인 부분 선*/
+
+------
+
+.df05 {border-bottom:1px solid #b1b1b1;vertical-align:top;}
+.df05 table {border:none;width:inherit;}
+.df05 table tr {border-bottom:1px solid #787878;} /* 결재라인 칸 */   
+.df05 .td_line{border-bottom:1px solid #767676;border-left:1px solid #767676;}
+.df05 table td:first-child{border-right:1px solid #767676;}
+.df05 table td table td:first-child{border-right:none;}
+.df05 table td table {border-left:0px !important;} /* 결재라인 테이블 */
+
+/*20160318 허정명추가*/
+.df05 table td.empty_sign_line{cursor:pointer;}
+.df05 table td table.sign_tbl{width:100%;table-layout:fixed}
+.df05 table td table.sign_tbl tr.non_border{border:0;}
+.df05 table td table.sign_tbl tr td.org_txt{height:25px;}
+.df05 table td table.sign_tbl tr td.sign_bg{position:relative;height:56px;}
+.df05 table td table.sign_tbl tr td.sign_bg .box_txt{position:absolute;top:3px;left:10px;right:10px;border:1px solid #b1b1b1;line-height:1;padding:3px 0;background:#e1e1e1 }
+.df05 table td table.sign_tbl tr td.sign_bg .sign_txt{position:absolute;top:22px;left:0;right:0;text-align:center}
+.df05 table td table.sign_tbl tr td.sign_name{height:28px;vertical-align:bottom}
+.df05 table td table.sign_tbl tr td.sign_bg .sign_txt_tbl{position:absolute;top:0;left:0;right:0;bottom:0;text-align:center;width:100%;height:inherit;}
+.df05 table td table.sign_tbl tr td.sign_bg .sign_txt_tbl tr{border:none;}
+
+.area_sign .bd_color02 {height:28px;border-top:1px solid #b1b1b1; border-left:1px solid #767676;} /* 테이블 참조문서 부분 선 */
+.area_sign .bd_color02:first-child{border-left:0;}
+ 
+.sign_num {position:absolute; z-index:10; width:25px; top:-1px; left:0px; border-right:1px solid #c0c0c0; border-bottom:1px solid #c0c0c0; text-align:center; line-height:15px; padding-top:3px; color:#6e6e6e;} /* 결재라인 순번 */        
+.sign_tb_pop01 td {border-left:1px solid #b1b1b1;}              
+.sign_tb_pop02 td {border:1px solid #b1b1b1;}                
+.sign_tb_pop03 td {border:1px solid #b1b1b1;}        
+#divFormContents{clear:both; vertical-align:top; text-align:left; word-break:break-all;}
+#divFormContents table{border-collapse:collapse;} /* 2014.07.04 [asp]인쇄미리보기 화면 table border 나오게 처리 */
+/*#divForm table{text-align:left;}  //2014.06.18- 최승혁사원 요청으로 양식 스타일 제거(정렬 기본값 center로 사용 원함) */
+
+/* 결재양식_기본양식 결재라인 분리 */
+.area_sign .td_line2{border-bottom:1px solid #b1b1b1;}
+.area_sign .tdp5{padding:5px 0;}
+.df05_new{clear:both; float:right; border:1px solid #787878; border-bottom:none;}
+.mt-1{margin-top:-1px;}
+
+/* 결재양식_지출결의 전표 테이블 */
+.statement{text-align:center; table-layout:fixed;} 
+.statement th{background-color:#f6f6f6; font-weight:normal; height:25px; border-bottom:1px solid #b1b1b1; border-right:1px solid #b1b1b1;word-break:break-all;}  
+.statement td{height:25px; border-bottom:1px solid #b1b1b1; border-right:1px solid #b1b1b1; line-height:140%; word-break:break-all;} 
+.statement .button_ex{border:0px; width: 18px; height: 18px; padding:0px; cursor:pointer;}
+.table_line {border:1px solid #b1b1b1;}
+.table_lineB_No{border-bottom:none;}
+.table_lineR_No{border-right:none;}
+
+/* 2015.12.17- 전자결재양식 상단버튼 및 결재특이사항 - 커스터마이징 맞추기 위해 추가 */
+ #con_newpop {padding-left:0px !important;}  
+.sign_pop{margin-left:16px !important;}
+.newpop_top_area{margin-left:0px !important;}
+
+/* 텍스트정렬 */
+.textL{text-align:left !important;}    
+.textC{text-align:center !important;} 
+.textR{text-align:right !important;}  
+	    	    
+/* 팝업 테이블,폼 버튼 */
+.pop_tb_btn {z-index:999;}
+.pop_tb_btn a {display:inline-block;padding:4px 4px 0px 4px; font-size:11px; border: 1px solid #999; -webkit-border-radius: 5px; -moz-border-radius: 5px; border-radius: 3px; background:url('../images/btn/tb_btnbg.gif') repeat-x left top; color:#3c3c3c;}
+@media screen and (-webkit-min-device-pixel-ratio:0) {.pop_tb_btn a {padding:2px 4px 2px 4px;}} /*사파리*/
+.pop_tb_btn a img  {vertical-align:middle; margin-top:-2px;}
+
+/* 결재양식 팝업 */
+.tb_addfile{margin-top:20px;}
+
+/* G20양식 스타일 */
+.document_table{border-top:2px solid #b1b1b1; font-size:12px;}
+.document_table th{background:#e0e9ef;}
+.document_table td{text-align:center; word-break:break-all;}
+.document_table th,.document_table td{border-bottom:1px solid #b1b1b1; border-right:1px solid #b1b1b1; padding-top:2px; height:23px;}
+.document_table td:last-child, .document_table th:last-child{border-right:none}
+
+.document_table2{font-size:12px;}
+.document_table2 thead th {border-top:1px solid #b1b1b1; border-right:1px solid #b1b1b1;  padding-top:2px; height:23px;}
+.document_table2 td {border-right:1px solid #b1b1b1; border-top:1px solid #b1b1b1; text-align:center; padding-top:2px; height:23px;}
+.document_table2 td:last-child, .document_table2 th:last-child {border-right:none}
+
+.sign_tb_popNew{font-size:12px;}
+.sign_tb_popNew thead th {border-top:1px solid #b1b1b1; border-right:1px solid #b1b1b1; border-bottom:1px solid #b1b1b1; padding-top:2px; height:23px;}
+.sign_tb_popNew td {border-right:1px solid #b1b1b1; border-bottom:1px solid #b1b1b1; border-left:none; text-align:center; padding-top:2px; height:23px;}
+.sign_tb_popNew td:last-child, .sign_tb_pop03 th:last-child {border-right:none}
+
+#divFormContents table td p{padding:0px 2px 0px 0px;} /*150326 이정미추가 - 뷰페이지와 작성페이지 및 인쇄미리보기 페이지 본문영역 td에 오른쪽 여백이 다르게 보임*/
+
+/* 인쇄미리보기*/
+@media print
+{
+    #xmlExcontents table{clear:both !important;}
+    #divFormContents table{clear:both; /*float:inherit !important;*/border-collapse:collapse;border-spacing:0;}    
+    #divFormContents p{margin:0;}
+    #divFormContents img{display:block; border:0;}  /*이미지가 길경우 다음페이지에 이미지 안나오는 현상 오류처리*/
+}

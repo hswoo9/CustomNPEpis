@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="loginPage">
+    
+    <select id="existUserYn" parameterType="map" resultType="map">
+    SELECT 	
+		COUNT(1) AS cnt
+		, login_id   
+	    , emp_seq
+	    , dept_seq
+	    , comp_seq
+	FROM
+	    NEOS.V_USER_INFO
+	WHERE
+	    (login_id = #{id} OR emp_name = #{id})
+	        AND USE_YN = 'Y' 
+	        AND MAIN_DEPT_YN = 'Y'
+    </select>
+    
+    <select id="loginAgreementPop" parameterType="map" resultType="map">
+		SELECT 
+		    A.popup_login_id,
+		    A.reg_title,
+		    A.reg_contents,
+		    B.confirm_notice_id,
+		    B.confirm_login_id,
+		    B.confirm_emp_seq,
+		    B.confirm_dept_seq,
+		    B.confirm_emp_position,
+		    B.confirm_emp_duty,
+		    B.confirm_yn
+		FROM
+		    TPF_CUST.TPF_POPUP_LOGIN A
+		        JOIN
+		    tpf_cust.tpf_confirm_notice B ON A.popup_login_id = B.popup_login_id
+		        AND A.ACTIVE = 'Y'
+		        AND A.REG_STATUS = 'RQ02'
+		        AND B.ACTIVE = 'Y'
+		        AND B.CONFIRM_YN = 'N'
+		        AND A.REG_YEAR = DATE_FORMAT(NOW(), '%Y')
+		WHERE
+		    B.confirm_login_id = #{login_id}
+		ORDER BY A.WRITE_DATE ASC
+		LIMIT 1
+    </select>
+    
+    <update id="updateAgreement" parameterType="map">
+    	UPDATE tpf_cust.tpf_confirm_notice
+    	SET confirm_yn = 'Y'
+    	WHERE confirm_notice_id = #{confirm_notice_id}
+    
+    </update>
+    
+   	<select id="getCurrTime" resultType ="String" parameterType="map">
+    	SELECT DATE_FORMAT(NOW(), '%H%i%S')
+    </select >
+    
+</mapper>    

@@ -1,0 +1,166 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ko" xml:lang="ko">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title></title>
+    
+    <!--css-->
+	<link rel="stylesheet" type="text/css" href="../../../Scripts/jqueryui/jquery-ui.css"/>
+    <link rel="stylesheet" type="text/css" href="../../../css/common.css">
+	    
+    <!--js-->
+    <script type="text/javascript" src="../../../Scripts/jquery-1.9.1.min.js"></script>
+	<script type="text/javascript" src="../../../Scripts/jqueryui/jquery.min.js"></script>
+	<script type="text/javascript" src="../../../Scripts/jqueryui/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="../../../Scripts/common.js"></script>
+    
+	<script type="text/javascript">
+			/*팝업 위치설정*/
+			$(document).ready(function() {
+				pop_position();
+				$(window).resize(function() { 
+					pop_position();
+				});
+				
+				$(".file_input_button").on("click",function(){
+					$(this).next().click();
+				});
+			});
+	</script>
+</head>
+<body>
+<!-- 팝업----------------------------------------------------- -->
+	<div class="pop_wrap_dir" style="width:1000px;">
+	    <div class="pop_head">
+	        <h1>직원추가</h1>
+	        <a href="#n" class="clo"><img src="../../../Images/btn/btn_pop_clo01.png" alt="" /></a>
+	    </div>
+	    
+	    <div class="pop_con">
+	        <div class="top_box">
+	            <dl>
+	                <dt class="ar" style="width:49px">이름</dt>
+	                <dd><input type="text" style="width:130px;" placeholder="" /></dd>
+	                <dt class="ar" style="width:49px">아아디</dt>
+	                <dd><input type="text" style="width:130px;" placeholder="" /></dd>
+	                <dt>부서</dt>
+	                <dd><input type="text" style="width:130px;" placeholder="" /></dd>
+	                <dt>직위</dt>
+	                <dd><input type="text" style="width:130px;" placeholder="" /></dd>
+	            </dl>
+	            <dl class="next2">
+	                <dt>심사코드</dt>
+	                <dd><input type="text" style="width:130px;" placeholder="" /></dd>
+	                <dt>심사규격</dt>
+	                <dd>
+	                     <select class="selectmenu" style="width:130px;">
+	                        <option value="" selected="selected">전체</option>
+	                        <option value="">..</option>
+	                     </select>
+	                </dd>
+	                <dd><input type="button" id="searchButton" value="검색" /></dd>
+	            </dl>
+	        </div>
+	
+	        <!-- 등록 테이블 -->
+	        <div class="com_ta2 mt14">
+	            <table>
+	                <colgroup>
+	                    <col width="34"/>
+	                    <col width="100"/>
+	                    <col width="100"/>
+	                    <col width="150"/>
+	                    <col width="100"/>
+	                    <col width="150"/>
+	                    <col width="80"/>
+	                    <col width="100"/>
+	                    <col width="100"/>
+	                </colgroup>
+	                <thead>
+	                    <tr>
+	                        <th><input type="checkbox" name="all_chk" id="all_chk"/> <label for="all_chk"></label></th>
+	                        <th>이름</th>
+	                        <th>아이디</th>
+	                        <th>부서</th>
+	                        <th>직위</th>
+	                        <th>적격성</th>
+	                        <th>구분</th>
+	                        <th>심사코드</th>
+	                        <th>심사규격</th>
+	                    </tr>
+	                </thead>
+	            </table>		
+	            </div>
+	
+	            <div class="com_ta2 ova_sc cursor_p bg_lightgray" style="height:296px;">
+	            <table>
+	                <colgroup>
+	                    <col width="34"/>
+	                    <col width="100"/>
+	                    <col width="100"/>
+	                    <col width="150"/>
+	                    <col width="100"/>
+	                    <col width="150"/>
+	                    <col width="80"/>
+	                    <col width="100"/>
+	                    <col width="100"/>
+	                </colgroup>
+	                <tbody>
+	                    <tr>
+	                        <td><input type="checkbox" name="all_chk" id="all_chk"/> <label for="all_chk"></label></td>
+	                        <td></td>
+	                        <td></td>
+	                        <td></td>
+	                        <td></td>
+	                        <td></td>
+	                        <td></td>
+	                        <td></td>
+	                        <td></td>
+	                    </tr>
+	                </tbody>
+	            </table>		
+	        </div>
+
+            <div class="gt_paging">
+                <div class="paging">
+                    <span class="pre_pre"><a href="">10페이지전</a></span>
+                    <span class="pre"><a href="">이전</a></span>
+                        <ol>
+                            <li class="on"><a href="">1</a></li>
+                            <li><a href="">2</a></li>
+                            <li><a href="">3</a></li>
+                            <li><a href="">4</a></li>
+                            <li><a href="">5</a></li>
+                            <li><a href="">6</a></li>
+                            <li><a href="">7</a></li>
+                            <li><a href="">8</a></li>
+                            <li><a href="">9</a></li>
+                            <li><a href="">10</a></li>
+                        </ol>
+                    <span class="nex"><a href="">다음</a></span>
+                    <span class="nex_nex"><a href="">10페이지다음</a></span>
+                </div>
+                
+                <div class="gt_count">
+                    <select class="selectmenu up" style="width:50px;">
+                        <option value="" selected="selected">10</option>
+                        <option value="">20</option>
+                        <option value="">50</option>
+                        <option value="">100</option>
+                     </select>
+                </div>	
+            </div>
+        </div><!-- //pop_con -->
+        
+        <div class="pop_foot">
+            <div class="btn_cen pt12">
+                <input type="button" value="추가" />
+                <input type="button"  class="gray_btn" value="취소" />
+            </div>
+        </div><!-- //pop_foot -->
+    </div><!-- //pop_wrap -->
+<!--// 팝업----------------------------------------------------- -->
+	<div class="modal"></div>
+</body>
+</html>

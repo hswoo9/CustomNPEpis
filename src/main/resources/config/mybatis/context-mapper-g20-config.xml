@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+	<settings>
+		<setting name="logImpl" value="LOG4J" />
+	</settings>
+
+	<typeAliases>
+		<typeAlias type="ac.cmm.vo.ConnectionVO" alias="connectionVO" />
+		<typeAlias type="ac.g20.ex.vo.Abdocu_H" alias="Abdocu_H" />
+		<typeAlias type="ac.g20.ex.vo.Abdocu_B" alias="Abdocu_B" />
+		<typeAlias type="ac.g20.ex.vo.Abdocu_T" alias="Abdocu_T" />
+		<typeAlias type="ac.g20.ex.vo.Abdocu_D" alias="Abdocu_D" />
+		<typeAlias type="ac.g20.ex.vo.Abdocu_TH" alias="Abdocu_TH" />
+		<typeAlias type="ac.g20.ex.vo.Abdocu_TD" alias="Abdocu_TD" />
+		<typeAlias type="ac.g20.ex.vo.Abdocu_TD2" alias="Abdocu_TD2" />
+		<typeAlias type="ac.g20.ex.vo.StateVO" alias="StateVO" />
+	</typeAliases>
+
+	<environments default="development">
+		<environment id="development">
+			<transactionManager type="JDBC" />
+			<dataSource type="UNPOOLED">
+				<property name="driver" value="${driver}" />
+				<property name="url" value="${url}" />
+				<property name="username" value="${username}" />
+				<property name="password" value="${password}" />
+			</dataSource>
+		</environment>
+	</environments>
+
+	<mappers>
+		<mapper resource="${databaseType}/mapper/g20/AcG20Code_Erp_SQL.xml" />
+		<mapper resource="${databaseType}/mapper/g20/AcG20Ex_Erp_SQL.xml" />
+		<mapper resource="${databaseType}/mapper/g20/AcG20Ex2_Erp_SQL.xml" />
+		<mapper resource="${databaseType}/mapper/g20/AcG20ExApp_Erp_SQL.xml" />
+		<mapper resource="${databaseType}/mapper/g20/AcG20State_Erp_SQL.xml" />
+		<mapper resource="${databaseType}/mapper/g20/PayCms_G20_SQL.xml" />
+		<mapper resource="${databaseType}/mapper/g20/BudgetList_G20_SQL.xml" />
+	</mappers>
+</configuration>

@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="approvalUser">
+
+    <select id="getUserFavApproveRouteList" parameterType="map" resultType="map">
+        /* getUserFavApproveRouteList */
+        SELECT
+            *
+        FROM
+            DJ_EPIS.V_USER_FAV_APPROVE_ROUTE
+        WHERE
+            FAV_EMP_SEQ = #{empSeq}
+        AND
+            ACTIVE = 'Y'
+    </select>
+
+    <select id="getUserFavApproveRouteDetail" parameterType="map" resultType="map">
+        /* getUserFavApproveRouteDetail */
+        SELECT
+            UFARD.*
+        FROM
+            DJ_EPIS.V_USER_FAV_APPROVE_ROUTE_DETAIL UFARD
+        JOIN
+            DJ_EPIS.V_USER_FAV_APPROVE_ROUTE UFAR
+        ON UFARD.FAV_ROUTE_ID = UFAR.FAV_ROUTE_ID
+        WHERE
+            UFAR.FAV_EMP_SEQ = #{empSeq}
+        AND
+            UFARD.FAV_ROUTE_ID = #{favRouteId}
+        AND
+            UFAR.ACTIVE = 'Y'
+        ORDER BY
+            APPROVE_ORDER ASC;
+    </select>
+
+    <insert id="setUserFavApproveRoute" parameterType="map">
+        /* setUserFavApproveRoute */
+        INSERT INTO DJ_EPIS.V_USER_FAV_APPROVE_ROUTE
+            (
+                FAV_APPROVE_ROUTE_NAME,
+                FAV_EMP_SEQ,
+                REG_EMP_SEQ
+            )
+        VALUES
+            (
+                #{favApproveRouteName},
+                #{empSeq},
+                #{empSeq}
+            )
+
+        <selectKey keyProperty="FAV_ROUTE_ID" resultType="Integer" order="BEFORE">
+            SELECT
+                AUTO_INCREMENT
+            FROM
+                INFORMATION_SCHEMA.TABLES
+            WHERE
+                TABLE_SCHEMA = 'DJ_EPIS'
+            AND
+                TABLE_NAME = 'V_USER_FAV_APPROVE_ROUTE'
+        </selectKey>
+    </insert>
+
+    <update id="setUserFavApproveRouteUpdate" parameterType="map">
+        /* setUserFavApproveRouteUpdate */
+        UPDATE
+            DJ_EPIS.V_USER_FAV_APPROVE_ROUTE
+        SET
+            <if test='favApproveRouteName != null and !"".equals(favApproveRouteName)'>
+                FAV_APPROVE_ROUTE_NAME = #{favApproveRouteName},
+            </if>
+            MOD_EMP_SEQ = #{empSeq},
+            MOD_DATE = NOW()
+        WHERE
+            FAV_ROUTE_ID = #{favRouteId}
+    </update>
+
+    <update id="setUserFavApproveRouteActiveN" parameterType="map">
+        /* setUserFavApproveRouteActiveN */
+        UPDATE
+            DJ_EPIS.V_USER_FAV_APPROVE_ROUTE
+        SET
+            ACTIVE = 'N',
+            MOD_EMP_SEQ = #{empSeq},
+            MOD_DATE = NOW()
+        WHERE
+            FAV_ROUTE_ID IN
+            (
+            <foreach collection="favArr" item="item" separator=",">
+                #{item}
+            </foreach>
+            )
+    </update>
+
+    <insert id="setUserFavApproveRouteDetail" parameterType="map">
+        /* setUserFavApproveRouteDetail */
+        INSERT INTO DJ_EPIS.V_USER_FAV_APPROVE_ROUTE_DETAIL
+            (
+                FAV_ROUTE_ID,
+                APPROVE_EMP_SEQ,
+                APPROVE_EMP_NAME,
+                APPROVE_POSITION_NAME,
+                APPROVE_DUTY_NAME,
+                APPROVE_DEPT_NAME,
+                APPROVE_ORDER,
+                REG_EMP_SEQ
+            )
+        VALUES
+            (
+                #{favRouteId},
+                #{approveEmpSeq},
+                #{approveEmpName},
+                #{approvePositionName},
+                #{approveDutyName},
+                #{approveDeptName},
+                #{approveOrder},
+                #{empSeq}
+            )
+    </insert>
+
+    <delete id="setUserFavApproveRouteDetailDel" parameterType="map">
+        /* setUserFavApproveRouteDetailDel */
+        DELETE FROM
+            DJ_EPIS.V_USER_FAV_APPROVE_ROUTE_DETAIL
+        WHERE
+            FAV_ROUTE_ID = #{favRouteId}
+    </delete>
+
+    <update id="setUserFavApproveRouteDetailActiveN" parameterType="map">
+        /* setUserFavApproveRouteDetailActiveN */
+        UPDATE
+            DJ_EPIS.V_USER_FAV_APPROVE_ROUTE_DETAIL
+        SET
+            ACTIVE = 'N',
+            MOD_EMP_SEQ = #{empSeq},
+            MOD_DATE = NOW()
+        WHERE
+            FAV_ROUTE_ID IN
+            (
+            <foreach collection="favArr" item="item" separator=",">
+                #{item}
+            </foreach>
+            )
+    </update>
+</mapper>

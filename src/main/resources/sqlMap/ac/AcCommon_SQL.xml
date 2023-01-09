@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="AcCommon">
+
+	<select id="AcCommonDAO.acErpSystemInfo" parameterClass="HashMap" resultClass="HashMap">
+	    /* AcCommonDAO.acErpSystemInfo - mariadb */
+		SELECT	`database_type` AS `DATABASE_TYPE` /* 데이터베이스 타입 */
+				, `driver` AS `DRIVER` /* 드라이버 */
+				, `url` AS `URL` /* URL */
+				, `userid` AS `USERID` /* 접속계정 */
+				, `password` AS `PASSWORD` /* 접속비번 */
+				, `erp_type_code` AS ERPTYPECODE /* 연동ERP구분 */
+		FROM	neos.t_co_erp
+				/* 회사 검색조건 */
+		<isNotEmpty property="loginVO.compSeq">
+		WHERE	comp_seq = #loginVO.compSeq#
+		</isNotEmpty>
+		<isEmpty property="loginVO.compSeq">
+		WHERE	comp_seq = (select comp_seq from neos.t_co_comp order by comp_seq limit 1)
+		</isEmpty>
+				/* 연동 ERP 검색조건 [ ac : 회계 / etc : 기타 ] */
+		AND		( achr_gbn = 'ac' OR achr_gbn = 'etc' )
+				/* 정렬순서 적용 ( 회계우선 ) */
+		ORDER	BY achr_gbn
+		LIMIT	1	
+	</select>
+	
+	<select id="AcCommonDAO.acErpSystemInfoTest" parameterClass="HashMap" resultClass="HashMap">
+	    /* AcCommonDAO.acErpSystemInfoTest - mariadb */
+		SELECT	`database_type` AS `DATABASE_TYPE` /* 데이터베이스 타입 */
+				, `driver` AS `DRIVER` /* 드라이버 */
+				, `url` AS `URL` /* URL */
+				, `userid` AS `USERID` /* 접속계정 */
+				, `password` AS `PASSWORD` /* 접속비번 */
+				, `erp_type_code` AS ERPTYPECODE /* 연동ERP구분 */
+		FROM	t_co_erp
+				/* 회사 검색조건 */
+		<isNotEmpty property="loginVO.compSeq">
+		WHERE	comp_seq = #loginVO.compSeq#
+		</isNotEmpty>
+		<isEmpty property="loginVO.compSeq">
+		WHERE	comp_seq = (select comp_seq from neos.t_co_comp order by comp_seq limit 1)
+		</isEmpty>
+				/* 연동 ERP 검색조건 [ ac : 회계 / etc : 기타 ] */
+		AND		( achr_gbn = 'ac' OR achr_gbn = 'etc' )
+				/* 정렬순서 적용 ( 회계우선 ) */
+		ORDER	BY achr_gbn
+		LIMIT	1	
+	</select>
+
+</sqlMap>

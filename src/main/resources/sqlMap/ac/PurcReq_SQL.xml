@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="PurcReqDAO">
+
+	<typeAlias alias="abdocu_H" type="ac.g20.ex.vo.Abdocu_H" />
+	<typeAlias alias="egovMap" type="egovframework.rte.psl.dataaccess.util.EgovMap"/>
+	
+	<select id="PurcReqDAO.getPurcReqHList" parameterClass="Map" resultClass="abdocu_H">
+	    /* PurcReqDAO.getPurcReqHList - mariadb */
+	    SELECT 
+			*
+		FROM dj_PURC_REQ_H A, NEOS.G20_ABDOCU_H B
+		WHERE A.ABDOCU_NO = B.ABDOCU_NO
+		AND A.ACTIVE = 'Y'
+		AND A.PURC_REQ_ID = #approKey#
+		ORDER BY A.ABDOCU_NO
+	</select>
+	
+	<update id="PurcReqDAO.updateDocId" parameterClass="Map">
+		/*PurcReqDAO.updateDocId*/
+		UPDATE dj_PURC_REQ
+		SET C_DIKEYCODE = #docId#
+		WHERE PURC_REQ_ID = #approKey#
+	</update>
+	
+	<select id="PurcReqDAO.purcReqAppSelect" parameterClass="Map" resultClass="egovMap">
+		/*PurcReqDAO.purcReqAppSelect*/
+		SELECT PURC_REQ_TITLE, PURC_REQ_CONTENT
+		FROM dj_PURC_REQ
+		WHERE PURC_REQ_ID = #approKey#
+	</select>
+	
+	<select id="PurcReqDAO.getPurcReq" parameterClass="String" resultClass="egovMap">
+		/*PurcReqDAO.getPurcReq*/
+		SELECT *
+		FROM dj_PURC_REQ
+		WHERE PURC_REQ_ID = #approKey#
+	</select>
+	
+	<select id="PurcReqDAO.getErpGwLinkList" parameterClass="String" resultClass="egovMap">
+		/*PurcReqDAO.getErpGwLinkList*/
+		select h.abdocu_no, (select login_id from neos.t_co_emp where emp_seq = h.write_emp_seq) as userId, h.write_emp_seq as empSeq
+		from dj_purc_req_h h
+		where purc_req_id = #approKey#
+	</select>
+	
+	<insert id="PurcReqDAO.insertErpGwLink" parameterClass="map">
+		/*PurcReqDAO.insertErpGwLink*/
+		insert into neos.erpgwlink
+		(
+			appr_seqn,
+			pack_knd_cd, 
+			docx_gubn, 
+			docx_numb, 
+			requ_userid, 
+			requ_userkey, 
+			requ_date, 
+			appr_dikey, 
+			appr_status, 
+			appr_end_date
+		)
+		values
+		(
+			(select neos.nextval('erpGwLinkSeq')),
+			'001',
+			'010',
+			#abdocuNo#,
+			#userId#,
+			#empSeq#,
+			(select DATE_FORMAT(now(), '%Y%m%d%H%i%s')),
+			#docId#,
+			'008',
+			(select DATE_FORMAT(now(), '%Y%m%d%H%i%s'))
+		)
+	</insert>
+	
+	<!-- G20 2.0 Start -->
+	
+	<select id="PurcReqDAO.getApprovalInfo" parameterClass="String" resultClass="java.util.HashMap">
+		/* PurcReqDAO.getApprovalInfo */
+		SELECT	doc.c_dikeycode AS docSeq
+				, IFNULL(rec.c_ridocfullnum,'') AS docNo
+				, IFNULL(drf.c_distatus,'') AS docStatus
+		FROM	neos.a_docinfo doc
+		INNER JOIN neos.a_recordinfo rec ON doc.c_dikeycode = rec.c_dikeycode
+		INNER JOIN neos.a_draftinfo drf ON doc.c_dikeycode = drf.c_dikeycode
+		WHERE	doc.c_dikeycode = #docId#
+	</select>
+	
+	<update id="PurcReqDAO.updateConsDocEaInfo" parameterClass="java.util.HashMap">
+		/* PurcReqDAO.updateConsDocEaInfo */
+		/* 품의 문서 전자결재 정보 갱신 */
+		UPDATE neos.t_exnp_consdoc
+		SET
+			`doc_seq` 			= IFNULL(#docSeq# , doc_seq ) ,
+			`doc_no` 			= IFNULL(#docNo# , doc_no ) , 
+			`doc_status` 		= IFNULL(#docStatus# , doc_status ) ,
+			`expend_date` 		= IFNULL(#expendDate# , expend_date) ,
+			`modify_seq` 		= IFNULL(#empSeq# , modify_seq ) 
+		WHERE	`cons_doc_seq` 	= (select `cons_doc_seq` from dj_purc_req where purc_req_id = #approKey#)
+	</update>
+	
+	<update id="PurcReqDAO.updatePurcReqTrInfo" parameterClass="Map">
+		/* PurcReqDAO.updatePurcReqTrInfo */
+		UPDATE dj_purc_req_t
+		SET
+			tr_cd = #trCd#,
+			tr_nm = #trNm#,
+			reg_nb = #regNb#,
+			ceo_nm = #ceoNm#
+		WHERE purc_req_b_id in (select purc_req_b_id from dj_purc_req_b where purc_req_h_id in (select purc_req_h_id from dj_purc_req_h where purc_req_id = #purcReqId#))
+	</update>
+	
+	<update id="PurcReqDAO.updateConsTrInfo" parameterClass="Map">
+		/* PurcReqDAO.updateConsTrInfo */
+		UPDATE neos.t_exnp_constrade
+		SET
+			tr_seq = #trCd#,
+			tr_name = #trNm#,
+			ceo_name = #ceoNm#
+		WHERE cons_doc_seq = #consDocSeq#
+	</update>
+	
+	<!-- G20 2.0 End -->
+	
+</sqlMap>
