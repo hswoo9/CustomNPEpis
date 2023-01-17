@@ -64,6 +64,8 @@ var $dataSource = new kendo.data.DataSource({		//그리드데이터소스
 				return response.list.filter(function(obj){return !obj.c_distatus;});
 			}else if($('#approSts').val() === '002'){
 				return response.list.filter(function(obj){return (obj.c_distatus === '001' || obj.c_distatus === '002' || obj.c_distatus === '003');});
+			}else if($('#approSts').val() === '001'){
+				return response.list.filter(function(obj){return (obj.c_distatus === '001');});
 			}else{
 				return response.list.filter(function(obj){return obj.c_distatus === $('#approSts').val();});
 			}
@@ -79,6 +81,8 @@ var $dataSource = new kendo.data.DataSource({		//그리드데이터소스
 					result =  response.list.filter(function(obj){return !obj.c_distatus;});
 				}else if($('#approSts').val() === '002'){
 					result = response.list.filter(function(obj){return (obj.c_distatus === '001' || obj.c_distatus === '002' || obj.c_distatus === '003');});
+				}else if($('#approSts').val() === '001'){
+					return response.list.filter(function(obj){return (obj.c_distatus === '001');});
 				}else{
 					result = response.list.filter(function(obj){return obj.c_distatus === $('#approSts').val();});
 				}
@@ -605,6 +609,7 @@ var $dataSource = new kendo.data.DataSource({		//그리드데이터소스
 					<dd style="width:80px;">
 						<select id="approSts" style="width: 100%;">
 							<option value="">전체</option>
+							<option value="001">기안중</option>
 							<option value="002">결재중</option>
 							<option value="004">결재보류</option>
 							<option value="008">결재완료</option>

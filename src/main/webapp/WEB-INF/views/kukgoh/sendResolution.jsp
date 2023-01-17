@@ -105,7 +105,7 @@
 				  select : onDeptSeqSelect,
 			});
 			
-			$("#deptNm").data('kendoComboBox').value(deptSeq);
+			$("#deptNm").data('kendoComboBox').value('99999');	// 기본값 전체
 		}
 		
 		$('#filePop').kendoWindow({
