@@ -115,7 +115,7 @@ var $dataSource = new kendo.data.DataSource({		//그리드데이터소스
 		    start: "month",
 		    culture : "ko-KR",
 			format : "yyyy-MM-dd",
-			value : new Date('${year}','${mm-1}','1'),
+			value : new Date('${year}','${mm-2}',(new Date().getDate())),
 			change : makeToDateMin
 		});
 		

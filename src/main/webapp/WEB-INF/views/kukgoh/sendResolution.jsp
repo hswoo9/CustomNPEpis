@@ -135,10 +135,11 @@
 	        format: "yyyy-MM-dd",
 			parseFormats : ["yyyy-MM-dd"],
 	        culture : "ko-KR",
-	        dateInput: true
+	        dateInput: true,
+			value : new Date('${year}','${mm-2}', (new Date().getDate()))
 	    });	  
 	    
-	    $("#fromMonth").val(moment().format('YYYY-MM-01'));
+	    // $("#fromMonth").val(moment().format('YYYY-MM-01'));
 	  
 		 //-----<<사원정보 팝업 초기화
 	    $("#empSearch").click(function(){	
