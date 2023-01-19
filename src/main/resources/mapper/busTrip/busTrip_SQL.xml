@@ -2259,7 +2259,10 @@ from
          
 <if test="dept_seq != null and dept_seq != ''"  >
 	AND dept_seq =#{dept_seq}
-</if>       
+</if>
+<if test="docNo != null and docNo != ''"  >
+	AND doc_no like concat ('%',#{docNo},'%')
+</if>
                 ) R,
 
         (SELECT
@@ -2310,12 +2313,14 @@ from
 		</if>  
 	<if test="txtFrDt != null and txtFrDt != ''"  >
 	AND date between #{txtFrDt} and #{txtToDt}
- 		</if>  
-      
+ 		</if>
+
       ) V
 
 WHERE
         R.res_doc_seq = V.res_doc_seq
+
+		LIMIT ${skip} , ${pageSize}
 
 </select>
 <select id="getSuccessBIzInfoCount" parameterType="map" resultType="int">
@@ -2338,7 +2343,16 @@ from
         AND
                 lang_code = 'kr'
         AND
-                detail_code in(002, 008)) R,
+                detail_code in(002, 008)
+
+	<if test="dept_seq != null and dept_seq != ''"  >
+		AND dept_seq =#{dept_seq}
+	</if>
+	<if test="docNo != null and docNo != ''"  >
+		AND doc_no like concat ('%',#{docNo},'%')
+	</if>
+
+        ) R,
 
         (SELECT
 
@@ -2375,8 +2389,20 @@ from
 
         where
                 A.biz_common_seq = B.biz_common_seq
-	
-    
+
+		and active= 'Y'
+
+		<if test="emp_name != null and emp_name != ''"  >
+			AND emp_name like concat ('%',#{emp_name},'%')
+		</if>
+
+		<if test="purpose != null and purpose != ''"  >
+			AND purpose like concat ('%',#{purpose},'%')
+		</if>
+		<if test="txtFrDt != null and txtFrDt != ''"  >
+			AND date between #{txtFrDt} and #{txtToDt}
+		</if>
+
         ) V
 
 WHERE
@@ -2409,7 +2435,10 @@ from
          
 <if test="dept_seq != null and dept_seq != ''"  >
 	AND dept_seq =#{dept_seq}
-</if>       
+</if>
+<if test="docNo != null and docNo != ''"  >
+	AND doc_no like concat ('%',#{docNo},'%')
+</if>
                 ) R,
 
         (select 
@@ -2461,6 +2490,8 @@ from
 WHERE
         R.res_doc_seq = V.resdocseq
 
+		LIMIT ${skip} , ${pageSize}
+
 </select>
 
 <select id="getSuccessBIzInfoCount2" parameterType="map" resultType="int">
@@ -2487,7 +2518,10 @@ from
          
 <if test="dept_seq != null and dept_seq != ''"  >
 	AND dept_seq =#{dept_seq}
-</if>       
+</if>
+<if test="docNo != null and docNo != ''"  >
+	AND doc_no like concat ('%',#{docNo},'%')
+</if>
                 ) R,
 
         (select 
