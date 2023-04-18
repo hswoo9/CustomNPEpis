@@ -331,11 +331,12 @@ var $dataSource = new kendo.data.DataSource({		//그리드데이터소스
 					field : "c_ridocfullnum",
 					title : "문서번호",
 					template : function(dataItem){
-						if(dataItem.c_ridocfullnum){
+						/*if(dataItem.c_ridocfullnum){
 							return'<span class="docTitle blueColor" onclick="fn_docViewPop(\'' + dataItem.appr_dikey + '\')">' + dataItem.c_ridocfullnum + '</span>';
 						}else{
 							return '';
-						}
+						}*/
+                        return'<span class="docTitle blueColor" onclick="fn_docViewPop(\'' + dataItem.appr_dikey + '\')">' + dataItem.c_ridocfullnum + '</span>';
 					}
 				},
 				{
