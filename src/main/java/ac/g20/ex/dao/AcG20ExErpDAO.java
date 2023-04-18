@@ -29,7 +29,7 @@ import ac.g20.ex.vo.Abdocu_H;
 public class AcG20ExErpDAO {
 
 	/* 변수정의 */
-	private SqlSessionFactory				sqlSessionFactory;
+	private SqlSessionFactory sqlSessionFactory;
 
 	/* 변수정의 - 로그 */
 	private org.apache.logging.log4j.Logger	LOG	= LogManager.getLogger(this.getClass());
