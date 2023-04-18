@@ -52,6 +52,9 @@
 			$('#empName').on('keyup', function(e){
 				if(e.keyCode ===13){gridReLoad()} 
 				});
+			$('#docNo').on('keyup', function(e){
+				if(e.keyCode ===13){gridReLoad()}
+			});
 	}
 	/**
 	 * 콤보박스 초기화
@@ -169,6 +172,8 @@
 				
 				data.txtFrDt =$('#txtFrDt').val();
 				data.txtToDt =$('#txtToDt').val();
+
+				data.docNo =$('#docNo').val();
 				
 				if($('#selDept').data('kendoComboBox').value() == '전체'){
 					
@@ -392,6 +397,10 @@
 				<dd>
 					<input type="text" name="" id="txtTitle" style="width: 200px" class="ri"/>
 				</dd>
+				<dt class="ar" style="width: 65px">문서번호</dt>
+				<dd>
+					<input type="text" id="docNo"  value="" />
+				</dd>
 			</dl>
 		</div>
 
@@ -404,7 +413,7 @@
 				<div class="controll_btn p0">
 					<!-- <button type="button" id="btnReturn" onclick="fnPurcContRepApproval();">계약보고</button>
 					<button type="button" id="btnReturn" onclick="fnPurcContRepApprovalComplete();" style="margin-right: 20px;">계약보고완료</button> -->
-					<!-- <button type="button" id="" onclick="searchBtn();">조회</button> -->
+					 <button type="button" id="" onclick="searchBtn();">조회</button>
 					 <button type="button" id="" onclick="changeStatus();">상태 변경</button> 
 				</div>
 			</div>

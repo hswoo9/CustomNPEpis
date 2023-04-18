@@ -97,7 +97,7 @@ var $dataSource = new kendo.data.DataSource({		//그리드데이터소스
 		    start: "month",
 		    culture : "ko-KR",
 			format : "yyyy-MM-dd",
-			value : new Date('${year}','${mm-1}','1'),
+			value : new Date('${year}','${mm-2}', (new Date().getDate())),
 			change : makeToDateMin
 		});
 		
@@ -633,7 +633,7 @@ var $dataSource = new kendo.data.DataSource({		//그리드데이터소스
 						<select id="biddingYn" style="width: 100%;">
 							<option value="">전체</option>
 							<option value="Y">확정</option>
-							<option value="N">미확정</option>
+							<option value="N" selected>미확정</option>
 							<option value="D">처리제외</option>
 						</select>
 					</dd>
