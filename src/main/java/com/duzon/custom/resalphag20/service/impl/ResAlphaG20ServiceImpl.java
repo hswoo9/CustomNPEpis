@@ -905,8 +905,13 @@ public class ResAlphaG20ServiceImpl implements ResAlphaG20Service {
 	public void saveReturnCardLog(Map<String, Object> params) {
 		resAlphaG20DAO.saveReturnCardLog(params);
 	}
-	
-	@Override
+
+    @Override
+    public void saveReturnCardHist(Map<String, Object> params) {
+        resAlphaG20DAO.saveReturnCardHist(params);
+    }
+
+    @Override
 	public void saveSelfPayCard(Map<String, Object> params) {
 		resAlphaG20DAO.saveSelfPayCard(params);
 	}
@@ -1221,19 +1226,34 @@ public class ResAlphaG20ServiceImpl implements ResAlphaG20Service {
 	public void deleteAdocuTmp(Map<String, Object> paramMap) {
 		resAlphaG20DAO.deleteAdocuTmp(paramMap);		
 	}
+
+    @Override
+    public Map<String, Object> cardHistRollback(Map<String, Object> paramMap) {
+        return resAlphaG20DAO.cardHistRollback(paramMap);
+    }
+
+    @Override
+    public void updateCardAqTmpRollback(Map<String, Object> paramMap) {
+        resAlphaG20DAO.updateCardAqTmpRollback(paramMap);
+    }
+
+    @Override
+    public void updateRestradeTblRollback(Map<String, Object> paramMap) {
+        resAlphaG20DAO.updateRestradeTblRollback(paramMap);
+    }
+
+    @Override
+    public void saveReturnEtaxHist(Map<String, Object> etaxReturnInfo) {
+        resAlphaG20DAO.saveReturnEtaxHist(etaxReturnInfo);
+    }
+
+    @Override
+    public Map<String, Object> etaxHistRollback(Map<String, Object> paramMap) {
+        return resAlphaG20DAO.etaxHistRollback(paramMap);
+    }
+
+    @Override
+    public void updateEtaxAqTmpRollback(Map<String, Object> etaxHist) {
+        resAlphaG20DAO.updateEtaxAqTmpRollback(etaxHist);
+    }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

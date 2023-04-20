@@ -35,6 +35,16 @@
 	$(document).ready(function() {
 		datePickerInit();
 		fnTpfDeptComboBoxInit('selDept');
+        $("#selStat").kendoComboBox({
+            dataSource : [
+                {text : "전체", value : ""},
+                {text : "활성", value: "Y"},
+                {text : "비활성", value: "N"}
+            ],
+            dataTextField : "text",
+            dataValueField: "value",
+            index: 1
+        });
 		mainGrid();
 		var grid = $('#grid').data('kendoGrid');
 		keyupInit();
@@ -176,12 +186,13 @@
 				data.docNo =$('#docNo').val();
 				
 				if($('#selDept').data('kendoComboBox').value() == '전체'){
-					
-				data.dept_seq ='';
+				    data.dept_seq ='';
 				}else{
-					
-				data.dept_seq = $('#selDept').data('kendoComboBox').value();
+				    data.dept_seq = $('#selDept').data('kendoComboBox').value();
 				}
+
+                data.active = $('#selStat').data('kendoComboBox').value()
+
 	   	    	return data ;
 			}
 		},
@@ -288,7 +299,12 @@
 							title : "상태",
 							template: function(data){
 								var detail_name = data.detail_name || "미결의";
-								return detail_name;
+								// return detail_name;
+
+                                // if(e.active == "N"){
+                                //     $(this).css({"text-decoration": "line-through", "text-decoration-color" : "red"});
+                                // }
+                                return '<a class="text_blue eaPop" style="text-decoration:underline;cursor:pointer;" onclick=\"javascript:fnAppdocPop(' + data.doc_seq + ', 0)\" title="전자결재 정보 상세 팝업보기">' + detail_name + '</a>';
 							}
 						}],
 						change: function (e) {
@@ -303,6 +319,16 @@
 						        	$(this).closest('table').parent().parent().parent().find('.checkbox').removeProp("checked");
 						        }
 							});
+
+                            var grid2 = $("#grid").data("kendoGrid");
+                            var gridData2 = grid2.dataSource.view();
+
+                            for (var i = 0; i < gridData2.length; i++) {
+                                if (gridData2[i].active == "N") {
+                                    grid2.table.find("tr[data-uid='" + gridData2[i].uid + "']").css({"text-decoration": "line-through", "text-decoration-color" : "red"});
+                                }
+                            }
+
 						}
 					}).data("kendoGrid");
 		
@@ -351,10 +377,40 @@
 		
 		})
 	}
-	
-	
-	
-	
+
+    /*	[결의 리스트] 전자결재 문서 창
+    --------------------------------------------*/
+    function fnAppdocPop(docSeq, formSeq) {
+        var intWidth = '900';
+        var intHeight = screen.height - 100;
+        var agt = navigator.userAgent.toLowerCase();
+
+        if (agt.indexOf("safari") != -1) {
+            intHeight = intHeight - 70;
+        }
+
+        var intLeft = screen.width / 2 - intWidth / 2;
+        var intTop = screen.height / 2 - intHeight / 2 - 40;
+
+        if (agt.indexOf("safari") != -1) {
+            intTop = intTop - 30;
+        }
+        var url = "";
+        var eaType = "${loginVo.eaType}";
+        var popName = "";
+        if( eaType == "eap"){
+            popName = "AppDoc";
+            url = "/eap/ea/docpop/EAAppDocViewPop.do?doc_id=" + docSeq + "&form_id=" + formSeq + "&doc_auth=1";
+        }else{
+            var param = "diKeyCode=" + docSeq + "&mode=reading";
+            popName = "popDocApprovalEdit";
+            param= "multiViewYN=N&"+param;
+            url = "/ea/edoc/eapproval/docCommonDraftView.do?"+ param;
+        }
+        window.open(url, popName,'menubar=0,resizable=0,scrollbars=1,status=no,titlebar=0,toolbar=no,width='
+            + intWidth + ',height=' + intHeight + ',left=' + intLeft + ',top=' + intTop);
+    }
+
 </script>
 
 <!-- iframe wrap -->
@@ -389,6 +445,10 @@
 					<input type="hidden" id="txtDeptName" value="" />
 					<input type="hidden" id="txtDeptCd" value="" />
 				</dd>
+                <dt class="ar" style="width: 65px">상태</dt>
+                <dd>
+                    <input id="selStat" />
+                </dd>
 				<dt class="ar" style="width: 65px">출장자</dt>
 				<dd>
 					<input type="text" id="empName"  value="" /> 

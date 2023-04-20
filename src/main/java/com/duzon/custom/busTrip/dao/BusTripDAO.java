@@ -115,7 +115,9 @@ public class BusTripDAO extends AbstractDAO {
 	public void modGradeCost(Map<String, Object>map) {
 		update("busTrip.modGradeCost", map);
 	}
-	public void changeStatus(Map<String, Object>map) {
+	public void changeStatus(Map<String, Object> map) {
+        String active = (String) selectOne("busTrip.getStatus", map);
+        map.put("active", active);
 		update("busTrip.changeStatus", map);
 	}
 	public void updateTradeSeq(Map<String, Object>map) {

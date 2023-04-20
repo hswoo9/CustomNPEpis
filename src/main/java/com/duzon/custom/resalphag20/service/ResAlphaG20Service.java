@@ -185,4 +185,18 @@ public interface ResAlphaG20Service {
 	String selectSmsMessage(Map<String, Object> paramMap);
 	
 	void deleteAdocuTmp(Map<String, Object> paramMap);
+
+    void saveReturnCardHist(Map<String, Object> cardReturnInfo);
+
+    Map<String, Object> cardHistRollback(Map<String, Object> paramMap);
+
+    void updateCardAqTmpRollback(Map<String, Object> paramMap);
+
+    void updateRestradeTblRollback(Map<String, Object> paramMap);
+
+    void saveReturnEtaxHist(Map<String, Object> etaxReturnInfo);
+
+    Map<String, Object> etaxHistRollback(Map<String, Object> paramMap);
+
+    void updateEtaxAqTmpRollback(Map<String, Object> etaxHist);
 }

@@ -336,7 +336,12 @@ var $dataSource = new kendo.data.DataSource({		//그리드데이터소스
 						}else{
 							return '';
 						}*/
-                        return'<span class="docTitle blueColor" onclick="fn_docViewPop(\'' + dataItem.appr_dikey + '\')">' + dataItem.c_ridocfullnum + '</span>';
+                        var txtValue = dataItem.c_ridocfullnum || "결재중";
+                        if(dataItem.appr_dikey){
+                            return'<span class="docTitle blueColor" onclick="fn_docViewPop(\'' + dataItem.appr_dikey + '\')">' + txtValue + '</span>';
+                        } else {
+                            return '';
+                        }
 					}
 				},
 				{
@@ -518,7 +523,7 @@ var $dataSource = new kendo.data.DataSource({		//그리드데이터소스
 		var params = {};
 	    var url = "/ea/edoc/eapproval/docCommonDraftView.do?multiViewYN=Y&diSeqNum=undefined&miSeqNum=undefined&diKeyCode="+dikeyCode;
 		if(g_hostName === '127.0.0.1' || g_hostName === 'localhost'){
-		    var url = "http://10.10.10.199/ea/edoc/eapproval/docCommonDraftView.do?multiViewYN=Y&diSeqNum=undefined&miSeqNum=undefined&diKeyCode="+dikeyCode;
+		    var url = "http://10.10.10.82/ea/edoc/eapproval/docCommonDraftView.do?multiViewYN=Y&diSeqNum=undefined&miSeqNum=undefined&diKeyCode="+dikeyCode;
 		}
 		window.open(url,"viewer","width=965, height=950, resizable=yes , scrollbars=no, status=no, top=50, left=50","newWindow");						
 	}

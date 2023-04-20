@@ -1382,13 +1382,21 @@ public class ResAlphaG20Controller {
 		Map<String, Object> resultMap = new HashMap<String, Object>();
 		
 		try {
-			Map<String, Object> cardReturnInfo = resAlphaG20Service.selectReturnCardLogInfo(paramMap);
-			
-			resAlphaG20Service.saveReturnCardLog(cardReturnInfo);
-			
-			resAlphaG20Service.updateCardAqTmp(paramMap);
-			resAlphaG20Service.updateRestradeTbl(paramMap);
-			
+            if(paramMap.get("statVal").toString() == "Y" || paramMap.get("statVal").equals("Y")){
+                Map<String, Object> cardReturnInfo = resAlphaG20Service.selectReturnCardLogInfo(paramMap);
+
+                resAlphaG20Service.saveReturnCardLog(cardReturnInfo);
+                resAlphaG20Service.saveReturnCardHist(cardReturnInfo);
+
+                resAlphaG20Service.updateCardAqTmp(paramMap);
+                resAlphaG20Service.updateRestradeTbl(paramMap);
+            } else {
+                Map<String, Object> cardHist = resAlphaG20Service.cardHistRollback(paramMap);
+
+                resAlphaG20Service.updateCardAqTmpRollback(cardHist);
+                resAlphaG20Service.updateRestradeTblRollback(cardHist);
+            }
+
 		} catch (Exception e) {
 			logger.info("Rollback ERROR : ", e);
 		}
@@ -1409,25 +1417,40 @@ public class ResAlphaG20Controller {
 		Map<String, Object> resultMap = new HashMap<String, Object>();
 		
 		try {
-			
-			Map<String, Object> tmpMap = resAlphaG20Service.getEtaxSyncId(paramMap);
-			
+
+            Map<String, Object> tmpMap = resAlphaG20Service.getEtaxSyncId(paramMap);
+
 			if (tmpMap != null) {
-				
-				// 반환 로그 테이블에 저장 res_return_etax_log
-				Map<String, Object> etaxReturnInfo = resAlphaG20Service.selectReturnEtaxLogInfo(tmpMap);
-				resAlphaG20Service.saveReturnEtaxLog(etaxReturnInfo);
-				
-				String syncId = String.valueOf(tmpMap.get("sync_id"));
-				
-				if (syncId != null && !"".equals(syncId)) {
-					paramMap.put("syncId", syncId);
-					
-					resAlphaG20Service.updateEtaxAqTmp(paramMap);
-					resAlphaG20Service.updateRestradeTbl(paramMap);
-				} else {
-					resultMap.put("OUT_MSG", "카드 사용정보가 없습니다.");
-				}
+
+                if(paramMap.get("statVal").toString() == "Y" || paramMap.get("statVal").equals("Y")){
+
+                    // 반환 로그 테이블에 저장 res_return_etax_log
+                    Map<String, Object> etaxReturnInfo = resAlphaG20Service.selectReturnEtaxLogInfo(tmpMap);
+                    resAlphaG20Service.saveReturnEtaxLog(etaxReturnInfo);
+                    resAlphaG20Service.saveReturnEtaxHist(etaxReturnInfo);
+
+                    String syncId = String.valueOf(tmpMap.get("sync_id"));
+
+                    if (syncId != null && !"".equals(syncId)) {
+                        paramMap.put("syncId", syncId);
+
+                        resAlphaG20Service.updateEtaxAqTmp(paramMap);
+                        resAlphaG20Service.updateRestradeTbl(paramMap);
+                    } else {
+                        resultMap.put("OUT_MSG", "카드 사용정보가 없습니다.");
+                    }
+                } else {
+//                    Map<String, Object> cardHist = resAlphaG20Service.cardHistRollback(paramMap);
+//
+//                    resAlphaG20Service.updateCardAqTmpRollback(cardHist);
+//                    resAlphaG20Service.updateRestradeTblRollback(cardHist);
+
+                    Map<String, Object> etaxHist = resAlphaG20Service.etaxHistRollback(tmpMap);
+
+                    resAlphaG20Service.updateEtaxAqTmpRollback(etaxHist);
+                    resAlphaG20Service.updateRestradeTblRollback(etaxHist);
+                }
+
 			} else {
 				resultMap.put("OUT_MSG", "사용정보가 없습니다.");
 			}

@@ -423,4 +423,33 @@ public class ResAlphaG20DAO extends AbstractDAO{
 	public void deleteAdocuTmp(Map<String, Object> paramMap) {
 		delete("resalphag20.deleteAdocuTmp", paramMap);		
 	}
+
+    public void saveReturnCardHist(Map<String, Object> params) {
+        insert("resalphag20.saveReturnCardHist", params);
+
+    }
+
+    public Map<String, Object> cardHistRollback(Map<String, Object> paramMap) {
+        return (Map<String, Object>) selectOne("resalphag20.cardHistRollback", paramMap);
+    }
+
+    public void updateCardAqTmpRollback(Map<String, Object> paramMap) {
+        update("resalphag20.updateCardAqTmpRollback", paramMap);
+    }
+
+    public void updateRestradeTblRollback(Map<String, Object> paramMap) {
+        update("resalphag20.updateRestradeTblRollback", paramMap);
+    }
+
+    public void saveReturnEtaxHist(Map<String, Object> etaxReturnInfo) {
+        insert("resalphag20.saveReturnEtaxHist", etaxReturnInfo);
+    }
+
+    public Map<String, Object> etaxHistRollback(Map<String, Object> paramMap) {
+        return (Map<String, Object>) selectOne("resalphag20.etaxHistRollback", paramMap);
+    }
+
+    public void updateEtaxAqTmpRollback(Map<String, Object> etaxHist) {
+        update("resalphag20.updateEtaxAqTmpRollback", etaxHist);
+    }
 }

@@ -504,6 +504,13 @@
 			set if_m_id = 0, if_d_id = 0, send_yn = null
 		where sync_id = #{syncId}
 	</update>
+
+    <update id="resalphag20.updateCardAqTmpRollback" parameterType="map">
+        /* resalphag20.updateCardAqTmpRollback */
+        update neos.t_ex_card_aq_tmp
+        set if_m_id = #{if_m_id}, if_d_id = #{if_d_id}, send_yn = #{send_yn}
+        where sync_id = #{sync_id}
+    </update>
 	
 	<update id="resalphag20.updateEtaxAqTmp" parameterType="map">
 		/* resalphag20.updateEtaxAqTmp */
@@ -511,6 +518,13 @@
 			set if_m_id = 0, if_d_id = 0, send_yn = 'N'
 		where sync_id = #{syncId}
 	</update>
+
+    <update id="resalphag20.updateEtaxAqTmpRollback" parameterType="map">
+        /* resalphag20.updateEtaxAqTmp */
+        update neos.t_ex_etax_aq_tmp
+        set if_m_id = #{if_m_id}, if_d_id = #{if_d_id}, send_yn = #{send_yn}
+        where sync_id = #{sync_id}
+    </update>
 	
 	<update id="resalphag20.updateRestradeTbl" parameterType="map">
 		/* resalphag20.updateRestradeTbl */
@@ -518,11 +532,18 @@
 			 set interface_seq = '' 
 		where interface_seq = #{syncId}
 	</update>
+
+    <update id="resalphag20.updateRestradeTblRollback" parameterType="map">
+        /* resalphag20.updateRestradeTblRollback */
+        update neos.t_exnp_restrade
+        set interface_seq = #{sync_id}
+        where trade_seq = #{trade_seq}
+    </update>
 	
 	<select id="resalphag20.getEtaxSyncId" parameterType="map" resultType="map">
 		/* resalphaG20.getEtaxSyncId */
 		select * from neos.t_ex_etax_aq_tmp
-					where iss_no = #{issNo} and send_yn = 'Y' and use_yn = 'Y'
+					where iss_no = #{issNo} and send_yn = #{statVal} and use_yn = 'Y'
 	</select>
 	
 	<select id="resalphag20.selectPdfErrorDocs" parameterType="map" resultType="map">
@@ -875,18 +896,51 @@
 	<insert id="resalphag20.saveReturnCardLog" parameterType="map">
 		INSERT INTO CUST_EPIS.res_return_card_log
 			(
-			sync_id
-			,if_m_id
-            ,if_d_id
-            ,trade_seq
+                sync_id
+                ,if_m_id
+                ,if_d_id
+                ,trade_seq
             )
             VALUES (
-            		#{sync_id}
-					,#{if_m_id}
-                    ,#{if_d_id}
-                    ,#{trade_seq}
-                    )
+                #{sync_id}
+                ,#{if_m_id}
+                ,#{if_d_id}
+                ,#{trade_seq}
+            )
 	</insert>
+
+    <insert id="resalphag20.saveReturnCardHist" parameterType="map">
+        INSERT INTO DJ_EPIS.dj_ex_card_hist
+        (
+            sync_id
+            ,if_m_id
+            ,if_d_id
+            ,send_yn
+            ,trade_seq
+        )
+        VALUES
+        (
+           #{sync_id}
+           ,#{if_m_id}
+           ,#{if_d_id}
+           ,#{send_yn}
+           ,#{trade_seq}
+       )
+    </insert>
+
+    <select id="cardHistRollback" parameterType="map" resultType="map">
+        SELECT * FROM DJ_EPIS.dj_ex_card_hist
+        WHERE sync_id = #{syncId}
+        ORDER BY sync_hist_id DESC
+        LIMIT 1
+    </select>
+
+    <select id="etaxHistRollback" parameterType="map" resultType="map">
+        SELECT * FROM DJ_EPIS.dj_ex_etax_hist
+        WHERE sync_id = #{sync_id}
+        ORDER BY sync_hist_id DESC
+        LIMIT 1
+    </select>
 	
 	<select id="resalphag20.selectReturnCardLogInfo" parameterType="map" resultType="map">
 	select * from neos.t_ex_card_aq_tmp a
@@ -1104,7 +1158,26 @@
                     ,#{trade_seq}
                     )
 	</insert>
-	
+    <insert id="resalphag20.saveReturnEtaxHist" parameterType="map">
+        /*resalphag20.saveReturnEtaxHist */
+
+        INSERT INTO DJ_EPIS.dj_ex_etax_hist
+        (
+            sync_id
+            ,if_m_id
+            ,if_d_id
+            ,trade_seq
+            ,send_yn
+        )
+        VALUES (
+                   #{sync_id}
+               ,#{if_m_id}
+               ,#{if_d_id}
+               ,#{trade_seq}
+               ,#{send_yn}
+               )
+    </insert>
+
 	<select id="resalphag20.selectReturnEtaxLog" parameterType="map" resultType="map">
 	/*resalphag20.selectReturnEtaxLog */
 	
