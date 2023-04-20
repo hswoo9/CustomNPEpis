@@ -61,6 +61,7 @@ public interface BudgetService {
 	List<Map<String, Object>> mokListAjax(Map<String, Object> map);
 	List<Map<String, Object>> getResDocSubmitList(Map<String, Object> map);
 	String resDocSubmit(Map<String, Object> map);
+	String resDocUpdate(Map<String, Object> map);
 	String updateUseYn(Map<String, Object> map);
 	List<Map<String, Object>> getResDocSubmitAdminList(Map<String, Object> map);
 	List<Map<String, Object>> getAdocuList(Map<String, Object> map);

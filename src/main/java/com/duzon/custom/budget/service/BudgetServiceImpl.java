@@ -17,6 +17,8 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import ch.qos.logback.core.net.SyslogOutputStream;
+import org.apache.commons.collections.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -35,142 +37,139 @@ import ac.cmm.vo.ConnectionVO;
 @Service ("BudgetService")
 public class BudgetServiceImpl implements BudgetService {
 	private String[] invalidName = {"\\\\","/",":","[*]","[?]","\"","<",">","[|]"};
-	
+
 	@Resource ( name = "BudgetDAO" )
 	private BudgetDAO budgetDAO;
-	
+
 	@Resource ( name = "BudgetMariaDAO" )
 	private BudgetMariaDAO budgetMariaDAO;
-	
+
 	@Resource ( name = "kukgohDAO" )
 	private KukgohDAO kukgohDAO;
-	
+
 	// G20 회계단위 목록 조회
 	public List<Map<String, Object>> getErpDivList(ConnectionVO conVo, Map<String, Object> map) {
 		return budgetDAO.getErpDivList(conVo, map);
 	}
-	
+
 	// G20 프로젝트 목록 조회
 	public List<Map<String, Object>> getErpPjtList(ConnectionVO conVo, Map<String, Object> map) {
 		return budgetDAO.getErpPjtList(conVo, map);
 	}
-	
+
 	// G20 하위사업 목록 조회
 	public List<Map<String, Object>> getErpBtmList(ConnectionVO conVo, Map<String, Object> map) {
 		return budgetDAO.getErpBtmList(conVo, map);
 	}
-	
+
 	public List<Map<String, Object>> getBudgetDataList(ConnectionVO conVo, Map<String, Object> map) {
 		// 부서코드를 하위사업으로 매핑, 조회조건에 부서에 해당하는 하위사업 추가
 		if (map.get("deptSeq") != null && !"".equals(map.get("deptSeq"))) {
 			Map<String, Object> btmInfo = budgetMariaDAO.getBtmInfoList(map);
 			String btmCd = Objects.toString(btmInfo.get("btmCd"), "") + Objects.toString(map.get("btmCd"), "");
-			
+
 			map.put("btmCd", btmCd);
 		}
-		
+
 		List<Map<String, Object>> budgetMap = new ArrayList<Map<String, Object>>();
 		List<Map<String, Object>> budgetList = budgetDAO.getBudgetDataList(conVo, map);
-		
+
 		for (int i = 0; i < budgetList.size(); i++) {
 			Map<String, Object> budgetInfo = budgetList.get(i);
-			
+
 			Map<String, Object> param = new HashMap<String, Object>();
 			param.put("pjtCd",  budgetInfo.get("MGT_CD"));
 			param.put("btmCd",  budgetInfo.get("BOTTOM_CD"));
-			
+
 			// 하위사업에 해당하는 부서명 읽어오기
 			Map<String, Object> deptInfo = budgetMariaDAO.getBtmDeptInfo(param);
-			
+
 			// 결과에 부서명이 존재하면 부서명 추가
 			if (deptInfo != null && deptInfo.size() > 0) {
 				budgetInfo.put("deptNm", deptInfo.get("deptNm"));
-			}
-			else {
+			} else {
 				budgetInfo.put("deptNm", "");
 			}
-			
+
 			budgetMap.add(budgetInfo);
 		}
-		
+
 		return budgetMap;
 	}
-	
+
 	// 프로젝트, 하위사업 목록
 	public List<Map<String, Object>> mapPjtBtmList(ConnectionVO conVo, Map<String, Object> map) {
 		return budgetDAO.mapPjtBtmList(conVo, map);
 	}
-	
+
 	// 예산과목 목록
 	public List<Map<String, Object>> mapBgtInfoList(ConnectionVO conVo, Map<String, Object> map) {
 		return budgetDAO.mapBgtInfoList(conVo, map);
 	}
-	
+
 	// 프로젝트 목록
 	public List<Map<String, Object>> pjtInfoList(ConnectionVO conVo, Map<String, Object> map) {
 		return budgetDAO.pjtInfoList(conVo, map);
 	}
-	
+
 	// 품의액 조회
 	public Map<String, Object> getPreBudgetInfo(Map<String, Object> map) {
 		return budgetMariaDAO.getPreBudgetInfo(map);
 	}
-	
+
 	// 부서 조회
 	public Map<String, Object> getDeptInfo(Map<String, Object> map) {
 		return budgetMariaDAO.getDeptInfo(map);
 	}
-	
+
 	// 프로젝트, 하위사업에 해당하는 부서정보 조회
 	public Map<String, Object> getBtmDeptInfo(Map<String, Object> map) {
 		return budgetMariaDAO.getBtmDeptInfo(map);
 	}
-	
+
 	// 프로젝트, 하위사업에 해당하는 부서목록 조회
 	public Map<String, Object> getBtmInfoList(Map<String, Object> map) {
 		return budgetMariaDAO.getBtmInfoList(map);
 	}
-	
+
 	// 부서정보 저장
 	public void saveDept(Map<String, Object> map) {
 		// 프로젝트코드_하위사업코드_부서코드로 된 구조임
 		String deptArr = (String) map.get("deptSeq");
 		String[] deptSeq = deptArr.split(",");
-		
+
 		for (int i = 0; i < deptSeq.length; i++) {
 			String[] deptInfo = deptSeq[i].split("_");
-			
+
 			// 3개의 데이터가 있을 경우 (프로젝트 코드, 하위사업 코드, 부서 코드)
 			if (deptInfo.length == 3) {
 				map.put("pjtCd",   deptInfo[0]);
 				map.put("btmCd",   deptInfo[1]);
 				map.put("deptSeq", deptInfo[2]);
-				
+
 				// 부서코드가 선택된 상태의 데이터 저장함
 				if (deptInfo[2] != null && !"".equals(deptInfo[2])) {
 					Map<String, Object> btmDeptInfo = budgetMariaDAO.getBtmDeptInfo(map);
-					
+
 					if (btmDeptInfo != null && !"".equals(btmDeptInfo.get("deptSeq"))) {
 						budgetMariaDAO.updateDept(map);
-					}
-					else {
+					} else {
 						budgetMariaDAO.insertDept(map);
 					}
 				}
 			}
 		}
 	}
-	
+
 	// 부서정보 저장
 	public void setBudgetList(List<Map<String, Object>> map) {
 		for (int i = 0; i < map.size(); i++) {
 			Map<String, Object> budgetInfo = map.get(i);
 			int cnt = budgetMariaDAO.getBudgetCnt(budgetInfo);
-					
+
 			if (cnt > 0) {
 				budgetMariaDAO.updateBudget(budgetInfo);
-			}
-			else {
+			} else {
 				budgetMariaDAO.insertBudget(budgetInfo);
 			}
 		}
@@ -178,111 +177,111 @@ public class BudgetServiceImpl implements BudgetService {
 
 	@Override
 	public List<Map<String, Object>> getBudgetDataList2(ConnectionVO conVo, Map<String, Object> map) {
-				
-				List<Map<String, Object>> budgetList = budgetDAO.getBudgetDataList2(conVo, map);
-				
-				return budgetList;
+
+		List<Map<String, Object>> budgetList = budgetDAO.getBudgetDataList2(conVo, map);
+
+		return budgetList;
 	}
 
 	@Override
 	public Map<String, Object> getPreBudgetInfo2(Map<String, Object> map) {
 		return budgetMariaDAO.getPreBudgetInfo2(map);
 	}
-	
+
 	@Override
 	public Map<String, Object> comboList(Map<String, Object> map){
-		
+
 		Map<String, Object> result = new HashMap<String,Object>();
-		
+
 		result.put("accountingUnitList", budgetDAO.accountingUnitList(map));
 		result.put("projectList", budgetDAO.projectList(map));
 		result.put("budgetList", budgetDAO.budgetList(map));
 		result.put("mokList", budgetDAO.mokList(map));
-		
+
 		return result;
 	}
-	
+
 	@Override
 	public Map<String, Object> caseActList(Map<String, Object> map){
-		
+
 		Map<String, Object> result = new HashMap<String,Object>();
-		
+
 		result.put("list", budgetDAO.caseActList(map));
 //		result.put("totalCount", budgetDAO.caseActListTotal(map));
 		result.put("totalCount",map.get("totalCount"));
 		return result;
 	}
-	
+
 	@Override
 	public Map<String, Object> caseActDetailList(Map<String, Object> map){
-		
+
 		Map<String, Object> result = new HashMap<String,Object>();
-		
+
 		result.put("list", budgetDAO.caseActDetailList(map));
 
 		return result;
 	}
-	
+
 	@Override
 	public List<Map<String, Object>> causeActDocSearch(Map<String, Object> map) {
-		
+
 		List<Map<String, Object>> doc = budgetDAO.causeActDocSearch(map);
-		
+
 		return doc;
 	}
-	
+
 	@Override
 	public Map<String, Object> ledgerComboList(Map<String, Object> map){
-		
+
 		Map<String, Object> result = new HashMap<String,Object>();
-		
+
 		result.put("accountingUnitList", budgetDAO.accountingUnitList(map));
 		result.put("accountTitleList", budgetDAO.accountTitleList(map));
 		//result.put("customerList", budgetDAO.customerList(map));
-		
+
 		return result;
 	}
-	
+
 	@Override
 	public Map<String, Object> ledgerComboList2(Map<String, Object> map){
-		
+
 		Map<String, Object> result = new HashMap<String,Object>();
-		
+
 		result.put("accountingUnitList", budgetDAO.accountingUnitList(map));
 		result.put("accountTitleList", budgetDAO.accountTitleList(map));
-		
+
 		return result;
 	}
-	
+
 	@Override
 	public Map<String, Object> ledgerList(Map<String, Object> map){
-		
+
 		Map<String, Object> result = new HashMap<String,Object>();
-		
+
 		result.put("list", budgetDAO.ledgerList(map));
 //		result.put("totalCount", budgetDAO.caseActListTotal(map));
 //		result.put("totalCount",map.get("totalCount"));
 		return result;
 	}
-	
+
 	@Override
 	public Map<String, Object> accountingComboList(Map<String, Object> map){
-		
+
 		Map<String, Object> result = new HashMap<String,Object>();
-		
+
 		result.put("accountingUnitList", budgetDAO.accountingUnitList(map));
 
 		return result;
 	}
-	
+
 	@Override
 	public Map<String, Object> caseActDetailList2(Map<String, Object> map){
 		Map<String, Object> result = new HashMap<String,Object>();
-		
+
 		List<Map<String, Object>> listErp = budgetDAO.caseActDetailList(map);
 		List<Map<String, Object>> listGw = budgetDAO.caseActDetailList2(map);
 		List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
-		
+
 		int wonAm = 0;
 		int janAm = 0;
 		if(map.get("budget_am") != null && !"".equals(map.get("budget_am"))){
@@ -341,18 +340,18 @@ public class BudgetServiceImpl implements BudgetService {
 
 	@Override
 	public Map<String, Object> getVoucher(Map<String, Object> map) {
-		
+
 		Map<String, Object> paramMap = budgetDAO.getVoucher(map);
-		
+
 		paramMap.put("C_DIKEYCODE", "");
 		paramMap.put("DOC_NUMBER", "");
 		paramMap.put("DOC_TITLE", "");
 		paramMap.put("DOC_REGDATE", "");
 		paramMap.put("OUT_YN", "");
 		paramMap.put("OUT_MSG", "");
-		
+
 		budgetDAO.getDocInfo(paramMap);
-		
+
 		return paramMap;
 	}
 
@@ -388,31 +387,31 @@ public class BudgetServiceImpl implements BudgetService {
 
 	@Override
 	public Map<String, Object> accountLedgerList(Map<String, Object> map) {
-		
+
 		Map<String, Object> result = new HashMap<String,Object>();
-		
+
 		result.put("list", budgetDAO.accountLedgerList(map));
-		
+
 		return result;
 	}
 
 	@Override
 	public Map<String, Object> generalAccountLedgerList(Map<String, Object> map) {
-		
+
 		Map<String, Object> result = new HashMap<String,Object>();
-		
+
 		result.put("list", budgetDAO.generalAccountLedgerList(map));
-		
+
 		return result;
 	}
 
 	@Override
 	public Map<String, Object> resolutionDeptComboList(Map<String, Object> map) {
-		
+
 		Map<String, Object> result = new HashMap<>();
-		
+
 		result.put("resolutionDeptList", budgetDAO.resolutionDeptComboList(map));
-		
+
 		return result;
 	}
 
@@ -428,11 +427,11 @@ public class BudgetServiceImpl implements BudgetService {
 
 	@Override
 	public List<Map<String, Object>> IndividualExpenditureResolutionList(Map<String, Object> map) {
-		
+
 		List<Map<String, Object>> list = budgetDAO.IndividualExpenditureResolutionList(map);
-		
+
 		for (Map<String, Object> map2 : list) {
-			
+
 			map2.put("C_DIKEYCODE", "");
 			map2.put("DOC_NUMBER", "");
 			map2.put("DOC_TITLE", "");
@@ -440,24 +439,24 @@ public class BudgetServiceImpl implements BudgetService {
 			map2.put("OUT_YN", "");
 			map2.put("OUT_MSG", "");
 			kukgohDAO.getDocInfo(map2);
-			
+
 			if(map2.get("OUT_YN") == null || "N".equals(map2.get("OUT_YN"))) {
 				map2.put("DOC_NUMBER", "-");
 				map2.put("DOC_TITLE", "-");
 				map2.put("DOC_REGDATE", "-");
 			}
 		}
-		
+
 		return list;
 	}
 
 	@Override
 	public List<Map<String, Object>> expenditureResolutionStatusList(Map<String, Object> map) {
-		
+
 		List<Map<String, Object>> list = budgetDAO.expenditureResolutionStatusList(map);
-		
+
 		for (Map<String, Object> map2 : list) {
-			
+
 			map2.put("C_DIKEYCODE", "");
 			map2.put("DOC_NUMBER", "");
 			map2.put("DOC_TITLE", "");
@@ -465,14 +464,14 @@ public class BudgetServiceImpl implements BudgetService {
 			map2.put("OUT_YN", "");
 			map2.put("OUT_MSG", "");
 			kukgohDAO.getDocInfo(map2);
-			
+
 			if(map2.get("OUT_YN") == null || "N".equals(map2.get("OUT_YN"))) {
 				map2.put("DOC_NUMBER", "-");
 				map2.put("DOC_TITLE", "-");
 				map2.put("DOC_REGDATE", "-");
 			}
 		}
-		
+
 		return list;
 	}
 
@@ -488,24 +487,24 @@ public class BudgetServiceImpl implements BudgetService {
 
 	@Override
 	public List<Map<String, Object>> projectPreparationList(Map<String, Object> map) {
-		
+
 		List<Map<String, Object>> list = budgetDAO.projectPreparationList(map);
-		
+
 		for (Map<String, Object> map2 : list) {
-			
+
 			map2.put("FROM_MONTH", map.get("FROM_MONTH"));
 			map2.put("MONTH", map.get("MONTH"));
 			map2.put("APPLY_AMT", "");
 			map2.put("OUT_YN", "");
 			map2.put("OUT_MSG", "");
-			
+
 			System.out.println("before@@" + map2);
-			
+
 			budgetDAO.amountGoodsList(map2);
-			
+
 			System.out.println("after@@" + map2);
 		}
-		
+
 		return list;
 	}
 
@@ -513,12 +512,12 @@ public class BudgetServiceImpl implements BudgetService {
 	public List<Map<String, Object>> projectList(Map<String, Object> map) {
 		return budgetDAO.projectList(map);
 	}
-	
+
 	@Override
 	public List<Map<String, Object>> projectList3(Map<String, Object> map) {
 		return budgetDAO.projectList3(map);
 	}
-	
+
 	@Override
 	public List<Map<String, Object>> projectList2(Map<String, Object> map) {
 		return budgetDAO.projectList2(map);
@@ -533,7 +532,7 @@ public class BudgetServiceImpl implements BudgetService {
 	public List<Map<String, Object>> mokListAjax(Map<String, Object> map) {
 		return budgetDAO.mokList(map);
 	}
-	
+
 	@Override
 	public List<Map<String, Object>> getResDocSubmitList(Map<String, Object> map) {
 		return budgetDAO.getResDocSubmitList(map);
@@ -542,43 +541,64 @@ public class BudgetServiceImpl implements BudgetService {
 	@Override
 	public String resDocSubmit(Map<String, Object> map) {
 		String[] resDocSeqArr = String.valueOf(map.get("resDocSeqArr")).split(",");
-		
+
 		for (String resDocSeq : resDocSeqArr) {
 			map.put("resDocSeq", resDocSeq);
 			budgetDAO.resDocSubmit(map);
 		}
 		return "Success";
 	}
-	
+
+	@Override
+	public String resDocUpdate(Map<String, Object> map) {
+		String[] resDocSeqArr = String.valueOf(map.get("resDocSeqArr")).split(",");
+
+		for (String resDocSeq : resDocSeqArr) {
+			map.put("resDocSeq", resDocSeq);
+			budgetDAO.resDocUpdate(map);
+		}
+		return "Success";
+	}
+
 	@Override
 	public String updateUseYn(Map<String, Object> map) {
 		String[] resDocSeqArr = String.valueOf(map.get("resDocSeqArr")).split(",");
-		
+
 		for (String resDocSeq : resDocSeqArr) {
 			map.put("resDocSeq", resDocSeq);
 			budgetDAO.updateUseYn(map);
 		}
 		return "Success";
 	}
-	
+
 	@Override
 	public String updateReturn(Map<String, Object> map) {
 		String[] resDocSeqArr = String.valueOf(map.get("resDocSeqArr")).split(",");
-		
+
 		for (String resDocSeq : resDocSeqArr) {
 			map.put("resDocSeq", resDocSeq);
 			budgetDAO.updateReturn(map);
 		}
 		return "Success";
 	}
-	
+
 	@Override
 	public List<Map<String, Object>> getResDocSubmitAdminList(Map<String, Object> map) {
 		List<Map<String, Object>> bgList = budgetDAO.getResDocSubmitAdminList(map);
 		List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
 		String biddingYn = String.valueOf(map.get("biddingYn"));
+
 		for (Map<String, Object> bgMap : bgList) {
 			Map<String, Object> erpBgMap = budgetDAO.getErpBgInfo(bgMap);
+
+			Map<String, Object> prufMap = budgetDAO.getPrufInfo(String.valueOf(bgMap.get("docNo")));
+
+			if(!MapUtils.isEmpty(prufMap) && prufMap.containsKey("PRUF_SE_CODE")){
+				bgMap.put("PRUF_SE_CODE", prufMap.get("PRUF_SE_CODE"));
+			}else{
+				bgMap.put("PRUF_SE_CODE", "");
+			}
+
 			if (erpBgMap != null) {
 				bgMap.putAll(erpBgMap);
 			}
@@ -593,6 +613,7 @@ public class BudgetServiceImpl implements BudgetService {
 			}else {
 				resultList.add(bgMap);
 			}
+
 		}
 		return resultList;
 	}
@@ -635,13 +656,13 @@ public class BudgetServiceImpl implements BudgetService {
 		resultMap.put("adocuDInfo", budgetDAO.getAdocuDInfo(map));
 		return resultMap;
 	}
-	
+
 	@Autowired
 	private ResAlphaG20Service resAlphaG20Service;
-	
+
 	@Value("#{bizboxa['BizboxA.pdfServerRootPath']}")
 	private String pdfServerRootPath;
-	
+
 	@Override
 	public void adocuApp(Map<String, Object> bodyMap) {
 		String docSts = String.valueOf(bodyMap.get("docSts"));
@@ -651,7 +672,7 @@ public class BudgetServiceImpl implements BudgetService {
 			t.start();
 		}
 	}
-	
+
 	@Override
 	public List<Map<String, Object>> getParentDept(Map<String, Object> map) {
 		return budgetDAO.getParentDept(map);
@@ -659,14 +680,14 @@ public class BudgetServiceImpl implements BudgetService {
 
 	@Override
 	public void parentDeptCancel(Map<String, Object> map) {
-		budgetDAO.parentDeptCancel(map);		
+		budgetDAO.parentDeptCancel(map);
 	}
 
 	@Override
 	public List<Map<String, Object>> searchDeptList(Map<String, Object> map) {
 		return budgetDAO.searchDeptList(map);
 	}
-	
+
 	@Override
 	public List<Map<String, Object>> searchDeptList2(Map<String, Object> map) {
 		return budgetDAO.searchDeptList2(map);
@@ -781,7 +802,7 @@ public class BudgetServiceImpl implements BudgetService {
 	public List<Map<String, Object>> getDeptBgt(Map<String, Object> map) {
 		return budgetDAO.getDeptBgt(map);
 	}
-	
+
 	@Override
 	public List<Map<String, Object>> getProjectYesilDaebi(Map<String, Object> map) {
 		return budgetDAO.getProjectYesilDaebi(map);
@@ -798,20 +819,20 @@ public class BudgetServiceImpl implements BudgetService {
 	@Override
 	public void saveBgtPlan(Map<String, Object> map) {
 		map.put("bgtAmt", Integer.parseInt(String.valueOf(map.get("bgtAmt"))));
-		
-		budgetDAO.saveBgtPlan(map);		
+
+		budgetDAO.saveBgtPlan(map);
 	}
-	
+
 	/**
 	 *  단일 제출 및 임시저장
-	 * @throws IOException 
-	 * @throws IllegalStateException 
+	 * @throws IOException
+	 * @throws IllegalStateException
 	 */
 	@Override
 	public void saveBgtPlan(Map<String, Object> map, MultipartHttpServletRequest multi, List<Map<String, Object>> delFiles) throws Exception {
-		
+
 		String ROOT_PATH = "";
-		
+
 		if (multi.getServerName().contains("localhost") || multi.getServerName().contains("127.0.0.1")) {
 			ROOT_PATH = "C:/home/upload/budget";
 		} else {
@@ -821,38 +842,38 @@ public class BudgetServiceImpl implements BudgetService {
 		String targetId = java.util.UUID.randomUUID().toString().replace("-", "");
 		String orderSq = String.valueOf(map.get("orderSq"));
 		String pjtCd = String.valueOf(map.get("pjtCd"));
-		
+
 		// 기존 저장되있던 파일 처리
 		if (delFiles.size() > 0) {
 			for (Map<String, Object> delFile : delFiles) {
 				budgetDAO.updateFile(delFile);
 			}
 		}
-		
+
 		// 기존에 저장 된 파일중 MAX 시퀀스 번호
 		String fileMaxSeq = budgetDAO.selectMaxFileSeq(map);
-		int fileSeq = Integer.parseInt(fileMaxSeq) + 1; 
-		
+		int fileSeq = Integer.parseInt(fileMaxSeq) + 1;
+
 		Iterator<String> files = multi.getFileNames();
-		
+
 		while (files.hasNext()) {
 			Map<String, Object> param = new HashMap<String, Object>();
 			MultipartFile mFile = multi.getFile(files.next());
-			
+
 			String orgFileName = mFile.getOriginalFilename();
 			String realFileName = orderSq + fileSeq + targetId.substring(0, 10);
 			String filePath = ROOT_PATH + "/" + pjtCd + "/";
-			
+
 			System.out.println("@@orgFileName : " + orgFileName);
 			System.out.println("@@fileSize : " + mFile.getSize());
-			
+
 			/* 파일 이름 유효성 체크 */
 			for (int j = 0; j < invalidName.length; j++) {
 				orgFileName = orgFileName.replaceAll(invalidName[j], "_");
 			}
-			
+
 			String ext = orgFileName.substring(orgFileName.lastIndexOf(".")+1);
-			
+
 			param.put("orgFileName", orgFileName);
 			param.put("realFileName", realFileName);
 			param.put("fileSize", String.valueOf(mFile.getSize()));
@@ -860,47 +881,47 @@ public class BudgetServiceImpl implements BudgetService {
 			param.put("targetId", orderSq);
 			param.put("ext", ext);
 			param.put("filePath", filePath);
-			
+
 			budgetDAO.insertBudgetAttach(param);
-			
+
 			File dir = new File(filePath);
-			
+
 			if(!dir.isDirectory()){
                 dir.mkdirs();
             }
-			
+
 			mFile.transferTo(new File(filePath + realFileName + "." + ext));
 		}
-		
+
 		map.put("fileId", orderSq);
 		map.put("bgtAmt", Long.parseLong(String.valueOf(map.get("bgtAmt"))));
-		
-		budgetDAO.saveBgtPlan(map);		
+
+		budgetDAO.saveBgtPlan(map);
 	}
 
 	@Override
 	public void copyBgtPlan(Map<String, Object> map) {
-		budgetDAO.copyBgtPlan(map);		
+		budgetDAO.copyBgtPlan(map);
 	}
 
 	@Override
 	public void cancelBgtPlan(Map<String, Object> map) {
-		budgetDAO.cancelBgtPlan(map);		
+		budgetDAO.cancelBgtPlan(map);
 	}
-	
+
 	@Override
 	public String callGetPjtBudget(Map<String, Object> map) {
-		return budgetDAO.callGetPjtBudget(map);		
+		return budgetDAO.callGetPjtBudget(map);
 	}
-	
+
 	@Override
 	public void saveEndProcess(Map<String, Object> map) {
-		budgetDAO.saveEndProcess(map);		
+		budgetDAO.saveEndProcess(map);
 	}
-	
+
 	@Override
 	public void cancelEndProcess(Map<String, Object> map) {
-		budgetDAO.cancelEndProcess(map);		
+		budgetDAO.cancelEndProcess(map);
 	}
 
 	@Override
@@ -912,7 +933,7 @@ public class BudgetServiceImpl implements BudgetService {
 	public List<Map<String, Object>> searchDeptList3(Map<String, Object> map) {
 		return budgetDAO.searchDeptList3(map);
 	}
-	
+
 	@Override
 	public List<Map<String, Object>> searchDeptList6(Map<String, Object> map) {
 		return budgetDAO.searchDeptList6(map);
@@ -947,54 +968,54 @@ public class BudgetServiceImpl implements BudgetService {
 	public List<Map<String, Object>> selectDailySchedule(Map<String, Object> map) {
 		return budgetDAO.selectDailySchedule(map);
 	}
-	
+
 	@Override
 	public void fileDown(Map<String, Object> map, HttpServletRequest request, HttpServletResponse response) {
-			
+
 		Map<String, Object> result =  budgetDAO.getBudgetAttachOne(map);
-			String fileName = String.valueOf(result.get("file_name"));
-			String fileExt = String.valueOf(result.get("file_extension"));
-			String path = String.valueOf(result.get("file_path")) + String.valueOf(result.get("real_file_name")) + "." + fileExt;	
-			
-			try {
-				fileDownLoad(fileName, path, request, response);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-	}
-	
-	@Override
-	public void excelDown(Map<String, Object> map, HttpServletRequest request, HttpServletResponse response) {
-		
-		String fileName = String.valueOf(map.get("fileName"));
-		String path = String.valueOf(map.get("fileFullPath"));
-		
+		String fileName = String.valueOf(result.get("file_name"));
+		String fileExt = String.valueOf(result.get("file_extension"));
+		String path = String.valueOf(result.get("file_path")) + String.valueOf(result.get("real_file_name")) + "." + fileExt;
+
 		try {
 			fileDownLoad(fileName, path, request, response);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
-	public void fileDownLoad(String fileNm, String path, HttpServletRequest request, HttpServletResponse response) throws Exception { 
+
+	@Override
+	public void excelDown(Map<String, Object> map, HttpServletRequest request, HttpServletResponse response) {
+
+		String fileName = String.valueOf(map.get("fileName"));
+		String path = String.valueOf(map.get("fileFullPath"));
+
+		try {
+			fileDownLoad(fileName, path, request, response);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void fileDownLoad(String fileNm, String path, HttpServletRequest request, HttpServletResponse response) throws Exception {
 		BufferedInputStream in = null;
 		BufferedOutputStream out = null;
 		File reFile = null;
 
 		reFile = new File(path);
 		setDisposition(fileNm, request, response);
-		
+
 		try {
 			in = new BufferedInputStream(new FileInputStream(reFile));
 			out = new BufferedOutputStream(response.getOutputStream());
-			
+
 			FileCopyUtils.copy(in, out);
 			out.flush();
 		}catch (Exception e) {
 
 		}
 	}
-	
+
 	private void setDisposition(String filename, HttpServletRequest request, HttpServletResponse response) throws Exception {
 		String browser = getBrowser(request);
 
@@ -1019,7 +1040,7 @@ public class BudgetServiceImpl implements BudgetService {
 			}
 			encodedFilename = sb.toString();
 		} else {
-			
+
 		}
 
 		response.setHeader("Content-Disposition", dispositionPrefix + encodedFilename);
@@ -1028,7 +1049,7 @@ public class BudgetServiceImpl implements BudgetService {
 			response.setContentType("application/octet-stream;charset=UTF-8");
 		}
 	}
-	
+
 	private String getBrowser(HttpServletRequest request) {
 		String header = request.getHeader("User-Agent");
 		if (header.indexOf("MSIE") > -1) { // IE 10 �씠�븯
@@ -1096,36 +1117,36 @@ public class BudgetServiceImpl implements BudgetService {
 	@Override
 	public void uploadBudgetFile(Map<String, Object> map, MultipartHttpServletRequest multi) throws Exception {
 		String ROOT_PATH = "";
-		
+
 		if (multi.getServerName().contains("localhost") || multi.getServerName().contains("127.0.0.1")) {
 			ROOT_PATH = "C:/home/upload/budget";
 		} else {
 			ROOT_PATH = "/home/upload/budget";
 		}
-		
+
 		List<Map<String, Object>> list = budgetDAO.getBudgetAttach(map);
-		
+
 		int fileSeq = list.size() + 1;
 		String targetId = String.valueOf(map.get("targetId"));
 		String pjtCd = String.valueOf(map.get("pjtCd"));
-		
+
 		Iterator<String> files = multi.getFileNames();
-		
+
 		while (files.hasNext()) {
 			Map<String, Object> param = new HashMap<String, Object>();
 			MultipartFile mFile = multi.getFile(files.next());
-			
+
 			String orgFileName = mFile.getOriginalFilename();
 			String realFileName = fileSeq + targetId;
 			String filePath = ROOT_PATH + "/" + pjtCd + "/";
-			
+
 			/* 파일 이름 유효성 체크 */
 			for (int j = 0; j < invalidName.length; j++) {
 				orgFileName = orgFileName.replaceAll(invalidName[j], "_");
 			}
-			
+
 			String ext = orgFileName.substring(orgFileName.lastIndexOf(".")+1);
-			
+
 			param.put("orgFileName", orgFileName);
 			param.put("realFileName", realFileName);
 			param.put("fileSize", String.valueOf(mFile.getSize()));
@@ -1133,18 +1154,18 @@ public class BudgetServiceImpl implements BudgetService {
 			param.put("targetId", targetId);
 			param.put("ext", ext);
 			param.put("filePath", filePath);
-			
+
 			budgetDAO.insertBudgetAttach(param);
-			
+
 			File dir = new File(filePath);
-			
+
 			if(!dir.isDirectory()){
                 dir.mkdirs();
             }
-			
+
 			mFile.transferTo(new File(filePath + realFileName + "." + ext));
 		}
-		
+
 	}
 
 	@Override
@@ -1160,24 +1181,25 @@ public class BudgetServiceImpl implements BudgetService {
 	@Override
 	public String getSumAmtByDate(Map<String, Object> map) {
 		return budgetDAO.getSumAmtByDate(map);
-	}	
+	}
+
 	@Override
 	public String getAskedEmpNm(String modifyId) {
 		return budgetDAO.getAskedEmpNm(modifyId);
-	}	
+	}
 
-//applyDeptBgt 에서 사용한다!
+	//applyDeptBgt 에서 사용한다!
 	@Override
 	public void saveBgtPlanDept(Map<String, Object> map, MultipartHttpServletRequest multi, List<Map<String, Object>> delFiles) throws Exception {
-		
+
 		String ROOT_PATH = "";
-		
+
 		if (multi.getServerName().contains("localhost") || multi.getServerName().contains("127.0.0.1")) {
 			ROOT_PATH = "C:/home/upload/budget";
 		} else {
 			ROOT_PATH = "/home/upload/budget";
 		}
-		
+
 		String targetId = java.util.UUID.randomUUID().toString().replace("-", "");
 		String orderSq = String.valueOf(map.get("bgtMonth"));
 		orderSq += String.valueOf(map.get("pjtCd")); //orderSq 는 날짜 + pjtCd
@@ -1189,31 +1211,31 @@ public class BudgetServiceImpl implements BudgetService {
 				budgetDAO.updateFile(delFile);
 			}
 		}
-		
+
 		// 기존에 저장 된 파일중 MAX 시퀀스 번호
 		String fileMaxSeq = budgetDAO.selectMaxFileSeq(map);
-		int fileSeq = Integer.parseInt(fileMaxSeq) + 1; 
-		
+		int fileSeq = Integer.parseInt(fileMaxSeq) + 1;
+
 		Iterator<String> files = multi.getFileNames();
 		System.out.println(files + " files 안의 내용들 찍어보기 ");
 		while (files.hasNext()) {
 			Map<String, Object> param = new HashMap<String, Object>();
 			MultipartFile mFile = multi.getFile(files.next());
-			
+
 			String orgFileName = mFile.getOriginalFilename();
 			String realFileName = orderSq + fileSeq + targetId.substring(0, 10);
 			String filePath = ROOT_PATH + "/" + pjtCd + "/";
-			
+
 			System.out.println("@@orgFileName : " + orgFileName);
 			System.out.println("@@fileSize : " + mFile.getSize());
-			
+
 			/* 파일 이름 유효성 체크 */
 			for (int j = 0; j < invalidName.length; j++) {
 				orgFileName = orgFileName.replaceAll(invalidName[j], "_");
 			}
-			
+
 			String ext = orgFileName.substring(orgFileName.lastIndexOf(".")+1);
-			
+
 			param.put("orgFileName", orgFileName);
 			param.put("realFileName", realFileName);
 			param.put("fileSize", String.valueOf(mFile.getSize()));
@@ -1221,20 +1243,20 @@ public class BudgetServiceImpl implements BudgetService {
 			param.put("targetId", orderSq);
 			param.put("ext", ext);
 			param.put("filePath", filePath);
-			
+
 			budgetDAO.insertBudgetAttach(param);
-			
+
 			File dir = new File(filePath);
-			
+
 			if(!dir.isDirectory()){
 				dir.mkdirs();
 			}
-			
+
 			mFile.transferTo(new File(filePath + realFileName + "." + ext));
 		}
-		
+
 		map.put("fileId", orderSq);
-		
-		budgetDAO.saveBgtPlanDept(map);		
+
+		budgetDAO.saveBgtPlanDept(map);
 	}
 }

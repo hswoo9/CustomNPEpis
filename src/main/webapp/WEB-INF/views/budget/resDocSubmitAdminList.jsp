@@ -71,7 +71,7 @@ var $dataSource = new kendo.data.DataSource({		//그리드데이터소스
 			 		obj.useName = '확정';
 			 	}
 			});
-			
+
 			return response.list;
 		},
 	    model : {
@@ -151,6 +151,25 @@ var $dataSource = new kendo.data.DataSource({		//그리드데이터소스
 				gridReload();	
 			}
 		});
+
+		$("#deadlinePopUp").kendoWindow({
+			width: "240px",
+			height: "110px",
+			visible: false,
+			modal: true,
+			close: function(e) {
+				$('#deadline').val('');
+			}
+		}).data("kendoWindow").center();
+
+		$("#deadline").kendoDatePicker({
+			depth: "month",
+			start: "month",
+			culture : "ko-KR",
+			format : "yyyy-MM-dd",
+		});
+
+		$('#deadline').prop('readonly', true);
 		
 		$("#biddingYn").kendoDropDownList();
 		
@@ -246,6 +265,28 @@ var $dataSource = new kendo.data.DataSource({		//그리드데이터소스
 					title : "승인일자"
 				},
 				{
+					width : 15,
+					title : "증빙유형",
+					template : function(dataItem){
+						if(dataItem.PRUF_SE_CODE == '001'){
+							return '전자세금계산서';
+						}else if(dataItem.PRUF_SE_CODE == '002'){
+							return '전자계산서';
+						}else if(dataItem.PRUF_SE_CODE == '004') {
+							return '보조금전용카드';
+						}else if(dataItem.PRUF_SE_CODE == '999') {
+							return '기타';
+						}else{
+							return '';
+						}
+					}
+				},
+				{	field : "deadline",
+					width : 15,
+					title : "납부기한"
+				},
+
+				/*{
 					field : "isu_dt",
 					template : function(dataItem) {
 						if(dataItem.isu_dt){
@@ -268,7 +309,7 @@ var $dataSource = new kendo.data.DataSource({		//그리드데이터소스
 					},
 					width : 15,
 					title : "확정일자(전표)"
-				},
+				},*/
 				{
 					field : "fill_num",
 					width : 15,
@@ -388,33 +429,33 @@ var $dataSource = new kendo.data.DataSource({		//그리드데이터소스
 			$(".rowCheckbox").prop("checked", false);
 		}
 	}
-	
-	function resDocSubmit(){
-		var checkBoxArr = $(".rowCheckbox:checked");
-		if(checkBoxArr.length == 0){
-			alert("선택된 결의서가 없습니다.");
-			return;
-		}
-		if(confirm("선택된 결의서를 제출합니다.")){
-			var resDocSeqArr = "";
-			$.each(checkBoxArr, function(inx){
-				if(inx != 0){
-					resDocSeqArr += ",";
-				}
-				resDocSeqArr += $(this).attr("resDocSeq");
-			});
-			$.ajax({
-				url : _g_contextPath_+ "/budget/resDocSubmit",
-				data : {resDocSeqArr: resDocSeqArr, empSeq: $("#empSeq").val()},
-				type : "POST",
-				async : false,
-				success : function(result){
-					$(".headerCheckbox").prop("checked", false);
-					gridReload();
-				}
-			});
-		}
-	}
+
+/*function resDocSubmit(){
+    var checkBoxArr = $(".useCheck:checked");
+    if(checkBoxArr.length == 0){
+        alert("선택된 결의서가 없습니다.");
+        return;
+    }
+    if(confirm("선택된 결의서를 제출합니다.")){
+        var resDocSeqArr = "";
+        $.each(checkBoxArr, function(inx){
+            if(inx != 0){
+                resDocSeqArr += ",";
+            }
+            resDocSeqArr += $(this).attr("resDocSeq");
+        });
+        $.ajax({
+            url : _g_contextPath_+ "/budget/resDocSubmit",
+            data : {resDocSeqArr: resDocSeqArr, empSeq: $("#empSeq").val()},
+            type : "POST",
+            async : false,
+            success : function(result){
+                $(".headerCheckbox").prop("checked", false);
+                gridReload();
+            }
+        });
+    }
+}*/
 	
 	//사원팝업 ajax
 	var empDataSource = new kendo.data.DataSource({
@@ -584,6 +625,58 @@ var $dataSource = new kendo.data.DataSource({		//그리드데이터소스
 			}
 		}).data("kendoWindow").center();
 	}
+
+	//일반 제출 -> 고지서 제출 전환 기능 추가
+	function resDocSubmit(submitType){
+		var checkBoxArr = $(".useCheck:checked");
+		var resDocSeqArr = "";
+		$.each(checkBoxArr, function(inx){
+			if(inx != 0){
+				resDocSeqArr += ",";
+			}
+			resDocSeqArr += $(this).val();
+		});
+		$.ajax({
+			url : _g_contextPath_+ "/budget/resDocUpdate",
+			data : {resDocSeqArr: resDocSeqArr, empSeq: $("#empSeq").val(), deadline: $('#deadline').val()},
+			type : "POST",
+			async : false,
+			success : function(result){
+				$(".headerCheckbox").prop("checked", false);
+				gridReload();
+			}
+		});
+	}
+
+	function resDocSubmitCheck2(){
+		var checkBoxArr = $(".useCheck:checked");
+		if(checkBoxArr.length == 0){
+			alert("선택된 문서가 없습니다.");
+			return;
+		}
+		if(checkBoxArr.length > 1){
+			alert("문서는 하나만 선택 가능합니다.");
+			return;
+		}
+		$("#deadlinePopUp").data("kendoWindow").open();
+		var resDocSeqArr = "";
+		$.each(checkBoxArr, function(inx){
+			if(inx != 0){
+				resDocSeqArr += ",";
+			}
+			resDocSeqArr += $(this).attr("resDocSeq");
+		});
+		console.log(resDocSeqArr);
+	}
+
+	function resDocSubmitCheck3(){
+		if(!$('#deadline').val()){
+			alert('처리기한을 입력하세요.');
+			return;
+		}
+		resDocSubmit(1);
+		$("#deadlinePopUp").data("kendoWindow").close();
+	}
 </script>
 <div class="iframe_wrap">
 	<div class="sub_title_wrap">
@@ -659,6 +752,7 @@ var $dataSource = new kendo.data.DataSource({		//그리드데이터소스
 
 			<div class="right_div">
 				<div class="controll_btn p0">
+					<button type="button" id="" onclick = "resDocSubmitCheck2()">고지서 제출(전환)</button>
 					<button type="button" id="" onclick = "fnReturnPop()">반송</button>
 					<button type="button" id="" onclick = "fnUseYN('N','처리제외')">처리제외</button>
 					<button type="button" id="" onclick = "fnUseYN('Y','처리제외취소')">처리제외취소</button>
@@ -719,6 +813,15 @@ var $dataSource = new kendo.data.DataSource({		//그리드데이터소스
 		</div>
 	</div><!-- //pop_con -->
 
-</div><!-- //pop_wrap -->	
+</div><!-- //pop_wrap -->
+<div class="pop_wrap_dir" id="deadlinePopUp">
+	<div class="pop_head">
+		<h1>처리기한</h1>
+	</div>
+	<div class="pop_con">
+		<input type="text" id="deadline"/>
+		<input type="button" class="gray_btn" id="" onclick="resDocSubmitCheck3()" value="제출" />
+	</div>
+</div>
 </body>
 

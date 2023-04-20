@@ -567,6 +567,7 @@ var $dataSource = new kendo.data.DataSource({		//그리드데이터소스
 		<div class="btn_div mt10 cl">
 			<div class="right_div">
 				<div class="controll_btn p0">
+					<span style="padding-right: 5px;">납부기한이 정해져 있는 경우(ex. 고지서), 반드시 고지서 제출 버튼을 클릭해주세요</span>
 					<button type="button" id="" onclick = "resDocSubmitCheck2()" style="border: 2px solid #143dd4;height: 26px;">고지서제출</button>
 					<button type="button" id="" onclick = "resDocSubmitCheck()" style="border: 2px solid #143dd4;height: 26px;">일반제출</button>
 					<button type="button" id="" onclick = "gridReload()">조회</button>

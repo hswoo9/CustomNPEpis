@@ -180,6 +180,15 @@
 		and b.fill_dt != '00000000'
 		and b.fill_nb != 0
 	</select>
+
+	<select id="budgetMs.getPrufInfo" parameterType="map" resultType="map">
+		SELECT TOP(1) PRUF_SE_CODE
+		FROM
+			TPF_KUKGOH_EXEC_01
+		WHERE
+			EXCUT_PRPOS_CN LIKE '%' + #{docNo} + ']%'
+		ORDER BY INSERT_DT DESC
+	</select>
 	
 	<select id="budgetMs.getAdocuList" parameterType="map" resultType="map">
 		/*budgetMs.getAdocuList*/

@@ -286,6 +286,10 @@ public class BudgetDAO extends AbstractDAO{
 	public void resDocSubmit(Map<String, Object> map) {
 		insert("BudgetMaria.resDocSubmit", map);
 	}
+
+	public void resDocUpdate(Map<String, Object> map) {
+		update("BudgetMaria.resDocUpdate", map);
+	}
 	
 	public void updateUseYn(Map<String, Object> map) {
 		update("BudgetMaria.updateUseYn", map);
@@ -297,6 +301,10 @@ public class BudgetDAO extends AbstractDAO{
 
 	public Map<String, Object> getErpBgInfo(Map<String, Object> bgMap) {
 		return (Map<String, Object>)selectOneMs("budgetMs.getErpBgInfo", bgMap);
+	}
+
+	public Map<String, Object> getPrufInfo(String map) {
+		return (Map<String, Object>) selectOneMs("budgetMs.getPrufInfo", map);
 	}
 
 	public List<Map<String, Object>> getAdocuList(Map<String, Object> map) {

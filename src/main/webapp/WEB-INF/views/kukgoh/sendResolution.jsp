@@ -1132,7 +1132,7 @@ function fileRow(e) {
 			return;
 		}
 		
-		 $.ajax({
+		 /*$.ajax({
 				url : _g_contextPath_ + "/kukgoh/cancelAllSendInfo",
 				data : { "param" : JSON.stringify(resolutionList) },
 				dataType : "json",
@@ -1144,9 +1144,43 @@ function fileRow(e) {
 					
 			    	fn_searchBtn();
 				}
-			}) 
+			}) */
 		
 	}
+
+function fn_AllcancelData() {
+
+	var resolutionList = [];
+	var flag = true;
+
+	$(".mainCheckBox").each(function(i, v) {
+
+		var rows = $("#sendResolutionGrid").data("kendoGrid").dataItem($(v).closest("tr"));
+
+		if (rows.KUKGO_STATE === "전송완료" || rows.KUKGO_STATE === '전송진행중' || rows.KUKGO_STATE === '전송실패') {
+
+			rows = fn_makeSendData(rows);
+
+			resolutionList.push(rows);
+
+		}
+	});
+
+	$.ajax({
+           url : _g_contextPath_ + "/kukgoh/cancelAllSendInfo",
+           data : { "param" : JSON.stringify(resolutionList) },
+           dataType : "json",
+           type : "POST",
+           success : function(result) {
+               alert("전송 취소하였습니다.");
+           },
+           complete : function(result) {
+
+               fn_searchBtn();
+           }
+       })
+
+}
 </script>
 
 <!-- 상단 검색 바 -->
@@ -1196,6 +1230,7 @@ function fileRow(e) {
 				<div class="btn_div">	
 					<div class="right_div">
 						<div class="controll_btn p0">
+							<button type="button" id="" onclick="fn_AllcancelData();">일괄 전송취소</button>
 							<button type="button" id="" onclick="fn_cancelData();">전송취소</button>
 							<button type="button" id="" onclick="fn_exceptData();">전송제외</button>
 							<button type="button" id="" onclick="fn_sendAccountBatch();">집행정보 일괄전송</button>

@@ -4856,6 +4856,29 @@ public class BudgetController {
 		
 		return resultMap;
 	}
+
+	/**
+	 * @MethodName : resDocSubmit
+	 * @author : jm
+	 * @since : 2020. 6. 22
+	 * 설명 : 지출결의서 제출
+	 */
+	@RequestMapping(value="/budget/resDocUpdate")
+	@ResponseBody
+	public Map<String, Object> resDocUpdate(@RequestParam Map<String, Object> map){
+
+		logger.info("/budget/resDocUpdate");
+
+		String result = "Failed";
+
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+
+		result = budgetService.resDocUpdate(map);
+
+		resultMap.put("result", result);
+
+		return resultMap;
+	}
 	
 	/**
 	 * @MethodName : updateUseYn
@@ -4918,7 +4941,7 @@ public class BudgetController {
 		Map<String, Object> resultMap = new HashMap<String, Object>();
 		
 		List<Map<String, Object>> list = budgetService.getResDocSubmitAdminList(map);
-		
+
 		resultMap.put("list", list);
 		
 		return resultMap;

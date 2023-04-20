@@ -512,6 +512,14 @@
 				submit_type = #{submitType},
 				deadline = #{deadline}
 	</insert>
+
+	<update id="BudgetMaria.resDocUpdate">
+		/*BudgetMaria.resDocUpdate*/
+		UPDATE res_doc_submit
+		SET submit_type = '1',
+			deadline = #{deadline}
+		WHERE resDocSeq = #{resDocSeq}
+	</update>
 	
 	<update id="BudgetMaria.updateUseYn">
 		/*BudgetMaria.updateUseYn*/
@@ -618,7 +626,7 @@
 			</otherwise>
 		</choose>
 	</select>
-	
+
 	<select id="BudgetMaria.getResDocInfo" parameterType="map" resultType="map">
 		/*BudgetMaria.getResDocInfo*/
 		select doc_seq as doc_seq
