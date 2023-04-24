@@ -2034,7 +2034,14 @@
                      where
                          A.biz_common_seq = B.biz_common_seq
                        and
-                         A.active = 'Y' group by biz_trip_no, b.emp_seq,date) ) as g
+                         A.active = 'Y'
+                       and
+                         DATE_FORMAT(B.date, '%Y-%m-%d') between #{start_dt} and #{end_dt}
+                       group by biz_trip_no, b.emp_seq,date)
+
+                       and
+                         DATE_FORMAT(B.date, '%Y-%m-%d') between #{start_dt} and #{end_dt}
+                        ) as g
 
         where
             a.res_doc_seq = b.res_doc_seq
@@ -2048,8 +2055,7 @@
             a.res_doc_seq = g.resdocseq
           and
             a.doc_status ='008'
-
-
+          and DATE_FORMAT(res_date, '%Y-%m-%d') between #{start_dt} and #{end_dt}
 
     </select>
     <select id="getAllBizDataOutside" parameterType="map" resultType="map">
@@ -2119,7 +2125,16 @@
                          b.biz_common_seq = c.biz_common_seq
                        and
                          a.active ='Y'
-                     group by trip_no_onnara, b.emp_seq,biz_day)) as g
+                       and
+                         b.sdate >= #{start_dt}
+                       and
+                         #{end_dt} >= b.edate
+                     group by trip_no_onnara, b.emp_seq,biz_day)
+                       and
+                         b.sdate >= #{start_dt}
+                       and
+                         #{end_dt} >= b.edate
+             ) as g
 
         where
             a.res_doc_seq = b.res_doc_seq
@@ -2133,7 +2148,7 @@
             a.res_doc_seq = g.resdocseq
           and
             a.doc_status ='008'
-
+          and DATE_FORMAT(res_date, '%Y-%m-%d') between #{start_dt} and #{end_dt}
 
 
     </select>

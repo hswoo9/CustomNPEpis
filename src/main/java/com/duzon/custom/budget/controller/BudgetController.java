@@ -4858,10 +4858,9 @@ public class BudgetController {
 	}
 
 	/**
-	 * @MethodName : resDocSubmit
-	 * @author : jm
-	 * @since : 2020. 6. 22
-	 * 설명 : 지출결의서 제출
+	 * @MethodName : resDocUpdate
+	 * @since : 2023. 4. 22
+	 * 설명 : 지출결의서 제출 전환 (일반 -> 고지서)
 	 */
 	@RequestMapping(value="/budget/resDocUpdate")
 	@ResponseBody

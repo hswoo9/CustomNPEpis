@@ -601,18 +601,18 @@ public class BudgetServiceImpl implements BudgetService {
 
 			if (erpBgMap != null) {
 				bgMap.putAll(erpBgMap);
-			}
-			if ("Y".equals(biddingYn)) {
-				if (erpBgMap != null) {
-					resultList.add(bgMap);
-				}
-			}else if("N".equals(biddingYn)) {
-				if (erpBgMap == null) {
-					resultList.add(bgMap);
-				}
-			}else {
+				resultList.add(bgMap);
+			}else{
 				resultList.add(bgMap);
 			}
+
+			/*if ("Y".equals(biddingYn) && erpBgMap != null) {
+				resultList.add(bgMap);
+			}else if("N".equals(biddingYn) && erpBgMap == null) {
+				resultList.add(bgMap);
+			}else {
+				resultList.add(bgMap);
+			}*/
 
 		}
 		return resultList;

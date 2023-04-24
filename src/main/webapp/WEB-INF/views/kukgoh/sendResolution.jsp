@@ -1132,7 +1132,7 @@ function fileRow(e) {
 			return;
 		}
 		
-		 /*$.ajax({
+		 $.ajax({
 				url : _g_contextPath_ + "/kukgoh/cancelAllSendInfo",
 				data : { "param" : JSON.stringify(resolutionList) },
 				dataType : "json",
@@ -1144,7 +1144,7 @@ function fileRow(e) {
 					
 			    	fn_searchBtn();
 				}
-			}) */
+			})
 		
 	}
 
@@ -1166,6 +1166,7 @@ function fn_AllcancelData() {
 		}
 	});
 
+	if(confirm("전체 전송 취소 하시겠습니까?")){
 	$.ajax({
            url : _g_contextPath_ + "/kukgoh/cancelAllSendInfo",
            data : { "param" : JSON.stringify(resolutionList) },
@@ -1178,8 +1179,8 @@ function fn_AllcancelData() {
 
                fn_searchBtn();
            }
-       })
-
+       });
+	}
 }
 </script>
 
