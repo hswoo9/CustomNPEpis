@@ -33,6 +33,11 @@ dd input { 	width : 80%; }
 var allDept = JSON.parse('${allDept}'); // 부서 목록
 var $voucherRowData;
 var $flag;
+var st = 0;
+var end = 20;
+var total = 0;
+var flag = false;
+
 var $dataSource = new kendo.data.DataSource({		//그리드데이터소스
 	serverPaging : true,
 	pageSize : 1000,
@@ -40,9 +45,82 @@ var $dataSource = new kendo.data.DataSource({		//그리드데이터소스
 		read : {
 			url : _g_contextPath_+ "/budget/getResDocSubmitAdminList",
 			dataType : "json",
-			type : "post"
+			type : "post",
+			complete: function (data) {
+
+				if(flag){
+					flag = false;
+					return;
+				}
+
+				if(data.status == 200){
+					for(var i=0; i < (total / end); i++){
+						st += end;
+						var data =  {
+							st: st,
+							end: end,
+							frDt: $("#from_period").val().replace(/-/gi, ""),
+							toDt: $("#to_period").val().replace(/-/gi, ""),
+							compSeq: $("#compSeq").val(),
+							deptSeq: $("#deptCombo").val(),
+							empSeq: $("#emp_seq_txt").val(),
+							submitYn: $("#submitYn").val(),
+							docTitle : "",
+							docNo: "",
+							biddingYn: $("#biddingYn").val(),
+							returnYn: $("#returnYn").val(),
+							order: 'reg_date desc, reg_no desc'
+						}
+
+						if($('#titleType').val() === '1'){
+							data.docTitle = $("#docTitle").val();
+						}else if($('#titleType').val() === '2'){
+							data.docNo = $("#docTitle").val();
+						}
+
+						$.ajax({
+							url: _g_contextPath_ + "/budget/getResDocSubmitAdminList",
+							dataType: "json",
+							type: "post",
+							data: data,
+							success: function (rs) {
+								if($('#biddingYn').val() === 'D'){
+									rs.list = rs.list.filter(function(obj){return obj.useName === '처리제외';})
+								}
+
+								for(var j = 0; j < rs.list.length; j++){
+									var docSeq = rs.list[j].docSeq;
+									if (docSeq === '17873' || docSeq === '44499' || docSeq === '43745') {
+										rs.list[j].useName = '확정';
+									}
+									$dataSource.add(rs.list[j]);
+								}
+								flag = false;
+							}
+						});
+						if((total / end) == (i+1)){
+							st = 0;
+							end = 20;
+						}
+					}
+				}
+			},
 		},
 		parameterMap: function(data, operation) {
+			st = 0;
+
+			$('.k-grid-excel').on("click", function(e) {
+				/*$('.k-grid-excel').append(' 저장중입니다.');*/
+				flag = true;
+			});
+
+			if(flag){
+				end = total;
+			}else{
+				end = 20;
+			}
+			data.st = st;
+			data.end = end;
 			data.frDt = $("#from_period").val().replace(/-/gi,"");
 			data.toDt = $("#to_period").val().replace(/-/gi,"");
 			data.compSeq = $("#compSeq").val();
@@ -57,8 +135,9 @@ var $dataSource = new kendo.data.DataSource({		//그리드데이터소스
 			data.biddingYn = $("#biddingYn").val();
 			data.returnYn = $("#returnYn").val();
 			data.order = 'reg_date desc, reg_no desc';
+
 	     	return data;
-	     }
+	     },
 	},
 	schema : {
 		data : function(response){
@@ -71,7 +150,7 @@ var $dataSource = new kendo.data.DataSource({		//그리드데이터소스
 			 		obj.useName = '확정';
 			 	}
 			});
-
+			total = response.total
 			return response.list;
 		},
 	    model : {
@@ -83,7 +162,6 @@ var $dataSource = new kendo.data.DataSource({		//그리드데이터소스
 });
 
 	$(function(){
-		
 		$(document).on("mouseover", ".docTitle", function() {
 			$(this).removeClass("blueColor").addClass("onFont");
 		});
@@ -181,6 +259,15 @@ var $dataSource = new kendo.data.DataSource({		//그리드데이터소스
 		empGrid();
 		returnPopUpInit();
 	});
+
+	function getExcelFlag(){
+
+
+		$('.k-grid-excel').on("click", function(e) {
+			flag = true;
+		});
+		return flag;
+	}
 
 	function getData(){
 		setTimeout(function(){
@@ -367,7 +454,8 @@ var $dataSource = new kendo.data.DataSource({		//그리드데이터소스
 	};
 	
 	function gridReload(){
-	
+		st = 0;
+		total = 0;
 		$gridIndex = 0;
 		$('#grid').data('kendoGrid').dataSource.read();
 		$rowData = {};

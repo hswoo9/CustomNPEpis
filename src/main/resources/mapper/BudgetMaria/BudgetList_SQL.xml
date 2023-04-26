@@ -581,7 +581,7 @@
 		and h.res_doc_seq = amt.res_doc_seq
 		INNER JOIN neos.erpgwlink gwlink
         ON			gwlink.appr_dikey = d.doc_seq
-        LEFT JOIN res_doc_submit ds
+        LEFT JOIN cust_epis.res_doc_submit ds
         ON d.res_doc_seq = ds.resDocSeq	
 		WHERE	d.comp_seq = #{compSeq}
 		<choose>
@@ -623,6 +623,75 @@
 			</when>
 			<otherwise>
 		ORDER BY expend_date DESC
+			</otherwise>
+		</choose>
+
+		LIMIT ${st}, ${end}
+	</select>
+
+	<select id="BudgetMaria.getResDocSubmitAdminListCnt" parameterType="map" resultType="int">
+		/*BudgetMaria.getResDocSubmitAdminListCnt*/
+		SELECT
+			count(*)
+		FROM	neos.t_exnp_resdoc	d
+		INNER JOIN neos.t_exnp_reshead h
+		ON d.res_doc_seq = h.res_doc_seq
+		INNER JOIN	neos.a_recordinfo	r
+		ON	d.doc_seq = r.c_dikeycode
+		INNER JOIN	(
+		SELECT	c_dikeycode,  MIN(c_diwriteday) AS c_diwriteday
+		FROM	neos.a_draftinfo
+		WHERE	IFNULL(c_distatus, '008') != 'd'
+		GROUP BY c_dikeycode
+		)	i
+		ON	r.c_dikeycode = i.c_dikeycode
+		INNER JOIN neos.t_exnp_resbudget amt
+		ON	h.res_seq = amt.res_seq
+		and h.res_doc_seq = amt.res_doc_seq
+		INNER JOIN neos.erpgwlink gwlink
+		ON			gwlink.appr_dikey = d.doc_seq
+		LEFT JOIN cust_epis.res_doc_submit ds
+		ON d.res_doc_seq = ds.resDocSeq
+		WHERE	d.comp_seq = #{compSeq}
+		<choose>
+			<when test='empSeq != null and empSeq != ""'>
+				AND	d.emp_seq = #{empSeq}
+			</when>
+			<when test='deptSeq != null and deptSeq != ""'>
+				AND	d.dept_seq = #{deptSeq}
+			</when>
+		</choose>
+		AND	d.doc_seq IS NOT NULL
+		AND 	IFNULL(doc_status, '008') IN ( '001', '002', '003', '004','007', '008', '009','20', '30', '90' )
+		AND	doc_status in ('008', '009', '90')
+		AND	LEFT(requ_date,8) BETWEEN #{frDt} AND #{toDt}
+		<if test="docTitle != null">
+			AND	c_riaftertitle LIKE CONCAT('%', IFNULL(#{docTitle}, ''), '%')
+		</if>
+		<if test="docNo != null">
+			AND	c_ridocfullnum LIKE CONCAT('%', IFNULL(#{docNo}, ''), '%')
+		</if>
+		<if test='submitYn != null and submitYn != ""'>
+			AND	IFNULL(ds.submit_yn, 'N') = #{submitYn}
+		</if>
+		<if test='biddingYn != null and biddingYn == "D"'>
+			AND	ds.use_yn = 'N'
+		</if>
+		<if test='biddingYn != null and biddingYn == "N"'>
+			AND	ds.use_yn = 'Y'
+		</if>
+		<if test='submitType != null and submitType != ""'>
+			AND	ds.submit_type = #{submitType}
+		</if>
+		<if test='returnYn != null and returnYn != ""'>
+			AND	ds.return_yn = #{returnYn}
+		</if>
+		<choose>
+			<when test='order != null and order != ""'>
+				ORDER BY ${order}
+			</when>
+			<otherwise>
+				ORDER BY expend_date DESC
 			</otherwise>
 		</choose>
 	</select>

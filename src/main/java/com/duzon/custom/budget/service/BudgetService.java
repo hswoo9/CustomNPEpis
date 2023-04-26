@@ -64,6 +64,7 @@ public interface BudgetService {
 	String resDocUpdate(Map<String, Object> map);
 	String updateUseYn(Map<String, Object> map);
 	List<Map<String, Object>> getResDocSubmitAdminList(Map<String, Object> map);
+	int getResDocSubmitAdminListCnt(Map<String, Object> map);
 	List<Map<String, Object>> getAdocuList(Map<String, Object> map);
 	List<Map<String, Object>> getErpDept(String coCd);
 	Object getErpEmpList(Map<String, Object> map);
@@ -114,6 +115,7 @@ public interface BudgetService {
 	void cancelConfirmBgtPlan(Map<String, Object> map);
 	List<Map<String, Object>> selectBudgetList(Map<String, Object> map);
 	List<Map<String, Object>> selectDailySchedule(Map<String, Object> map);
+	Map<String, Object> getDailyScheduleCheck(Map<String, Object> map);
 	public void excelDown(Map<String, Object> map, HttpServletRequest request, HttpServletResponse response);
 	public void fileDown(Map<String, Object> map, HttpServletRequest request, HttpServletResponse response);
 	void fileDownLoad(String fileNm, String path, HttpServletRequest request, HttpServletResponse response) throws Exception;

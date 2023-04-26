@@ -589,34 +589,42 @@ public class BudgetServiceImpl implements BudgetService {
 		String biddingYn = String.valueOf(map.get("biddingYn"));
 
 		for (Map<String, Object> bgMap : bgList) {
-			Map<String, Object> erpBgMap = budgetDAO.getErpBgInfo(bgMap);
 
 			Map<String, Object> prufMap = budgetDAO.getPrufInfo(String.valueOf(bgMap.get("docNo")));
 
-			if(!MapUtils.isEmpty(prufMap) && prufMap.containsKey("PRUF_SE_CODE")){
+			/*if(!MapUtils.isEmpty(prufMap) && prufMap.containsKey("PRUF_SE_CODE")){*/
+			if(prufMap != null){
 				bgMap.put("PRUF_SE_CODE", prufMap.get("PRUF_SE_CODE"));
 			}else{
 				bgMap.put("PRUF_SE_CODE", "");
 			}
 
+			Map<String, Object> erpBgMap = budgetDAO.getErpBgInfo(bgMap);
+
 			if (erpBgMap != null) {
 				bgMap.putAll(erpBgMap);
-				resultList.add(bgMap);
-			}else{
-				resultList.add(bgMap);
 			}
 
-			/*if ("Y".equals(biddingYn) && erpBgMap != null) {
-				resultList.add(bgMap);
-			}else if("N".equals(biddingYn) && erpBgMap == null) {
-				resultList.add(bgMap);
+			if ("Y".equals(biddingYn)) {
+				if (erpBgMap != null) {
+					resultList.add(bgMap);
+				}
+			}else if("N".equals(biddingYn)) {
+				if (erpBgMap == null) {
+					resultList.add(bgMap);
+				}
 			}else {
 				resultList.add(bgMap);
-			}*/
-
+			}
 		}
 		return resultList;
 	}
+
+	@Override
+	public int getResDocSubmitAdminListCnt(Map<String, Object> map) {
+		return budgetDAO.getResDocSubmitAdminListCnt(map);
+	}
+
 
 	@Override
 	public List<Map<String, Object>> getAdocuList(Map<String, Object> map) {
@@ -1067,6 +1075,17 @@ public class BudgetServiceImpl implements BudgetService {
 	@Override
 	public Map<String, Object> getErpGwLinkInfo(Map<String, Object> paramMap) throws Exception {
 		return budgetDAO.getErpGwLinkInfo(paramMap);
+	}
+
+	public Map<String, Object> getDailyScheduleCheck(Map<String, Object> map) {
+		Map<String, Object> resultMap = new HashMap<>();
+		Map<String, Object> tmp = budgetDAO.getDailyScheduleCheck(map);
+		if (tmp == null) {
+			resultMap.put("check", "N");
+		} else {
+			resultMap.put("check", "Y");
+		}
+		return resultMap;
 	}
 
 	@Override

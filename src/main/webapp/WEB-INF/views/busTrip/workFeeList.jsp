@@ -2157,6 +2157,10 @@ html:first-child select {
 								title : "비용집행자",
 								width:100,
 							},{
+								field : "djWorkFeeUserCnt",
+								title : "참석인원",
+								width:100,
+							},{
 								field : "djWorkFeeUser2",
 								title : "참석자",
 								width:150,

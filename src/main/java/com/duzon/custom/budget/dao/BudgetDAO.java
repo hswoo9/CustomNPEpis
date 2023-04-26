@@ -299,6 +299,10 @@ public class BudgetDAO extends AbstractDAO{
 		return selectList("BudgetMaria.getResDocSubmitAdminList", map);
 	}
 
+	public int getResDocSubmitAdminListCnt(Map<String, Object> map) {
+		return (int) selectOne("BudgetMaria.getResDocSubmitAdminListCnt", map);
+	}
+
 	public Map<String, Object> getErpBgInfo(Map<String, Object> bgMap) {
 		return (Map<String, Object>)selectOneMs("budgetMs.getErpBgInfo", bgMap);
 	}
@@ -534,6 +538,10 @@ public class BudgetDAO extends AbstractDAO{
 	
 	public Map<String, Object> getErpGwLinkInfo(Map<String, Object> map) {
 		return (Map<String, Object>) selectOne("BudgetMaria.getErpGwLinkInfo", map);
+	}
+
+	public Map<String, Object> getDailyScheduleCheck(Map<String, Object> map) {
+		return (Map<String, Object>)selectOne("BudgetMaria.getDailyScheduleCheck", map);
 	}
 	
 	public void saveHighDept(Map<String, Object> map) {

@@ -4942,6 +4942,7 @@ public class BudgetController {
 		List<Map<String, Object>> list = budgetService.getResDocSubmitAdminList(map);
 
 		resultMap.put("list", list);
+		resultMap.put("total", budgetService.getResDocSubmitAdminListCnt(map));
 		
 		return resultMap;
 	}
@@ -6984,6 +6985,19 @@ public class BudgetController {
 		resultMap.put("list", list);
 		resultMap.put("total", list.size());
 		
+		return resultMap;
+	}
+
+	@RequestMapping({"/budget/selectDailyScheduleCheck"})
+	@ResponseBody
+	public Map<String, Object> selectDailyScheduleCheck(@RequestParam Map<String, Object> map) {
+		logger.info("/budget/selectDailyScheduleCheck");
+		Map<String, Object> resultMap = new HashMap<>();
+		try {
+			resultMap = budgetService.getDailyScheduleCheck(map);
+		} catch (Exception e) {
+			logger.info("Budget selectDailyScheduleCheck : ", e);
+		}
 		return resultMap;
 	}
 	
