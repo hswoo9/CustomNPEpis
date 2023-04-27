@@ -2159,6 +2159,9 @@ html:first-child select {
 							},{
 								field : "djWorkFeeUserCnt",
 								title : "참석인원",
+								template : function (data) {
+									return data.djWorkFeeUserCnt + "명";
+								},
 								width:100,
 							},{
 								field : "djWorkFeeUser2",

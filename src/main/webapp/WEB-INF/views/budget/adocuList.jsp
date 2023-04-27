@@ -516,7 +516,7 @@ var $dataSource = new kendo.data.DataSource({		//그리드데이터소스
 	
 	function fn_viewPop(isu_dt, isu_sq){
 		var url = _g_contextPath_+ "/budget/pop/adocuViewPop?isu_dt=" + isu_dt + "&isu_sq=" + isu_sq;
-		window.open(url,"adocuViewer","width=800, height=900, resizable=yes , scrollbars=no, status=no, top=50, left=50","newWindow");	
+		window.open(url,"adocuViewer","width=800, height=900, resizable=yes , scrollbars=1, status=no, top=50, left=50","newWindow");
 	}
 	
 	function fn_docViewPop(dikeyCode){

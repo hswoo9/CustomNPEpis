@@ -830,6 +830,7 @@ public class BusTripController {
 							
 							msData.put("djWorkFeeDate", listMap.get("djWorkFeeDate"));
 							msData.put("djWorkFeeUser1", listMap.get("djWorkFeeUser1"));
+							msData.put("djWorkFeeUserCnt", listMap.get("djWorkFeeUserCnt"));
 							msData.put("djWorkFeeUser2", listMap.get("djWorkFeeUser2"));
 							msData.put("djWorkFeeAmt", listMap.get("djWorkFeeAmt"));
 							
