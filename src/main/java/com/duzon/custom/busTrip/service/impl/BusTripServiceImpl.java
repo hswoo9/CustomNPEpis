@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +16,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.duzon.custom.budget.dao.BudgetDAO;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.ibatis.annotations.Insert;
@@ -38,6 +40,9 @@ public class BusTripServiceImpl implements BusTripService {
 
     @Autowired
     private BusTripDAO busTripDAO;
+
+    @Autowired
+    private BudgetDAO budgetDAO;
 
     @Override
     public List<Map<String, Object>> getPositionList() {
@@ -748,5 +753,90 @@ public class BusTripServiceImpl implements BusTripService {
         return busTripDAO.getCardCostBySort(map);
     }
 
+    @Override
+    public List<Map<String, Object>> getBustripInResData(Map<String, Object> map) {
+        List<Map<String, Object>> bgList = busTripDAO.getBustripInResData(map);
+        List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
+        String biddingYn = String.valueOf(map.get("biddingYn"));
+
+        for (Map<String, Object> bgMap : bgList) {
+
+            Map<String, Object> prufMap = budgetDAO.getPrufInfo(String.valueOf(bgMap.get("docNo")));
+
+            /*if(!MapUtils.isEmpty(prufMap) && prufMap.containsKey("PRUF_SE_CODE")){*/
+            if(prufMap != null){
+                bgMap.put("PRUF_SE_CODE", prufMap.get("PRUF_SE_CODE"));
+            }else{
+                bgMap.put("PRUF_SE_CODE", "");
+            }
+
+            Map<String, Object> erpBgMap = budgetDAO.getErpBgInfo(bgMap);
+
+            if (erpBgMap != null) {
+                bgMap.putAll(erpBgMap);
+            }
+
+            if ("Y".equals(biddingYn)) {
+                if (erpBgMap != null) {
+                    resultList.add(bgMap);
+                }
+            }else if("N".equals(biddingYn)) {
+                if (erpBgMap == null) {
+                    resultList.add(bgMap);
+                }
+            }else {
+                resultList.add(bgMap);
+            }
+        }
+        return resultList;
+    }
+
+    @Override
+    public Object getBustripInResDataCnt(Map<String, Object> map) {
+        return busTripDAO.getBustripInResDataCnt(map);
+    }
+
+    @Override
+    public List<Map<String, Object>> getBustripOutResData(Map<String, Object> map) {
+        List<Map<String, Object>> bgList = busTripDAO.getBustripOutResData(map);
+        List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
+        String biddingYn = String.valueOf(map.get("biddingYn"));
+
+        for (Map<String, Object> bgMap : bgList) {
+
+            Map<String, Object> prufMap = budgetDAO.getPrufInfo(String.valueOf(bgMap.get("docNo")));
+
+            /*if(!MapUtils.isEmpty(prufMap) && prufMap.containsKey("PRUF_SE_CODE")){*/
+            if(prufMap != null){
+                bgMap.put("PRUF_SE_CODE", prufMap.get("PRUF_SE_CODE"));
+            }else{
+                bgMap.put("PRUF_SE_CODE", "");
+            }
+
+            Map<String, Object> erpBgMap = budgetDAO.getErpBgInfo(bgMap);
+
+            if (erpBgMap != null) {
+                bgMap.putAll(erpBgMap);
+            }
+
+            if ("Y".equals(biddingYn)) {
+                if (erpBgMap != null) {
+                    resultList.add(bgMap);
+                }
+            }else if("N".equals(biddingYn)) {
+                if (erpBgMap == null) {
+                    resultList.add(bgMap);
+                }
+            }else {
+                resultList.add(bgMap);
+            }
+        }
+        return resultList;
+    }
+
+    @Override
+    public Object getBustripOutResDataCnt(Map<String, Object> map) {
+        return busTripDAO.getBustripOutResDataCnt(map);
+    }
 }
 

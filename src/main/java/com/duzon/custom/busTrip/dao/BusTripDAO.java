@@ -446,4 +446,21 @@ public class BusTripDAO extends AbstractDAO {
 	public List<Map<String, Object>> getCardCostBySort (Map<String, Object>map){
 		return selectList("busTrip.getCardCostBySort",map);
 	}
+
+    public List<Map<String, Object>> getBustripInResData(Map<String, Object> map) {
+        return selectList("busTrip.getBustripInResData", map);
+    }
+
+    public Object getBustripInResDataCnt(Map<String, Object> map) {
+        return selectOne("busTrip.getBustripInResDataCnt", map);
+    }
+
+    public List<Map<String, Object>> getBustripOutResData(Map<String, Object> map) {
+        return selectList("busTrip.getBustripOutResData", map);
+
+    }
+
+    public Object getBustripOutResDataCnt(Map<String, Object> map) {
+        return selectOne("busTrip.getBustripOutResDataCnt", map);
+    }
 }

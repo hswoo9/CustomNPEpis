@@ -141,5 +141,13 @@ public interface BusTripService {
 	List<Map<String, Object>> getCardDataByOutSubSeq(Map<String, Object>map);
 	List<Map<String, Object>> getTransportDataByOutSubSeq(Map<String, Object>map);
 	List<Map<String, Object>> getCardCostBySort(Map<String, Object>map);
-	
+
+    List<Map<String, Object>> getBustripInResData(Map<String, Object> map);
+
+    Object getBustripInResDataCnt(Map<String, Object> map);
+
+    List<Map<String, Object>> getBustripOutResData(Map<String, Object> map);
+
+    Object getBustripOutResDataCnt(Map<String, Object> map);
+
 }

@@ -2919,5 +2919,390 @@
             outsubseq
     </select>
 
+    <select id="getBustripInResData" parameterType="map" resultType="map">
+        /*getBustripInResData*/
+        SELECT
+            d.res_doc_seq	AS 'consDocSeq'
+            , ct.biz_common_seq AS 'bizCommonSeq'
+            , d.doc_seq	AS 'docSeq'
+            , d.doc_seq		AS 'docSeq'
+            , IFNULL(r.c_ridocfullnum, '')	AS 'docNo'
+            , d.doc_status		AS 'docStatus'
+            <!-- 			, i.c_diwriteday	AS 'docDate' -->
+            , date_format(gwlink.appr_end_date, '%Y-%m-%d')	AS 'docDate'
+            , d.resdoc_note	AS 'consdocNote'
+            , d.resdoc_note	AS 'resdocNote'
+            , d.expend_date	AS 'expendDate'
+            , d.comp_name	AS 'compName'
+            , d.dept_name	AS 'deptName'
+            , d.emp_name	AS 'empName'
+            , d.send_emp_seq	AS 'sendEmpSeq'
+            , d.send_date		AS 'sendDate'
+            , d.send_emp_name	AS 'sendName'
+            , r.c_riaftertitle	AS 'docTitle'
+            , d.erp_send_yn	AS 'erpSendYN'
+            , 'EA'			AS 'eaType'
+            , IFNULL(ds.submit_yn, 'N') AS 'submitYn'
+            , concat(date_format(ds.reg_date, '%Y-%m-%d'), '-', lpad(ds.reg_no, 4, '0')) AS 'regNo'
+            , h.mgt_name AS 'mgtName'
+            , h.erp_comp_seq AS 'erpCompSeq'
+            , IFNULL(amt.budget_amt, 0) AS 'resDocAmt'
+            , IFNULL(amt.budget_tax_amt, 0) AS 'resDocTaxAmt'
+            , IFNULL(amt.budget_std_amt, 0) AS 'resDocStdAmt'
+            , amt.erp_budget_name AS 'repBudgetName'
+            , amt.erp_gisu_date AS 'erpGisuDate'
+            , amt.erp_gisu_sq AS 'erpGisuSq'
+            , amt.erp_bg_sq AS 'erpBgSq'
+            , ds.use_yn AS 'useYn'
+            , case when ds.use_yn = 'N' then '처리제외' else '미확정' end AS 'useName'
+            , ds.deadline AS 'deadline'
+        FROM	neos.t_exnp_resdoc	d
+        LEFT JOIN
+            (
+                SELECT A.res_doc_seq, A.biz_common_seq
+                FROM cust_epis.dj_hr_biz_common A
+                LEFT JOIN cust_epis.dj_hr_biz_city B
+                ON A.biz_common_seq = B.biz_common_seq
+                WHERE
+                    B.biz_common_seq is not null
+            ) ct
+        ON d.res_doc_seq = ct.res_doc_seq
+        INNER JOIN neos.t_exnp_reshead h
+        ON d.res_doc_seq = h.res_doc_seq
+        INNER JOIN	neos.a_recordinfo	r
+        ON	d.doc_seq = r.c_dikeycode
+        INNER JOIN	(
+        SELECT	c_dikeycode,  MIN(c_diwriteday) AS c_diwriteday
+        FROM	neos.a_draftinfo
+        WHERE	IFNULL(c_distatus, '008') != 'd'
+        GROUP BY c_dikeycode
+        )	i
+        ON	r.c_dikeycode = i.c_dikeycode
+        INNER JOIN neos.t_exnp_resbudget amt
+        ON	h.res_seq = amt.res_seq
+        and h.res_doc_seq = amt.res_doc_seq
+        INNER JOIN neos.erpgwlink gwlink
+        ON			gwlink.appr_dikey = d.doc_seq
+        LEFT JOIN cust_epis.res_doc_submit ds
+        ON d.res_doc_seq = ds.resDocSeq
+        WHERE	d.comp_seq = #{compSeq}
+        AND ct.biz_common_seq is not null
+        <choose>
+            <when test='empSeq != null and empSeq != ""'>
+                AND	d.emp_seq = #{empSeq}
+            </when>
+            <when test='deptSeq != null and deptSeq != ""'>
+                AND	d.dept_seq = #{deptSeq}
+            </when>
+        </choose>
+        AND	d.doc_seq IS NOT NULL
+        AND 	IFNULL(doc_status, '008') IN ( '001', '002', '003', '004','007', '008', '009','20', '30', '90' )
+        AND	doc_status in ('008', '009', '90')
+        AND	LEFT(requ_date,8) BETWEEN #{frDt} AND #{toDt}
+        <if test="docTitle != null">
+            AND	c_riaftertitle LIKE CONCAT('%', IFNULL(#{docTitle}, ''), '%')
+        </if>
+        <if test="docNo != null">
+            AND	c_ridocfullnum LIKE CONCAT('%', IFNULL(#{docNo}, ''), '%')
+        </if>
+        <if test='submitYn != null and submitYn != ""'>
+            AND	IFNULL(ds.submit_yn, 'N') = #{submitYn}
+        </if>
+        <if test='biddingYn != null and biddingYn == "D"'>
+            AND	ds.use_yn = 'N'
+        </if>
+        <if test='biddingYn != null and biddingYn == "N"'>
+            AND	ds.use_yn = 'Y'
+        </if>
+        <if test='submitType != null and submitType != ""'>
+            AND	ds.submit_type = #{submitType}
+        </if>
+        <if test='returnYn != null and returnYn != ""'>
+            AND	ds.return_yn = #{returnYn}
+        </if>
+        <choose>
+            <when test='order != null and order != ""'>
+                ORDER BY ${order}
+            </when>
+            <otherwise>
+                ORDER BY expend_date DESC
+            </otherwise>
+        </choose>
 
+        LIMIT ${st}, ${end}
+    </select>
+
+    <select id="getBustripInResDataCnt" parameterType="map" resultType="int">
+        /*getBustripInResDataCnt*/
+        SELECT
+            COUNT(*)
+        FROM	neos.t_exnp_resdoc	d
+        LEFT JOIN
+        (
+        SELECT A.res_doc_seq, A.biz_common_seq
+        FROM cust_epis.dj_hr_biz_common A
+        LEFT JOIN cust_epis.dj_hr_biz_city B
+        ON A.biz_common_seq = B.biz_common_seq
+        WHERE
+        B.biz_common_seq is not null
+        ) ct
+        ON d.res_doc_seq = ct.res_doc_seq
+        INNER JOIN neos.t_exnp_reshead h
+        ON d.res_doc_seq = h.res_doc_seq
+        INNER JOIN	neos.a_recordinfo	r
+        ON	d.doc_seq = r.c_dikeycode
+        INNER JOIN	(
+        SELECT	c_dikeycode,  MIN(c_diwriteday) AS c_diwriteday
+        FROM	neos.a_draftinfo
+        WHERE	IFNULL(c_distatus, '008') != 'd'
+        GROUP BY c_dikeycode
+        )	i
+        ON	r.c_dikeycode = i.c_dikeycode
+        INNER JOIN neos.t_exnp_resbudget amt
+        ON	h.res_seq = amt.res_seq
+        and h.res_doc_seq = amt.res_doc_seq
+        INNER JOIN neos.erpgwlink gwlink
+        ON			gwlink.appr_dikey = d.doc_seq
+        LEFT JOIN cust_epis.res_doc_submit ds
+        ON d.res_doc_seq = ds.resDocSeq
+        WHERE	d.comp_seq = #{compSeq}
+        AND ct.biz_common_seq is not null
+        <choose>
+            <when test='empSeq != null and empSeq != ""'>
+                AND	d.emp_seq = #{empSeq}
+            </when>
+            <when test='deptSeq != null and deptSeq != ""'>
+                AND	d.dept_seq = #{deptSeq}
+            </when>
+        </choose>
+        AND	d.doc_seq IS NOT NULL
+        AND 	IFNULL(doc_status, '008') IN ( '001', '002', '003', '004','007', '008', '009','20', '30', '90' )
+        AND	doc_status in ('008', '009', '90')
+        AND	LEFT(requ_date,8) BETWEEN #{frDt} AND #{toDt}
+        <if test="docTitle != null">
+            AND	c_riaftertitle LIKE CONCAT('%', IFNULL(#{docTitle}, ''), '%')
+        </if>
+        <if test="docNo != null">
+            AND	c_ridocfullnum LIKE CONCAT('%', IFNULL(#{docNo}, ''), '%')
+        </if>
+        <if test='submitYn != null and submitYn != ""'>
+            AND	IFNULL(ds.submit_yn, 'N') = #{submitYn}
+        </if>
+        <if test='biddingYn != null and biddingYn == "D"'>
+            AND	ds.use_yn = 'N'
+        </if>
+        <if test='biddingYn != null and biddingYn == "N"'>
+            AND	ds.use_yn = 'Y'
+        </if>
+        <if test='submitType != null and submitType != ""'>
+            AND	ds.submit_type = #{submitType}
+        </if>
+        <if test='returnYn != null and returnYn != ""'>
+            AND	ds.return_yn = #{returnYn}
+        </if>
+        <choose>
+            <when test='order != null and order != ""'>
+                ORDER BY ${order}
+            </when>
+            <otherwise>
+                ORDER BY expend_date DESC
+            </otherwise>
+        </choose>
+
+        LIMIT ${st}, ${end}
+    </select>
+
+
+    <select id="getBustripOutResData" parameterType="map" resultType="map">
+        /*getBustripOutResData*/
+        SELECT
+        d.res_doc_seq	AS 'consDocSeq'
+        , ct.biz_common_seq AS 'bizCommonSeq'
+        , d.doc_seq	AS 'docSeq'
+        , d.doc_seq		AS 'docSeq'
+        , IFNULL(r.c_ridocfullnum, '')	AS 'docNo'
+        , d.doc_status		AS 'docStatus'
+        <!-- 			, i.c_diwriteday	AS 'docDate' -->
+        , date_format(gwlink.appr_end_date, '%Y-%m-%d')	AS 'docDate'
+        , d.resdoc_note	AS 'consdocNote'
+        , d.resdoc_note	AS 'resdocNote'
+        , d.expend_date	AS 'expendDate'
+        , d.comp_name	AS 'compName'
+        , d.dept_name	AS 'deptName'
+        , d.emp_name	AS 'empName'
+        , d.send_emp_seq	AS 'sendEmpSeq'
+        , d.send_date		AS 'sendDate'
+        , d.send_emp_name	AS 'sendName'
+        , r.c_riaftertitle	AS 'docTitle'
+        , d.erp_send_yn	AS 'erpSendYN'
+        , 'EA'			AS 'eaType'
+        , IFNULL(ds.submit_yn, 'N') AS 'submitYn'
+        , concat(date_format(ds.reg_date, '%Y-%m-%d'), '-', lpad(ds.reg_no, 4, '0')) AS 'regNo'
+        , h.mgt_name AS 'mgtName'
+        , h.erp_comp_seq AS 'erpCompSeq'
+        , IFNULL(amt.budget_amt, 0) AS 'resDocAmt'
+        , IFNULL(amt.budget_tax_amt, 0) AS 'resDocTaxAmt'
+        , IFNULL(amt.budget_std_amt, 0) AS 'resDocStdAmt'
+        , amt.erp_budget_name AS 'repBudgetName'
+        , amt.erp_gisu_date AS 'erpGisuDate'
+        , amt.erp_gisu_sq AS 'erpGisuSq'
+        , amt.erp_bg_sq AS 'erpBgSq'
+        , ds.use_yn AS 'useYn'
+        , case when ds.use_yn = 'N' then '처리제외' else '미확정' end AS 'useName'
+        , ds.deadline AS 'deadline'
+        FROM	neos.t_exnp_resdoc	d
+        LEFT JOIN
+        (
+        SELECT A.res_doc_seq, A.biz_common_seq
+        FROM cust_epis.dj_hr_biz_common A
+        LEFT JOIN cust_epis.dj_hr_biz_outside B
+        ON A.biz_common_seq = B.biz_common_seq
+        WHERE
+        B.biz_common_seq is not null
+        ) ct
+        ON d.res_doc_seq = ct.res_doc_seq
+        INNER JOIN neos.t_exnp_reshead h
+        ON d.res_doc_seq = h.res_doc_seq
+        INNER JOIN	neos.a_recordinfo	r
+        ON	d.doc_seq = r.c_dikeycode
+        INNER JOIN	(
+        SELECT	c_dikeycode,  MIN(c_diwriteday) AS c_diwriteday
+        FROM	neos.a_draftinfo
+        WHERE	IFNULL(c_distatus, '008') != 'd'
+        GROUP BY c_dikeycode
+        )	i
+        ON	r.c_dikeycode = i.c_dikeycode
+        INNER JOIN neos.t_exnp_resbudget amt
+        ON	h.res_seq = amt.res_seq
+        and h.res_doc_seq = amt.res_doc_seq
+        INNER JOIN neos.erpgwlink gwlink
+        ON			gwlink.appr_dikey = d.doc_seq
+        LEFT JOIN cust_epis.res_doc_submit ds
+        ON d.res_doc_seq = ds.resDocSeq
+        WHERE	d.comp_seq = #{compSeq}
+        AND ct.biz_common_seq is not null
+        <choose>
+            <when test='empSeq != null and empSeq != ""'>
+                AND	d.emp_seq = #{empSeq}
+            </when>
+            <when test='deptSeq != null and deptSeq != ""'>
+                AND	d.dept_seq = #{deptSeq}
+            </when>
+        </choose>
+        AND	d.doc_seq IS NOT NULL
+        AND 	IFNULL(doc_status, '008') IN ( '001', '002', '003', '004','007', '008', '009','20', '30', '90' )
+        AND	doc_status in ('008', '009', '90')
+        AND	LEFT(requ_date,8) BETWEEN #{frDt} AND #{toDt}
+        <if test="docTitle != null">
+            AND	c_riaftertitle LIKE CONCAT('%', IFNULL(#{docTitle}, ''), '%')
+        </if>
+        <if test="docNo != null">
+            AND	c_ridocfullnum LIKE CONCAT('%', IFNULL(#{docNo}, ''), '%')
+        </if>
+        <if test='submitYn != null and submitYn != ""'>
+            AND	IFNULL(ds.submit_yn, 'N') = #{submitYn}
+        </if>
+        <if test='biddingYn != null and biddingYn == "D"'>
+            AND	ds.use_yn = 'N'
+        </if>
+        <if test='biddingYn != null and biddingYn == "N"'>
+            AND	ds.use_yn = 'Y'
+        </if>
+        <if test='submitType != null and submitType != ""'>
+            AND	ds.submit_type = #{submitType}
+        </if>
+        <if test='returnYn != null and returnYn != ""'>
+            AND	ds.return_yn = #{returnYn}
+        </if>
+        <choose>
+            <when test='order != null and order != ""'>
+                ORDER BY ${order}
+            </when>
+            <otherwise>
+                ORDER BY expend_date DESC
+            </otherwise>
+        </choose>
+
+        LIMIT ${st}, ${end}
+    </select>
+
+    <select id="getBustripOutResDataCnt" parameterType="map" resultType="int">
+        /*getBustripOutResDataCnt*/
+        SELECT
+        COUNT(*)
+        FROM	neos.t_exnp_resdoc	d
+        LEFT JOIN
+        (
+        SELECT A.res_doc_seq, A.biz_common_seq
+        FROM cust_epis.dj_hr_biz_common A
+        LEFT JOIN cust_epis.dj_hr_biz_outside B
+        ON A.biz_common_seq = B.biz_common_seq
+        WHERE
+        B.biz_common_seq is not null
+        ) ct
+        ON d.res_doc_seq = ct.res_doc_seq
+        INNER JOIN neos.t_exnp_reshead h
+        ON d.res_doc_seq = h.res_doc_seq
+        INNER JOIN	neos.a_recordinfo	r
+        ON	d.doc_seq = r.c_dikeycode
+        INNER JOIN	(
+        SELECT	c_dikeycode,  MIN(c_diwriteday) AS c_diwriteday
+        FROM	neos.a_draftinfo
+        WHERE	IFNULL(c_distatus, '008') != 'd'
+        GROUP BY c_dikeycode
+        )	i
+        ON	r.c_dikeycode = i.c_dikeycode
+        INNER JOIN neos.t_exnp_resbudget amt
+        ON	h.res_seq = amt.res_seq
+        and h.res_doc_seq = amt.res_doc_seq
+        INNER JOIN neos.erpgwlink gwlink
+        ON			gwlink.appr_dikey = d.doc_seq
+        LEFT JOIN cust_epis.res_doc_submit ds
+        ON d.res_doc_seq = ds.resDocSeq
+        WHERE	d.comp_seq = #{compSeq}
+        AND ct.biz_common_seq is not null
+        <choose>
+            <when test='empSeq != null and empSeq != ""'>
+                AND	d.emp_seq = #{empSeq}
+            </when>
+            <when test='deptSeq != null and deptSeq != ""'>
+                AND	d.dept_seq = #{deptSeq}
+            </when>
+        </choose>
+        AND	d.doc_seq IS NOT NULL
+        AND 	IFNULL(doc_status, '008') IN ( '001', '002', '003', '004','007', '008', '009','20', '30', '90' )
+        AND	doc_status in ('008', '009', '90')
+        AND	LEFT(requ_date,8) BETWEEN #{frDt} AND #{toDt}
+        <if test="docTitle != null">
+            AND	c_riaftertitle LIKE CONCAT('%', IFNULL(#{docTitle}, ''), '%')
+        </if>
+        <if test="docNo != null">
+            AND	c_ridocfullnum LIKE CONCAT('%', IFNULL(#{docNo}, ''), '%')
+        </if>
+        <if test='submitYn != null and submitYn != ""'>
+            AND	IFNULL(ds.submit_yn, 'N') = #{submitYn}
+        </if>
+        <if test='biddingYn != null and biddingYn == "D"'>
+            AND	ds.use_yn = 'N'
+        </if>
+        <if test='biddingYn != null and biddingYn == "N"'>
+            AND	ds.use_yn = 'Y'
+        </if>
+        <if test='submitType != null and submitType != ""'>
+            AND	ds.submit_type = #{submitType}
+        </if>
+        <if test='returnYn != null and returnYn != ""'>
+            AND	ds.return_yn = #{returnYn}
+        </if>
+        <choose>
+            <when test='order != null and order != ""'>
+                ORDER BY ${order}
+            </when>
+            <otherwise>
+                ORDER BY expend_date DESC
+            </otherwise>
+        </choose>
+
+        LIMIT ${st}, ${end}
+    </select>
 </mapper>

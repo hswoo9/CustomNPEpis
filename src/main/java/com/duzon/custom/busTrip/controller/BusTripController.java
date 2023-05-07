@@ -4351,15 +4351,74 @@ public class BusTripController {
             
         } catch (Exception e) {
         	  logger.info("ERROR!!!!!!ERROR!!!!!!ERROR!!!!!!출장집계표 (시외) 엑셀",e);
-        }	
-		
-		
+        }
 		return	resultMap;
 	}
-	
-	
-	
-	
+
+
+    /**
+     * 시내출장 지출결의 현황 뷰
+     * 2023. 05. 04. By.hk
+     * @param params
+     * @param model
+     * @return
+     */
+    @RequestMapping("/bustrip/bustripInResDocView")
+    public String bustripInResDocView(@RequestParam Map<String, Object> params, Model model){
+        LoginVO loginVO = (LoginVO) EgovUserDetailsHelper.getAuthenticatedUser();
+
+        model.addAttribute("userInfo", loginVO);
+        model.addAttribute("allDept", new Gson().toJson(commonService.getAllDept()));
+
+
+        return "/busTrip/bustripInResDocView";
+    }
+
+    /**
+     * 시내출장 지결 데이터 조회
+     * 2023. 05. 04 by. hk
+     * @param map
+     * @return
+     */
+    @RequestMapping("/bustrip/getBustripInResData")
+    @ResponseBody
+    public Map<String, Object> getBustripInResData(@RequestParam Map<String, Object> map){
+        logger.info("/bustrip/getBustripInResDate");
+
+        Map<String, Object> resultMap = new HashMap<>();
+        List<Map<String, Object>> list = busTripService.getBustripInResData(map);
+
+        resultMap.put("list", list);
+        resultMap.put("total", busTripService.getBustripInResDataCnt(map));
+
+        return resultMap;
+    }
+
+    @RequestMapping("/bustrip/bustripOutResDocView")
+    public String bustripOutResDocView(@RequestParam Map<String, Object> params, Model model){
+        LoginVO loginVO = (LoginVO) EgovUserDetailsHelper.getAuthenticatedUser();
+
+        model.addAttribute("userInfo", loginVO);
+        model.addAttribute("allDept", new Gson().toJson(commonService.getAllDept()));
+
+
+        return "/busTrip/bustripOutResDocView";
+    }
+
+
+    @RequestMapping("/bustrip/getBustripOutResData")
+    @ResponseBody
+    public Map<String, Object> getBustripOutResData(@RequestParam Map<String, Object> map){
+        logger.info("/bustrip/getBustripOutResData");
+
+        Map<String, Object> resultMap = new HashMap<>();
+        List<Map<String, Object>> list = busTripService.getBustripOutResData(map);
+
+        resultMap.put("list", list);
+        resultMap.put("total", busTripService.getBustripOutResDataCnt(map));
+
+        return resultMap;
+    }
 	
 	
 	

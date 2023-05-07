@@ -46,6 +46,14 @@ table tr td {
 			<th>화면경로</th>
 			<th>url(xxxx.jsp)</th>
 		</tr>
+        <tr>
+            <td>시내출장 지출결의서 현황</td>
+            <td><a href="${pageContext.request.contextPath}/bustrip/bustripInResDocView">bustripInResDocView</a></td>
+        </tr>
+        <tr>
+            <td>시외출장 지출결의서 현황</td>
+            <td><a href="${pageContext.request.contextPath}/bustrip/bustripOutResDocView">bustripOutResDocView</a></td>
+        </tr>
 		<tr>
 			<td>리스트 조회 및 SMS 전송 </td>
 			<td><a href="${pageContext.request.contextPath }/resAlphaG20/sendSmsMessage">sendSmsMessage.jsp</a></td>
