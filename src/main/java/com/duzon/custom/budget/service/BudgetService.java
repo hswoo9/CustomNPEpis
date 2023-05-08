@@ -137,4 +137,9 @@ public interface BudgetService {
 	String getAskedEmpNm(String modifyId);
 	void saveBgtPlanDept(Map<String, Object> map, MultipartHttpServletRequest multi, List<Map<String, Object>> delFiles)
 			throws Exception;
+
+	List<Map<String, Object>> getResDocBizFeeList(Map<String, Object> map);
+	int getResDocBizFeeListCnt(Map<String, Object> map);
+	List<Map<String, Object>> getResDocDailyExpList(Map<String, Object> map);
+	int getResDocDailyExpListCnt(Map<String, Object> map);
 }

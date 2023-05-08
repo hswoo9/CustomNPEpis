@@ -1278,4 +1278,89 @@ public class BudgetServiceImpl implements BudgetService {
 
 		budgetDAO.saveBgtPlanDept(map);
 	}
+
+	@Override
+	public List<Map<String, Object>> getResDocBizFeeList(Map<String, Object> map) {
+		List<Map<String, Object>> bgList = budgetDAO.getResDocBizFeeList(map);
+		List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
+		String biddingYn = String.valueOf(map.get("biddingYn"));
+
+		for (Map<String, Object> bgMap : bgList) {
+
+			Map<String, Object> prufMap = budgetDAO.getPrufInfo(String.valueOf(bgMap.get("docNo")));
+
+			/*if(!MapUtils.isEmpty(prufMap) && prufMap.containsKey("PRUF_SE_CODE")){*/
+			if(prufMap != null){
+				bgMap.put("PRUF_SE_CODE", prufMap.get("PRUF_SE_CODE"));
+			}else{
+				bgMap.put("PRUF_SE_CODE", "");
+			}
+
+			Map<String, Object> erpBgMap = budgetDAO.getErpBgInfo(bgMap);
+
+			if (erpBgMap != null) {
+				bgMap.putAll(erpBgMap);
+			}
+
+			if ("Y".equals(biddingYn)) {
+				if (erpBgMap != null) {
+					resultList.add(bgMap);
+				}
+			}else if("N".equals(biddingYn)) {
+				if (erpBgMap == null) {
+					resultList.add(bgMap);
+				}
+			}else {
+				resultList.add(bgMap);
+			}
+		}
+		return resultList;
+	}
+
+	@Override
+	public int getResDocBizFeeListCnt(Map<String, Object> map) {
+		return budgetDAO.getResDocBizFeeListCnt(map);
+	}
+
+	@Override
+	public List<Map<String, Object>> getResDocDailyExpList(Map<String, Object> map) {
+		List<Map<String, Object>> bgList = budgetDAO.getResDocDailyExpList(map);
+		List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
+		String biddingYn = String.valueOf(map.get("biddingYn"));
+
+		for (Map<String, Object> bgMap : bgList) {
+
+			Map<String, Object> prufMap = budgetDAO.getPrufInfo(String.valueOf(bgMap.get("docNo")));
+
+			/*if(!MapUtils.isEmpty(prufMap) && prufMap.containsKey("PRUF_SE_CODE")){*/
+			if(prufMap != null){
+				bgMap.put("PRUF_SE_CODE", prufMap.get("PRUF_SE_CODE"));
+			}else{
+				bgMap.put("PRUF_SE_CODE", "");
+			}
+
+			Map<String, Object> erpBgMap = budgetDAO.getErpBgInfo(bgMap);
+
+			if (erpBgMap != null) {
+				bgMap.putAll(erpBgMap);
+			}
+
+			if ("Y".equals(biddingYn)) {
+				if (erpBgMap != null) {
+					resultList.add(bgMap);
+				}
+			}else if("N".equals(biddingYn)) {
+				if (erpBgMap == null) {
+					resultList.add(bgMap);
+				}
+			}else {
+				resultList.add(bgMap);
+			}
+		}
+		return resultList;
+	}
+	@Override
+	public int getResDocDailyExpListCnt(Map<String, Object> map) {
+		return budgetDAO.getResDocSubmitAdminListCnt(map);
+	}
 }

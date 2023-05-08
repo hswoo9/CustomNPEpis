@@ -606,5 +606,20 @@ public class BudgetDAO extends AbstractDAO{
 	public void saveBgtPlanDept(Map<String, Object> map) {
 		selectOneMs("budgetMs.saveBgtPlanDept", map);
 	}
-	
+
+	public List<Map<String, Object>> getResDocBizFeeList(Map<String, Object> map) {
+		return selectList("BudgetMaria.getResDocBizFeeList", map);
+	}
+
+	public int getResDocBizFeeListCnt(Map<String, Object> map) {
+		return (int) selectOne("BudgetMaria.getResDocBizFeeListCnt", map);
+	}
+
+	public List<Map<String, Object>> getResDocDailyExpList(Map<String, Object> map) {
+		return selectList("BudgetMaria.getResDocDailyExpList", map);
+	}
+
+	public int getResDocDailyExpListCnt(Map<String, Object> map) {
+		return (int) selectOne("BudgetMaria.getResDocDailyExpListCnt", map);
+	}
 }

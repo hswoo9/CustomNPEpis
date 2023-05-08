@@ -55,6 +55,14 @@ table tr td {
             <td><a href="${pageContext.request.contextPath}/bustrip/bustripOutResDocView">bustripOutResDocView</a></td>
         </tr>
 		<tr>
+			<td>업무추진 지출결의서 현황</td>
+			<td><a href="${pageContext.request.contextPath}/budget/resDocBizFeeList">resDocBizFeeList</a></td>
+		</tr>
+		<tr>
+			<td>일상경비 지출결의서 현황</td>
+			<td><a href="${pageContext.request.contextPath}/budget/resDocDailyExpList">resDocDailyExpList</a></td>
+		</tr>
+		<tr>
 			<td>리스트 조회 및 SMS 전송 </td>
 			<td><a href="${pageContext.request.contextPath }/resAlphaG20/sendSmsMessage">sendSmsMessage.jsp</a></td>
 		</tr>

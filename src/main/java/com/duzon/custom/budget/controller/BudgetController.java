@@ -7567,4 +7567,72 @@ public class BudgetController {
 		
 		return "/budget/add/monthSaupBgt";
 	}
+
+	@RequestMapping(value="/budget/resDocBizFeeList")
+	public String resDocBizFeeList(Locale locale, Model model, HttpServletRequest servletRequest) throws NoPermissionException {
+
+		logger.info("resDocBizFeeList");
+
+		LoginVO loginVO = (LoginVO) EgovUserDetailsHelper.getAuthenticatedUser();
+
+		model.addAttribute("userInfo", loginVO);
+		model.addAttribute("allDept", new Gson().toJson(commonService.getAllDept()));
+
+		return "/budget/resDocBizFeeList";
+	}
+
+	/**
+	 * @MethodName : getResDocBizFeeList
+	 * @since : 2023. 5. 8.
+	 * 설명 : 지출결의서 현황(업무추진)
+	 */
+	@RequestMapping(value="/budget/getResDocBizFeeList")
+	@ResponseBody
+	public Map<String, Object> getResDocBizFeeList(@RequestParam Map<String, Object> map){
+
+		logger.info("/budget/getResDocBizFeeList");
+
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+
+		List<Map<String, Object>> list = budgetService.getResDocBizFeeList(map);
+
+		resultMap.put("list", list);
+		resultMap.put("total", budgetService.getResDocBizFeeListCnt(map));
+
+		return resultMap;
+	}
+
+	@RequestMapping(value="/budget/resDocDailyExpList")
+	public String resDocDailyExpList(Locale locale, Model model, HttpServletRequest servletRequest) throws NoPermissionException {
+
+		logger.info("resDocDailyExpList");
+
+		LoginVO loginVO = (LoginVO) EgovUserDetailsHelper.getAuthenticatedUser();
+
+		model.addAttribute("userInfo", loginVO);
+		model.addAttribute("allDept", new Gson().toJson(commonService.getAllDept()));
+
+		return "/budget/resDocDailyExpList";
+	}
+
+	/**
+	 * @MethodName : getResDocDailyExpList
+	 * @since : 2023. 5. 8.
+	 * 설명 : 지출결의서 현황(일상경비)
+	 */
+	@RequestMapping(value="/budget/getResDocDailyExpList")
+	@ResponseBody
+	public Map<String, Object> getResDocDailyExpList(@RequestParam Map<String, Object> map){
+
+		logger.info("/budget/getResDocDailyExpList");
+
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+
+		List<Map<String, Object>> list = budgetService.getResDocDailyExpList(map);
+
+		resultMap.put("list", list);
+		resultMap.put("total", budgetService.getResDocDailyExpListCnt(map));
+
+		return resultMap;
+	}
 }
