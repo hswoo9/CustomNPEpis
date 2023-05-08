@@ -67,8 +67,8 @@
                                 submitYn: $("#submitYn").val(),
                                 docTitle : "",
                                 docNo: "",
-                                biddingYn: $("#biddingYn").val(),
-                                returnYn: $("#returnYn").val(),
+                                biddingYn: "Y",
+                                returnYn: "N",
                                 order: 'reg_date desc, reg_no desc'
                             }
 
@@ -132,8 +132,10 @@
                     data.docNo = $("#docTitle").val();
                 }
                 data.submitYn = $("#submitYn").val();
-                data.biddingYn = $("#biddingYn").val();
-                data.returnYn = $("#returnYn").val();
+                //data.biddingYn = $("#biddingYn").val();
+                data.biddingYn = "Y";
+                //data.returnYn = $("#returnYn").val();
+                data.returnYn = "N";
                 data.order = 'reg_date desc, reg_no desc';
 
                 return data;
