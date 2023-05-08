@@ -1407,7 +1407,7 @@
     </select>
 
     <select id="getGradeCost" parameterType="map" resultType="map">
-        SELECT * FROM cust_epis.dj_hr_biz_grade_cost_master where apply_grade_array_seqs like CONCAT('%',#{dept_position_code},'%') and date_format(#{day},'%Y-%m-%d') between date_format(sdate,'%Y-%m-%d') and date_format(edate,'%Y-%m-%d')
+        SELECT * FROM cust_epis.dj_hr_biz_grade_cost_master where apply_grade_array_seqs like CONCAT('%',#{dept_position_code},'%') and date_format(#{day},'%Y-%m-%d') between date_format(sdate,'%Y-%m-%d') and date_format(edate,'%Y-%m-%d') and active = 'Y'
     </select>
     <select id="getOilTypeCost" parameterType="map" resultType="map">
         SELECT * FROM cust_epis.dj_hr_biz_oil_cost_master where common_code_id = #{common_code_id} and date_format(#{day},'%Y-%m-%d') between date_format(apply_sdate,'%Y-%m-%d') and date_format(apply_edate,'%Y-%m-%d')
