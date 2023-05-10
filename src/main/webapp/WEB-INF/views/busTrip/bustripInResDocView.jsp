@@ -353,7 +353,7 @@
                     width : 15,
                     title : "승인일자"
                 },
-                {
+                /*{
                     width : 15,
                     title : "증빙유형",
                     template : function(dataItem){
@@ -373,7 +373,7 @@
                 {	field : "deadline",
                     width : 15,
                     title : "납부기한"
-                },
+                },*/
 
                 /*{
                     field : "isu_dt",
@@ -432,11 +432,11 @@
                     width : 20,
                     title : "결의금액"
                 },
-                {
+                /*{
                     field : "useName",
                     width : 15,
                     title : "확정여부",
-                },
+                },*/
             ],
             change : selectRow
 
