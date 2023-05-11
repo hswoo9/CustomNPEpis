@@ -80,8 +80,14 @@ var makeRowUtil = {
 			html += '<td>' + row.AUTHORNAME + '</td>';
 			html += '<td>' + fn_formatDate(row.REPORTDT) + '</td>';
 			html += '<td>' + "[" + row.AUTHORDEPTNAME + "-" + row.DOCNOSEQ + "] " + row.DOCTTL + '</td>';
-			html += '<td><input type="button" class="openHwpViewer" id="added_' + row.DOCID + '" value="보기" /></td>';
-			html += '<td><div class="controll_btn cen p0"><button type="button" class="attachIco2">첨부파일목록</button></div></td>';
+			if(row.PROTECTFLAG === "Y") {
+				html += '<td><input type="button" class="openHwpViewer" id="added_' + row.DOCID + '" value="보기" disabled/></td>';
+				html += '<td><div class="controll_btn cen p0"><button type="button" class="attachIco2" disabled>첨부파일목록</button></div></td>';
+			}else{
+				html += '<td><input type="button" class="openHwpViewer" id="added_' + row.DOCID + '" value="보기" /></td>';
+				html += '<td><div class="controll_btn cen p0"><button type="button" class="attachIco2">첨부파일목록</button></div></td>';
+			}
+
 			html += '<td>' + (row.usedGubun === "1" ?  '<span style="color : blue;">사용' : '<span style="">미사용') + '</span></td>';
 			html += '<td onclick=makeRowUtil.deleteRow(\"' + row.DOCID + '\",this)><img class="closeIco" style="width:15px; height:15px;" src="' + _g_contextPath_ + '/Images/ico/close.png" alt="" /></td>';
 			html += '</tr>';
@@ -401,7 +407,6 @@ function onnaraGrid(){
 		            type: 'post'
 		        },
 		      	parameterMap: function(data, operation){
-		      		
 		      		data.erpEmpSeqJson = $('#erpEmpSeq').val().length > 0 ? JSON.stringify({ paramArr : [$('#erpEmpSeq').val()] }) : JSON.stringify({ paramArr : savedEmpErpArray });
 					data.fromDate = $("#fromDate").val().replace(/\-/g, '');
 					data.toDate = $("#toDate").val().replace(/\-/g,'') + '235959';
@@ -443,7 +448,14 @@ function onnaraGrid(){
 		columns : [
 			{
 				template : function(dataItem) {
-					if (dataItem.attachVo.length > 0 && checkAuth(dataItem)) {
+
+					if(dataItem.READRANGETYPE == 'DDEP3' && dataItem.AUTHORDEPTNAME == JSON.parse('${orgnztNm}')){
+						return '<input type="checkbox" class = "mainCheckBox">';
+					} else if (dataItem.READRANGETYPE == 'DDEP3' && dataItem.AUTHORDEPTNAME != JSON.parse('${orgnztNm}')){
+						return "";
+					}  else if (dataItem.PROTECTFLAG === 'Y'){
+						return "";
+					} else if (dataItem.attachVo.length > 0 && checkAuth(dataItem)) {
 	            		return '<input type="checkbox" class = "mainCheckBox">';            		
 					} else {
 						return "";
@@ -478,11 +490,15 @@ function onnaraGrid(){
 			},
 			{
 				template : function(dataItem) {
-					if (dataItem.attachVo.length > 0 && checkAuth(dataItem)) {
+					if(dataItem.READRANGETYPE == 'DDEP3' && dataItem.AUTHORDEPTNAME == JSON.parse('${orgnztNm}')){
 						return "<input type='button' class='openHwpViewer' id='" + dataItem.DOCID + "' value='보기' />";
-					} else if (data.PROTECTFLAG === 'N'){
+					} else if (dataItem.READRANGETYPE == 'DDEP3' && dataItem.AUTHORDEPTNAME != JSON.parse('${orgnztNm}')){
 						return "<input type='button' class='openHwpViewer' id='" + dataItem.DOCID + "' value='보기' disabled />";
-					} else {
+					} else if (dataItem.PROTECTFLAG === 'Y'){
+						return "<input type='button' class='openHwpViewer' id='" + dataItem.DOCID + "' value='보기' disabled />";
+					} else if (dataItem.attachVo.length > 0 && checkAuth(dataItem)) {
+						return "<input type='button' class='openHwpViewer' id='" + dataItem.DOCID + "' value='보기' />";
+					}  else {
                         return "";
                     }
 				},
@@ -491,11 +507,15 @@ function onnaraGrid(){
 			},
 			{
 				template : function(dataItem) {
-					if (dataItem.attachVo.length > 0 && checkAuth(dataItem)) {
+					if(dataItem.READRANGETYPE == 'DDEP3' && dataItem.AUTHORDEPTNAME == JSON.parse('${orgnztNm}')){
 						return '<div class="controll_btn cen p0"><button type="button" class="attachIco">첨부파일목록</button></div>';
-					}  else if (data.PROTECTFLAG === 'N'){
-                        return '<div class="controll_btn cen p0"><button type="button" class="attachIco" disabled>첨부파일목록</button></div>';
-                    } else {
+					} else if (dataItem.READRANGETYPE == 'DDEP3' && dataItem.AUTHORDEPTNAME != JSON.parse('${orgnztNm}')){
+						return '<div class="controll_btn cen p0"><button type="button" class="attachIco" disabled>첨부파일목록</button></div>';
+					} else if (dataItem.PROTECTFLAG === 'Y'){
+						return '<div class="controll_btn cen p0"><button type="button" class="attachIco" disabled>첨부파일목록</button></div>';
+					} else if (dataItem.attachVo.length > 0 && checkAuth(dataItem)) {
+						return '<div class="controll_btn cen p0"><button type="button" class="attachIco">첨부파일목록</button></div>';
+					} else {
                         return "";
                     }
 				},
@@ -524,7 +544,8 @@ function onnaraGrid(){
 		grid = $('#onnaraGrid').data("kendoGrid");
 		data = grid.dataItem(row);
 		console.log(data);
-		
+		console.log(data.READRANGETYPE);
+
 		// Checkbox on/off
 		if (checkAuth(data)) {
 			var checkFlag = row.find('.mainCheckBox').prop('checked') ? false : true;

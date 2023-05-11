@@ -181,7 +181,10 @@ public class ResAlphaG20Controller {
 		model.addAttribute("allDept",  new Gson().toJson(allDept));
 		model.addAttribute("deptSeq",  new Gson().toJson(loginVO.getDept_seq()));
 		model.addAttribute("erpEmpSeq", loginVO.getErpEmpCd());
-		
+		model.addAttribute("organNm", new Gson().toJson(loginVO.getOrganNm()));
+		model.addAttribute("orgnztNm", new Gson().toJson(loginVO.getOrgnztNm()));
+
+
 		return "/resAlphaG20/pop/ONNARApopup";
 	}
 	

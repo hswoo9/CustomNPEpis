@@ -334,12 +334,14 @@ function attachTooltipTemplate(row) {
 	
 	var html = "";
 	var attachVo = row.attachVo;
-	
-	attachVo.forEach(function(v, i) {
-		html += '<div class="attachTooltip" onclick="downloadFileId(\'' + v.FLEID + '\');">' + v.FLETTL + "</div>";
-	});
-	
-	return html;
+
+	if(row.PROTECTFLAG !== 'Y') {
+		attachVo.forEach(function (v, i) {
+			html += '<div class="attachTooltip" onclick="downloadFileId(\'' + v.FLEID + '\');">' + v.FLETTL + "</div>";
+		});
+	}
+		return html;
+
 }
 
 function downloadFileId(fileId) {
