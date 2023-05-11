@@ -480,9 +480,11 @@ function onnaraGrid(){
 				template : function(dataItem) {
 					if (dataItem.attachVo.length > 0 && checkAuth(dataItem)) {
 						return "<input type='button' class='openHwpViewer' id='" + dataItem.DOCID + "' value='보기' />";
+					} else if (data.PROTECTFLAG === 'N'){
+						return "<input type='button' class='openHwpViewer' id='" + dataItem.DOCID + "' value='보기' disabled />";
 					} else {
-						return "";
-					}
+                        return "";
+                    }
 				},
 				width : 3.5,
 				title : "문서보기"
@@ -491,9 +493,11 @@ function onnaraGrid(){
 				template : function(dataItem) {
 					if (dataItem.attachVo.length > 0 && checkAuth(dataItem)) {
 						return '<div class="controll_btn cen p0"><button type="button" class="attachIco">첨부파일목록</button></div>';
-					} else {
-						return "";
-					}
+					}  else if (data.PROTECTFLAG === 'N'){
+                        return '<div class="controll_btn cen p0"><button type="button" class="attachIco" disabled>첨부파일목록</button></div>';
+                    } else {
+                        return "";
+                    }
 				},
 				title : "첨부파일",
 				width : 5
