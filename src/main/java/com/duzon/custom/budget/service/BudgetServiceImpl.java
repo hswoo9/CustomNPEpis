@@ -590,14 +590,14 @@ public class BudgetServiceImpl implements BudgetService {
 
 		for (Map<String, Object> bgMap : bgList) {
 
-			Map<String, Object> prufMap = budgetDAO.getPrufInfo(String.valueOf(bgMap.get("docNo")));
+			/*Map<String, Object> prufMap = budgetDAO.getPrufInfo(String.valueOf(bgMap.get("docNo")));*/
 
 			/*if(!MapUtils.isEmpty(prufMap) && prufMap.containsKey("PRUF_SE_CODE")){*/
-			if(prufMap != null){
+			/*if(prufMap != null){
 				bgMap.put("PRUF_SE_CODE", prufMap.get("PRUF_SE_CODE"));
 			}else{
 				bgMap.put("PRUF_SE_CODE", "");
-			}
+			}*/
 
 			Map<String, Object> erpBgMap = budgetDAO.getErpBgInfo(bgMap);
 

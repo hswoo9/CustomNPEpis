@@ -351,7 +351,7 @@ var $dataSource = new kendo.data.DataSource({		//그리드데이터소스
 					width : 15,
 					title : "승인일자"
 				},
-				{
+				/*{
 					width : 15,
 					title : "증빙유형",
 					template : function(dataItem){
@@ -367,7 +367,7 @@ var $dataSource = new kendo.data.DataSource({		//그리드데이터소스
 							return '';
 						}
 					}
-				},
+				},*/
 				{	field : "deadline",
 					width : 15,
 					title : "납부기한"
