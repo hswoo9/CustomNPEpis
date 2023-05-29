@@ -1,5 +1,6 @@
 package com.duzon.custom.loginPage.service.impl;
 
+import bizbox.orgchart.service.vo.LoginVO;
 import com.duzon.custom.common.service.CommonService;
 import com.duzon.custom.loginPage.dao.LoginPageDAO;
 import com.duzon.custom.loginPage.service.LoginPageService;
@@ -118,9 +119,21 @@ public class LoginPageServiceImpl implements LoginPageService {
 		return loginPageDAO.getCurrTime(map);
 	}
 
-	
 
+	public LoginVO actionLogin(Map<String, Object> params){
+		LoginVO resultVO = null;
+		try {
+			resultVO = loginPageDAO.actionLogin(params);
+		} catch (Exception e) {
+			logger.info(e.getMessage());
+		}
+		return resultVO;
+	}
 
+	@Override
+	public Map<String, Object> selectOptionSet(Map<String, Object> mp) {
+		return loginPageDAO.selectOptionSet(mp);
+	}
 	
 
 	

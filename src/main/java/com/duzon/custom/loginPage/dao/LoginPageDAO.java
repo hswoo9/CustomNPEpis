@@ -1,7 +1,10 @@
 package com.duzon.custom.loginPage.dao;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import bizbox.orgchart.service.vo.LoginVO;
 import org.springframework.stereotype.Repository;
 
 import com.duzon.custom.common.dao.AbstractDAO;
@@ -28,4 +31,23 @@ public class LoginPageDAO extends AbstractDAO {
 		return (String)selectOne("loginPage.getCurrTime", map);
 	}
 
+	public LoginVO actionLogin(Map<String, Object> params) throws Exception {
+		return (LoginVO) selectOne("loginPage.actionLogin", params);
+	}
+
+	public Map<String, Object> selectOptionSet(Map<String, Object> mp){
+
+		Map<String, Object> option = new HashMap<>();
+
+		@SuppressWarnings("unchecked")
+		List<Map<String, Object>> listMap = selectList("loginPage.selectOption", mp);
+
+		if(listMap != null && listMap.size() > 0){
+			for (Map<String, Object> map : listMap) {
+				option.put((String)map.get("optionId"), map.get("optionValue") == null ? (String)map.get("optionDValue") : (String)map.get("optionValue"));
+			}
+		}
+
+		return option;
+	}
 }

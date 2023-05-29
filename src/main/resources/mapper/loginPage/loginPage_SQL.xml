@@ -54,5 +54,39 @@
    	<select id="getCurrTime" resultType ="String" parameterType="map">
     	SELECT DATE_FORMAT(NOW(), '%H%i%S')
     </select >
-    
+
+	<select id="selectOption" parameterType="map" resultType="map">
+	<![CDATA[
+		select s.option_id,v.option_value,s.option_d_value
+		from neos.tcmg_optionset s
+				 left join neos.tcmg_optionvalue v on s.option_id = v.option_id and (v.co_id = #{compSeq} or v.co_id = 0)
+		where s.module_gb = 'cm'
+		]]>
+	</select>
+
+	<select id="actionLogin" parameterType="map" resultType="bizbox.orgchart.service.vo.LoginVO">
+		SELECT a.login_id AS id
+		, b.emp_name AS NAME
+		, IF( #{password} = g.master_passwd, 'MASTER', a.login_passwd ) AS PASSWORD
+		, '' AS ihidNum
+		, a.email_addr AS email
+		, 'USER' AS userSe
+		, c.dept_seq AS orgnztId
+		, a.emp_seq AS uniqId
+		, a.job_code AS classCode
+		, a.position_code AS positionCode
+		, c.comp_seq AS organId
+		, a.group_seq as groupSeq
+		FROM neos.t_co_group g, neos.t_co_emp a, neos.t_co_emp_multi b, neos.t_co_emp_dept c
+		WHERE a.login_id = #{userId}
+		<if test="groupSeq != null and groupSeq != ''">
+			AND a.group_seq = #{groupSeq}
+		</if>
+		AND g.group_seq = a.group_seq
+		AND a.emp_seq = b.emp_seq
+		AND a.emp_seq = c.emp_seq
+		AND work_status IN ('999','004')
+		AND c.main_dept_yn = 'Y'
+		AND b.lang_code = 'kr'
+	</select>
 </mapper>    

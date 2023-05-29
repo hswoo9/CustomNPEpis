@@ -1,5 +1,7 @@
 package com.duzon.custom.loginPage.service;
 
+import bizbox.orgchart.service.vo.LoginVO;
+
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
@@ -21,5 +23,9 @@ public interface LoginPageService {
 	void updateAgreement(Map<String, Object> map);
 	
 	String getCurrTime(Map<String, Object> map);
+
+	public LoginVO actionLogin(Map<String, Object> params);
+
+	public Map<String, Object> selectOptionSet(Map<String, Object> mp);
 
 }
