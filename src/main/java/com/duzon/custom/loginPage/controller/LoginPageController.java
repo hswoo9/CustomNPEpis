@@ -225,11 +225,32 @@ private static final Logger logger = LoggerFactory.getLogger(LoginPageController
 		if(paramMap.containsKey("redirectUrl")){
 			return "redirect:" + paramMap.get("redirectUrl");
 		}else{
-			return "redirect:/gw/userMain.do";
+			model.addAttribute("paramMap", paramMap);
+			return "/busTrip/loginSession";
+		}
+	}
+
+	@RequestMapping(value="/custom/empInfoSaveProc.do")
+	public String empInfoSaveProc(HttpServletRequest request, ModelMap model, @RequestParam Map<String,Object> paramMap) throws Exception {
+		LoginVO resultVO = null;
+		logger.info("loginSession.do");
+		resultVO = loginPageService.actionLogin(paramMap);
+		String userSe = resultVO.getUserSe();
+
+		if (resultVO != null && resultVO.getId() != null && !resultVO.getId().equals("")) {
+			// 2-1. 로그인 정보를 세션에 저장
+			logger.info("resultVO != null && resultVO.getId() != null && !resultVO.getId().equals()");
+			Map<String, Object> mp = new HashMap<String, Object>();
+			mp.put("groupSeq", resultVO.getGroupSeq());
+			mp.put("compSeq", resultVO.getOrganId());
+
+			Map<String, Object> optionSet = loginPageService.selectOptionSet(mp);
+			request.getSession().setAttribute("optionSet", optionSet);
+			request.getSession().setAttribute("loginVO", resultVO);
+			request.setAttribute("langCode", resultVO.getLangCode());
 		}
 
-
-
-
+		model.addAttribute("paramMap", paramMap);
+		return "/busTrip/empInfoSaveProc";
 	}
 }
