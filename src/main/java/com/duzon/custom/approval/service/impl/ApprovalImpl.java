@@ -383,4 +383,9 @@ public class ApprovalImpl implements ApprovalService {
             evalDAO.setEvalDocApproveRetrieve(params);
         }
     }
+
+    @Override
+    public Map<String, Object> approveCheck(Map<String, Object> map) {
+        return approvalRepository.approveCheck(map);
+    }
 }

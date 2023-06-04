@@ -169,4 +169,13 @@ public class ApprovalController {
 		return "jsonView";
 	}
 
+	//결재 상신 체크(운영,개발)
+	@RequestMapping("/approval/approveCheck.do")
+	public String approveCheck(@RequestParam Map<String, Object> map, HttpServletRequest request, Model model){
+
+		model.addAttribute("cnt", approvalService.approveCheck(map));
+
+		return "jsonView";
+	}
+
 }

@@ -948,4 +948,13 @@
           AND
             APPROVE_EMP_SEQ = #{empSeq}
     </update>
+
+    <select id="approveCheck" parameterType="map" resultType="map">
+        SELECT
+            COUNT(*) AS DOC_CNT
+        FROM
+            DJ_EPIS.A_DOC_INFO
+        WHERE
+            DOC_ID = #{docId}
+    </select>
 </mapper>

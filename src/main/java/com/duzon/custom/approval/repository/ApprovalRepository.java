@@ -69,9 +69,8 @@ public class ApprovalRepository extends AbstractDAO{
 
     public void setDocApproveRouteReadDt(Map<String, Object> parama) { update("approval.setDocApproveRouteReadDt", parama);}
 
-
-
-
+    public Map<String, Object> approveCheck(Map<String, Object> map){ return (Map<String, Object>) selectOne("approval.approveCheck", map);
+    }
 
 
 }

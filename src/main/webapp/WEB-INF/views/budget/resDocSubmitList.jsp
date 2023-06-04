@@ -179,6 +179,46 @@ var $dataSource = new kendo.data.DataSource({		//그리드데이터소스
 		
 		empGrid();
 	});
+
+	function fn_docViewPop2(docId, approKey, menuCd, deleteFlag){
+		if(deleteFlag != null && deleteFlag == "Y"){
+			alert("삭제된 문서는 열 수 없습니다.");
+			return
+		}
+
+		var  chkFlag = true;
+		$.ajax({
+			url : _g_contextPath_+"/approval/approveCheck.do",
+			type : "POST",
+			async : false,
+			data : {
+				docId : docId,
+			},
+			success : function(data) {
+				console.log(data.cnt.DOC_CNT);
+
+				if(data.cnt.DOC_CNT != 1){
+					console.log("더존 전자결재 조회")
+					chkFlag = false;
+					fn_docViewPop(docId);
+				}else{console.log("커스텀 전자결재 조회")}
+			}
+		});
+
+		if(chkFlag == false){return;}
+
+		var devHostName = "http://121.186.165.80:8010";
+		var hostName = "http://10.10.10.114";
+		var mod = "V";
+		var pop = "" ;
+		var url = devHostName + '/approval/approvalDocView.do?docId='+docId+'&menuCd=' + "normal" + '&mod=' + mod + '&approKey='+ "EXNPRESI_NP_55229";
+		var width = "1000";
+		var height = "950";
+		windowX = Math.ceil( (window.screen.width  - width) / 2 );
+		windowY = Math.ceil( (window.screen.height - height) / 2 );
+		pop = window.open(url, '결재 문서_' + docId, "width=" + width + ", height=" + height + ", top="+ windowY +", left="+ windowX +", resizable=NO, scrollbars=NO");
+		//pop.focus();
+	}
 	
 	function fnTpfGetDeptList(){
 		var result = {};
@@ -235,7 +275,7 @@ var $dataSource = new kendo.data.DataSource({		//그리드데이터소스
 				{
 					field : "docNo",
 					template : function(dataItem) {
-						return "<span class='blueColor docTitle' onclick='fn_docViewPop(" + dataItem.docSeq + ")'>" + dataItem.docNo + "</span>";
+						return "<span class='blueColor docTitle' onclick='fn_docViewPop2(" + dataItem.docSeq + ")'>" + dataItem.docNo + "</span>";
 					},
 					width : 15,
 					title : "문서번호"
@@ -244,7 +284,7 @@ var $dataSource = new kendo.data.DataSource({		//그리드데이터소스
 					width : 35,
 					field : "docTitle",
 					template : function(dataItem) {
-						return "<span class='blueColor docTitle' onclick='fn_docViewPop(" + dataItem.docSeq + ")'>" + dataItem.docTitle + "</span>";
+						return "<span class='blueColor docTitle' onclick='fn_docViewPop2(" + dataItem.docSeq + ")'>" + dataItem.docTitle + "</span>";
 					},
 					title : "제목"
 				},

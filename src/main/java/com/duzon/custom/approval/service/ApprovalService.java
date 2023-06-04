@@ -74,4 +74,6 @@ public interface ApprovalService {
      * 상신 문서 회수 (최종결재 전 회수 가능)
      */
     void setApproveRetrieve(Map<String, Object> params);
+
+    Map<String, Object> approveCheck(Map<String, Object> map);
 }
