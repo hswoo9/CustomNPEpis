@@ -443,6 +443,7 @@
 			, ds.return_yn AS 'returnYn'
 			, ds.return_reason AS 'returnReason'
 			, ds.return_date AS 'returnDate'
+			, gwlink.docx_numb AS 'docxNumb'
 		FROM	neos.t_exnp_resdoc	d
 		INNER JOIN	neos.a_recordinfo	r
 		 ON	d.doc_seq = r.c_dikeycode

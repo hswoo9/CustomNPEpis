@@ -180,12 +180,11 @@ var $dataSource = new kendo.data.DataSource({		//그리드데이터소스
 		empGrid();
 	});
 
-	function fn_docViewPop2(docId, approKey, menuCd, deleteFlag){
-		if(deleteFlag != null && deleteFlag == "Y"){
+	function fn_docViewPop2(docId, approKey){
+		/*if(deleteFlag != null && deleteFlag == "Y"){
 			alert("삭제된 문서는 열 수 없습니다.");
 			return
-		}
-
+		}*/
 		var  chkFlag = true;
 		$.ajax({
 			url : _g_contextPath_+"/approval/approveCheck.do",
@@ -207,11 +206,18 @@ var $dataSource = new kendo.data.DataSource({		//그리드데이터소스
 
 		if(chkFlag == false){return;}
 
-		var devHostName = "http://121.186.165.80:8010";
-		var hostName = "http://10.10.10.114";
+		var hostName = "";
+		if(g_hostName == 'localhost' || g_hostName == '127.0.0.1'){
+			var hostName = "http://121.186.165.80:8010";
+		}else{
+			var hostName = "http://10.10.10.114";
+		}
+
+
+
 		var mod = "V";
 		var pop = "" ;
-		var url = devHostName + '/approval/approvalDocView.do?docId='+docId+'&menuCd=' + "normal" + '&mod=' + mod + '&approKey='+ "EXNPRESI_NP_55229";
+		var url = hostName + '/approval/approvalDocView.do?docId='+docId+'&menuCd=' + "normal" + '&mod=' + mod + '&approKey='+ approKey;
 		var width = "1000";
 		var height = "950";
 		windowX = Math.ceil( (window.screen.width  - width) / 2 );
@@ -275,7 +281,7 @@ var $dataSource = new kendo.data.DataSource({		//그리드데이터소스
 				{
 					field : "docNo",
 					template : function(dataItem) {
-						return "<span class='blueColor docTitle' onclick='fn_docViewPop2(" + dataItem.docSeq + ")'>" + dataItem.docNo + "</span>";
+						return "<span class='blueColor docTitle' onclick=\"fn_docViewPop2('" + dataItem.docSeq + "','" + dataItem.docxNumb +  "')\">" + dataItem.docNo + "</span>";
 					},
 					width : 15,
 					title : "문서번호"
@@ -284,7 +290,7 @@ var $dataSource = new kendo.data.DataSource({		//그리드데이터소스
 					width : 35,
 					field : "docTitle",
 					template : function(dataItem) {
-						return "<span class='blueColor docTitle' onclick='fn_docViewPop2(" + dataItem.docSeq + ")'>" + dataItem.docTitle + "</span>";
+						return "<span class='blueColor docTitle' onclick=\"fn_docViewPop2('" + dataItem.docSeq + "','" + dataItem.docxNumb +  "')\">" + dataItem.docTitle + "</span>";
 					},
 					title : "제목"
 				},
