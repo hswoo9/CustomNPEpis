@@ -467,13 +467,13 @@ $(function() {
     				{	field : "KOR_NM",				title : "결의자",			width : 70},
     				{	
     					template : function(dataItem) {
-    						return "<span class='grdCol' style='color: blue;' onclick='fn_docViewPop(" + dataItem.C_DIKEYCODE + ")'>" + dataItem.DOC_NUMBER + "</span>";
+    						return "<span class='grdCol' style='color: blue;' onclick='fn_docViewPop2(" + dataItem.C_DIKEYCODE + ")'>" + dataItem.DOC_NUMBER + "</span>";
     					},
     					title : "문서번호", 		width : 100
     				},
     				{	
     					template : function(dataItem) {
-    						return "<span class='grdCol' style='color: blue;' onclick='fn_docViewPop(" + dataItem.C_DIKEYCODE + ")'>" + dataItem.DOC_TITLE + "</span>";
+    						return "<span class='grdCol' style='color: blue;' onclick='fn_docViewPop2(" + dataItem.C_DIKEYCODE + ")'>" + dataItem.DOC_TITLE + "</span>";
     					},
     					title : "문서제목", 		width : 140
     				},
@@ -685,6 +685,51 @@ $(function() {
 
 <!--  커스텀 function -->
 <script type="text/javascript">
+function fn_docViewPop2(docId, approKey){
+	/*if(deleteFlag != null && deleteFlag == "Y"){
+		alert("삭제된 문서는 열 수 없습니다.");
+		return
+	}*/
+	var  chkFlag = true;
+	$.ajax({
+		url : _g_contextPath_+"/approval/approveCheck.do",
+		type : "POST",
+		async : false,
+		data : {
+			docId : docId,
+		},
+		success : function(data) {
+
+			if(data.cnt.DOC_CNT != 1){
+				console.log("더존 전자결재 조회")
+				chkFlag = false;
+				fn_btnDocView(docId);
+			}else{console.log("커스텀 전자결재 조회")}
+		}
+	});
+
+	if(chkFlag == false){return;}
+
+	var hostName = "";
+	if(g_hostName == 'localhost' || g_hostName == '127.0.0.1'){
+		var hostName = "http://121.186.165.80:8010";
+	}else{
+		var hostName = "http://10.10.10.114";
+	}
+
+
+
+	var mod = "V";
+	var pop = "" ;
+	var id = '${userInfo.id}';
+	var url = hostName + '/approval/approvalDocView.do?docId='+docId+'&menuCd=' + "normal" + '&mod=' + mod + '&approKey='+ approKey  + '&id=' + id;
+	var width = "1000";
+	var height = "950";
+	windowX = Math.ceil( (window.screen.width  - width) / 2 );
+	windowY = Math.ceil( (window.screen.height - height) / 2 );
+	pop = window.open(url, '결재 문서_' + docId, "width=" + width + ", height=" + height + ", top="+ windowY +", left="+ windowX +", resizable=NO, scrollbars=NO");
+	//pop.focus();
+}
 
 function kukgohFileDown(e){
 	var row = $(e).closest("tr");

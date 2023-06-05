@@ -194,7 +194,6 @@ var $dataSource = new kendo.data.DataSource({		//그리드데이터소스
 				docId : docId,
 			},
 			success : function(data) {
-				console.log(data.cnt.DOC_CNT);
 
 				if(data.cnt.DOC_CNT != 1){
 					console.log("더존 전자결재 조회")
@@ -213,11 +212,10 @@ var $dataSource = new kendo.data.DataSource({		//그리드데이터소스
 			var hostName = "http://10.10.10.114";
 		}
 
-
-
 		var mod = "V";
 		var pop = "" ;
-		var url = hostName + '/approval/approvalDocView.do?docId='+docId+'&menuCd=' + "normal" + '&mod=' + mod + '&approKey='+ approKey;
+		var id = '${userInfo.id}';
+		var url = hostName + '/approval/approvalDocView.do?docId='+docId+'&menuCd=' + "normal" + '&mod=' + mod + '&approKey='+ approKey  + '&id=' + id;
 		var width = "1000";
 		var height = "950";
 		windowX = Math.ceil( (window.screen.width  - width) / 2 );

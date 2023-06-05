@@ -307,7 +307,9 @@ $(document).ready(function() {
 		});
 		
 		$('#docView').on('click', function (){
-			fn_btnDocView();
+			var docId = '${data.C_DIKEYCODE}';
+			fn_docViewPop2(docId);
+
 		});
 		
 		$('#gisuDt').val(fn_formatDate($('#gisuDt').val()));
@@ -1217,6 +1219,52 @@ function fn_btnDocView(){
 	var dikeyCode = '${data.C_DIKEYCODE}';
     var url = "http://" + g_hostName + "/ea/edoc/eapproval/docCommonDraftView.do?multiViewYN=Y&diSeqNum=undefined&miSeqNum=undefined&diKeyCode="+dikeyCode;
 	window.open(url,"viewer","width=965, height=950, resizable=yes, scrollbars=yes, status=no, top=50, left=50","newWindow");						
+}
+
+function fn_docViewPop2(docId, approKey){
+	/*if(deleteFlag != null && deleteFlag == "Y"){
+		alert("삭제된 문서는 열 수 없습니다.");
+		return
+	}*/
+	var  chkFlag = true;
+	$.ajax({
+		url : _g_contextPath_+"/approval/approveCheck.do",
+		type : "POST",
+		async : false,
+		data : {
+			docId : docId,
+		},
+		success : function(data) {
+
+			if(data.cnt.DOC_CNT != 1){
+				console.log("더존 전자결재 조회")
+				chkFlag = false;
+				fn_btnDocView(docId);
+			}else{console.log("커스텀 전자결재 조회")}
+		}
+	});
+
+	if(chkFlag == false){return;}
+
+	var hostName = "";
+	if(g_hostName == 'localhost' || g_hostName == '127.0.0.1'){
+		var hostName = "http://121.186.165.80:8010";
+	}else{
+		var hostName = "http://10.10.10.114";
+	}
+
+
+
+	var mod = "V";
+	var pop = "" ;
+	var id = '${userInfo.id}';
+	var url = hostName + '/approval/approvalDocView.do?docId='+docId+'&menuCd=' + "normal" + '&mod=' + mod + '&approKey='+ approKey  + '&id=' + id;
+	var width = "1000";
+	var height = "950";
+	windowX = Math.ceil( (window.screen.width  - width) / 2 );
+	windowY = Math.ceil( (window.screen.height - height) / 2 );
+	pop = window.open(url, '결재 문서_' + docId, "width=" + width + ", height=" + height + ", top="+ windowY +", left="+ windowX +", resizable=NO, scrollbars=NO");
+	//pop.focus();
 }
 
 function check(str){
