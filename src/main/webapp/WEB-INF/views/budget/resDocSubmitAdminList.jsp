@@ -146,7 +146,7 @@ var $dataSource = new kendo.data.DataSource({		//그리드데이터소스
 			}
 			
 			response.list.map(function(obj){
-			 	if (obj.docSeq === '17873' || obj.docSeq === '44499' || obj.docSeq === '43745') {
+			 	if (obj.docSeq === '17873' || obj.docSeq === '44499' || obj.docSeq === '43745' || obj.docSeq === '53614') {
 			 		obj.useName = '확정';
 			 	}
 			});
