@@ -703,7 +703,7 @@ function fn_docViewPop2(docId, approKey){
 			if(data.cnt.DOC_CNT != 1){
 				console.log("더존 전자결재 조회")
 				chkFlag = false;
-				fn_btnDocView(docId);
+				fn_docViewPop(docId);
 			}else{console.log("커스텀 전자결재 조회")}
 		}
 	});
