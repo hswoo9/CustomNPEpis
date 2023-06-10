@@ -925,7 +925,11 @@ function fileRow(e) {
 		var flag = $(e).val() === "전송" ? 'S' : 'C'; // 전송 'S', 확인 'C'
  		var dataItem = $("#sendResolutionGrid").data("kendoGrid").dataItem($(e).closest("tr"));
 		dataItem.flag = flag;
-		
+
+		dataItem.EXCUT_PRPOS_CN = "[" + dataItem.DOC_NUMBER + "] " + dataItem.DOC_TITLE;
+		dataItem.PRDLST_NM = "[" + dataItem.DOC_NUMBER + "] " + dataItem.DOC_TITLE;
+
+		console.log(dataItem);
 		var w = 1450;
 		var h = 650;
 		
@@ -955,7 +959,7 @@ function fileRow(e) {
 	}
 	
 	function fn_makeSendData(dataJson) {
-		
+
 		dataJson.BCNC_ACNUT_NO = dataJson.BCNC_ACNUT_NO.replace(/\-/g,'');
 		
 		// 사업자등록번호 처리

@@ -43,6 +43,7 @@
 		SELECT * FROM cust_epis.if_onnara_moved_file
 					WHERE o_docid = #{DOCID}
 						AND gubun = 'DFT01'
+					  AND seq = (SELECT MAX(seq) FROM cust_epis.if_onnara_moved_file WHERE o_docid = #{DOCID} AND gubun = 'DFT01' AND seq IS NOT NULL)
 	</select>
 	
 	<select id="resalphag20.getOnnaraMovedFile" resultType="map" parameterType="map">

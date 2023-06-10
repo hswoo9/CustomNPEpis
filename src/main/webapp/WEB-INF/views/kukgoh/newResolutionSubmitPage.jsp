@@ -2062,13 +2062,13 @@ function cardNoGrid() {
 								<dl class="next2">
 									<dt style="width:100px;"><img src="<c:url value='/Images/ico/ico_check01.png'/>" alt="" />집행용도</dt>
 									<dd>
-										<input style="width:480px" type="text" id="EXCUT_PRPOS_CN" name="EXCUT_PROPOS_CN" value="${result.EXCUT_PRPOS_CN }"/>
+										<input style="width:480px" type="text" id="EXCUT_PRPOS_CN" name="EXCUT_PROPOS_CN" value="${dataJson.EXCUT_PRPOS_CN }"/>
 									</dd>
 								</dl>
 								<dl class="next2">
 								<dt style="width:100px;"><img src="<c:url value='/Images/ico/ico_check01.png'/>" alt="" />품목</dt>
 									<dd>
-										<input style="width:480px" type="text" id="PRDLST_NM" name="PRDLST_NM" value="${result.PRDLST_NM }"/>
+										<input style="width:480px" type="text" id="PRDLST_NM" name="PRDLST_NM" value="${dataJson.PRDLST_NM }"/>
 									</dd>
 								</dl>
 								<dl class="next2">

@@ -130,13 +130,20 @@ public class ResAlphaG20ServiceImpl implements ResAlphaG20Service {
 		
 		try {
 		
-			if (checkMap != null) { // 이미 알파서버에 있는 경우
-				
-				hwpMap.put("SFILENAME", (String) checkMap.get("o_real_file_name"));
-				hwpMap.put("FLETTL", (String) checkMap.get("o_org_file_name"));
-				hwpMap.put("FILEID", (String) checkMap.get("o_file_id"));
-				hwpMap.put("INDT", (String) checkMap.get("o_indt"));
-				hwpMap.put("yyyyMM", (String) checkMap.get("yyyyMM"));
+			if (checkMap != null && checkMap.containsKey("seq")) { // 이미 알파서버에 있는 경우
+				if(checkMap.get("seq") != null) {
+					hwpMap.put("SFILENAME", (String) checkMap.get("o_real_file_name"));
+					hwpMap.put("FLETTL", (String) checkMap.get("o_org_file_name"));
+					hwpMap.put("FILEID", (String) checkMap.get("o_file_id"));
+					hwpMap.put("INDT", (String) checkMap.get("o_indt"));
+					hwpMap.put("yyyyMM", (String) checkMap.get("yyyyMM"));
+				}else {
+					hwpMap.put("SFILENAME", (String) checkMap.get("o_real_file_name"));
+					hwpMap.put("FLETTL", (String) checkMap.get("o_org_file_name"));
+					hwpMap.put("FILEID", (String) checkMap.get("o_file_id"));
+					hwpMap.put("INDT", (String) checkMap.get("o_indt"));
+					hwpMap.put("yyyyMM", (String) checkMap.get("yyyyMM"));
+				}
 				
 			} else {
 				
@@ -204,7 +211,9 @@ public class ResAlphaG20ServiceImpl implements ResAlphaG20Service {
 		} catch (Exception e) {
 			logger.info("Error : ", e);
 		} finally {
-			channelSftp.quit();
+			if(channelSftp != null){
+				channelSftp.quit();
+			}
 			try {
 				channelSftp.disconnect();
 				channelSftp = null;
