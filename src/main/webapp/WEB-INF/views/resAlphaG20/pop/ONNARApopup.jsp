@@ -484,7 +484,7 @@
 				{
 					template : function(dataItem) {
 
-						if(dataItem.READRANGETYPE == 'DDEP3' && dataItem.AUTHORDEPTNAME == JSON.parse('${orgnztNm}')){
+						if(dataItem.READRANGETYPE == 'DDEP3' && dataItem.AUTHORDEPTNAME == JSON.parse('${orgnztNm}') || JSON.parse('${orgnztNm}') == "국제통상협력실"){
 							return '<input type="checkbox" class = "mainCheckBox">';
 						} else if (dataItem.READRANGETYPE == 'DDEP2' && loginParentDept != deptParentDept){
 							return "";
@@ -731,7 +731,7 @@
 					var fileFullPath = result.fileFullPath;
 
 					//window.open(_g_contextPath_ + '/resAlphaG20/pdfViewerIE?fileFullPath=' + fileFullPath);
-
+console.log()
 					$.ajax({
 						url: _g_contextPath_+"/resAlphaG20/convertPdfToBase64",
 						dataType : 'json',
