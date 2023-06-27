@@ -265,7 +265,7 @@ $(document).ready(function() {
 			  dataValueField: "CMMN_DETAIL_CODE",
 			  index: 0,
 			  select : fn_depositGbCause
-		});		
+		});
         
 		//TRANSFR_ACNUT_SE_CODE
 		$("#btnGetPrufSeNo").on("click", function(){
@@ -684,8 +684,10 @@ function fn_depositGb(e){
 		SBSACNT_TRFRSN_CODE.wrapper.hide();
 		$("#SBSACNT_TRFRSN_CN").hide();
 	}
-	
-	
+
+	if(SBSACNT_TRFRSN_CODE.value() == '006'){
+		$("#SBSACNT_TRFRSN_CODE").data("kendoComboBox").select(25);
+	}
 }
 
 //보조금계좌로 이체
@@ -1917,6 +1919,12 @@ function cardNoGrid() {
 			}	
 		});
 }
+		//집행 전송 페이지에서 이체구분이 운영비 자체 이체로 들어올 때
+		$(document).ajaxStop(function(){
+			if($("#SBSACNT_TRFRSN_CODE").val() == '006'){
+				$("#SBSACNT_TRFRSN_CODE").data("kendoComboBox").select(25); //운영비 자체 이체-사후승인
+			}
+		});
 	
 </script>
 
