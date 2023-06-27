@@ -47,7 +47,8 @@ var $dataSource = new kendo.data.DataSource({		//그리드데이터소스
 			data.frDt = $("#from_period").val().replace(/-/gi,"");
 			data.toDt = $("#to_period").val().replace(/-/gi,"");
 			data.compSeq = $("#compSeq").val();
-			data.empSeq = $("#erpEmpSeq").val();
+			//data.empSeq = $("#erpEmpSeq").val();
+			data.empSeq = $("#emp_seq_txt").val();
 			data.deptSeq = $("#deptCombo").val();
 			if($('#titleType').val() === '1'){
 				data.docTitle = $("#docTitle").val();
