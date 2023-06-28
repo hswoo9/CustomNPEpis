@@ -396,9 +396,10 @@ $(function() {
 					parameterMap : function(data, operation) {
 						data.fromMonth = $('#fromMonth').val().replace(/\-/g,'');
 						data.endMonth = $('#endMonth').val().replace(/\-/g,'');
-						data.erpDeptSeq = $("#erpEmpSeq").val() === '' 
+						/*data.erpDeptSeq = $("#erpEmpSeq").val() === ''
 													? ( $("#deptNm").data('kendoComboBox').value() === '99999' ? '' : $("#deptNm").data('kendoComboBox').value() )   
-													: '';
+													: '';*/
+						data.erpDeptSeq = $("#deptSeq").val();
 						data.erpEmpSeq = $("#erpEmpSeq").val();
 						data.status = $("#status").data('kendoComboBox').value();
 						return data;
