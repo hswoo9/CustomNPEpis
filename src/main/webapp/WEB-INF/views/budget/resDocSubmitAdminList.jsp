@@ -90,7 +90,7 @@ var $dataSource = new kendo.data.DataSource({		//그리드데이터소스
 
 								for(var j = 0; j < rs.list.length; j++){
 									var docSeq = rs.list[j].docSeq;
-									if (docSeq === '17873' || docSeq === '44499' || docSeq === '43745') {
+									if (docSeq === '17873' || docSeq === '44499' || docSeq === '43745' || docSeq === '53614') {
 										rs.list[j].useName = '확정';
 									}
 									$dataSource.add(rs.list[j]);
