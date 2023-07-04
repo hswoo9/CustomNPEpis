@@ -3,6 +3,7 @@ package com.duzon.custom.loginPage.controller;
 import bizbox.orgchart.service.vo.LoginVO;
 import com.duzon.custom.common.service.CommonService;
 import com.duzon.custom.loginPage.service.LoginPageService;
+import egovframework.com.cmm.util.EgovUserDetailsHelper;
 import org.apache.commons.collections.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -252,5 +253,16 @@ private static final Logger logger = LoggerFactory.getLogger(LoginPageController
 
 		model.addAttribute("paramMap", paramMap);
 		return "/busTrip/empInfoSaveProc";
+	}
+
+	@RequestMapping(value = "/custom/newGroupwareLogin")
+	public String newGroupwareLogin(Model model, @RequestParam Map<String, Object> map, HttpServletRequest servletRequest) {
+		LoginVO loginVO = (LoginVO) EgovUserDetailsHelper.getAuthenticatedUser();
+		// model.addAttribute("userInfo",
+		// commonService.commonGetEmpInfo(servletRequest));
+		model.addAttribute("loginVO", loginVO);
+		model.addAttribute("id", loginVO.getId());
+		return "/busTrip/newGroupwareLogin";
+
 	}
 }
