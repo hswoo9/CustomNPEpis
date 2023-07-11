@@ -2160,7 +2160,12 @@ html:first-child select {
 								field : "djWorkFeeUserCnt",
 								title : "참석인원",
 								template : function (data) {
-									return data.djWorkFeeUserCnt + "명";
+									if(data.djWorkFeeUserCnt == '' || data.djWorkFeeUserCnt == null || data.djWorkFeeUserCnt == undefined){
+										return '';
+									}else{
+										return data.djWorkFeeUserCnt + "명";
+									}
+
 								},
 								width:100,
 							},{

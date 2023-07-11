@@ -9,7 +9,7 @@
 	
 		SELECT A.*, (SELECT wm_concat(OBJID) FROM BMS_DCT_PATH B WHERE A.DOCID = B.DOCID) AS AUTHEMP 
 		FROM BMS_DCT_RDOC A 
-		WHERE INDT BETWEEN #{fromDate} AND #{toDate}
+		WHERE ENDDT BETWEEN #{fromDate} AND #{toDate}
 			AND DOCTTL LIKE '%' ||  #{docTtl} || '%'
 			AND AUTHORID IN
 			<foreach collection="erpEmpSeqArr" item="type"  open="(" close=")" separator=",">
