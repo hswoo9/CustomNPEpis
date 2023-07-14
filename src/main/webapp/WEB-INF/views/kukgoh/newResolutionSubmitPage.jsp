@@ -1545,15 +1545,36 @@ function fn_depositToTpfAccount(){
 				},{
 					field : "SPLPC",
 					title : "공급가",
-					width : 100
+					width : 100,
+					template : function(row){
+						if(row.SPLPC != null){
+							return row.SPLPC.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+						}else{
+							return 0;
+						}
+					}
 				},{
 					field : "VAT",
 					title : "부가세",
-					width : 100
+					width : 100,
+					template : function(row){
+						if(row.VAT != null){
+							return row.VAT.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+						}else{
+							return 0;
+						}
+					}
 				},{
 					field : "PUCHAS_TAMT",
 					title : "합계",
-					width : 100
+					width : 100,
+					template : function(row){
+						if(row.PUCHAS_TAMT != null){
+							return row.PUCHAS_TAMT.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+						}else{
+							return 0;
+						}
+					}
 				}
 			],
 	        change: function (e){
