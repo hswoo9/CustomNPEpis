@@ -142,4 +142,6 @@ public interface BudgetService {
 	int getResDocBizFeeListCnt(Map<String, Object> map);
 	List<Map<String, Object>> getResDocDailyExpList(Map<String, Object> map);
 	int getResDocDailyExpListCnt(Map<String, Object> map);
+
+	Map<String, Object> insertBudgetTemp(Map<String, Object> params);
 }

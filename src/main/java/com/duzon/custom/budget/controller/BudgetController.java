@@ -7635,4 +7635,11 @@ public class BudgetController {
 
 		return resultMap;
 	}
+
+	@RequestMapping(value="/budget/insertBudgetTemp")
+	@ResponseBody
+	public Map<String, Object> insertBudgetTemp(@RequestParam Map<String, Object> map){
+		logger.info("/budget/insertBudgetTemp");
+		return budgetService.insertBudgetTemp(map);
+	}
 }

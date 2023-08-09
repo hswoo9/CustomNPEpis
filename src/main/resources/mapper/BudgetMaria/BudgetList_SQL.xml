@@ -727,6 +727,28 @@
 		and a.docx_numb = concat('DJADOCUEA_', #{ISU_DT}, '_', #{ISU_SQ})
 		limit 1
 	</select>
+
+	<select id="BudgetMaria.getAdocuDocInfo2" parameterType="map" resultType="map">
+		/*BudgetMaria.getAdocuDocInfo2*/
+		select b.c_distatus, c.c_ridocfullnum , a.appr_dikey
+			, (SELECT detail_name FROM neos.t_co_code_detail_multi where code = 'COM109' and lang_code = 'kr' and detail_code = b.c_distatus) as c_distatus_nm
+			, (select emp_name from neos.v_user_info where emp_seq = b.c_dilastuserkey limit 1) as kyuljaeuser
+		from neos.erpgwlink a, neos.a_draftinfo b, neos.a_recordinfo c
+		where a.appr_dikey = b.c_dikeycode
+		and a.appr_dikey = c.c_dikeycode
+		and b.c_dikeycode = #{doc_id}
+	</select>
+
+	<select id="BudgetMaria.getAdocuDocInfoList" parameterType="map" resultType="map">
+		/*BudgetMaria.getAdocuDocInfoList*/
+		select b.c_distatus, c.c_ridocfullnum , a.appr_dikey
+			, (SELECT detail_name FROM neos.t_co_code_detail_multi where code = 'COM109' and lang_code = 'kr' and detail_code = b.c_distatus) as c_distatus_nm
+			, (select emp_name from neos.v_user_info where emp_seq = b.c_dilastuserkey limit 1) as kyuljaeuser
+		from neos.erpgwlink a, neos.a_draftinfo b, neos.a_recordinfo c
+		where a.appr_dikey = b.c_dikeycode
+		and a.appr_dikey = c.c_dikeycode
+		and a.docx_numb = concat('DJADOCUEA_', #{ISU_DT}, '_', #{ISU_SQ})
+	</select>
 	
 	<insert id="BudgetMaria.insertBudgetAttach" parameterType="map">
 		INSERT INTO cust_epis.dj_budget_attach 
@@ -1161,5 +1183,40 @@
 			</otherwise>
 		</choose>
 	</select>
-	
+
+	<insert id="BudgetMaria.insertBudgetTemp" parameterType="map">
+		INSERT INTO DJ_EPIS.BUDGET_TEMP
+		(
+			ISU_DT,
+		 	ISU_SQ,
+		 	FILL_SEQ,
+			APPRO_KEY,
+		 	REG_DATE
+		)
+		VALUES
+		(
+			#{isuDt},
+		 	#{isuSq},
+	 		#{fillSeq},
+		 	#{approKey},
+		 	NOW()
+		)
+	</insert>
+
+	<update id="BudgetMaria.updateBudgetTemp" parameterType="map">
+		UPDATE DJ_EPIS.BUDGET_TEMP
+		SET APPR_STATUS = #{docSts},
+			DOC_ID = #{docId},
+			MOD_DATE = NOW()
+		WHERE APPRO_KEY = #{approKey}
+	</update>
+
+	<select id="BudgetMaria.getAdocuDocInfoTempList" parameterType="map" resultType="map">
+		SELECT
+		    *
+		FROM
+		    DJ_EPIS.BUDGET_TEMP
+		WHERE APPR_STATUS IN('002', '008')
+		AND APPRO_KEY = concat('DJADOCUEA_', #{ISU_DT}, '_', #{ISU_SQ})
+	</select>
 </mapper>

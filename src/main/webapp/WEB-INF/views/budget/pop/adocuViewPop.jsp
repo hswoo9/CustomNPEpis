@@ -15,13 +15,14 @@
 <script type="text/javascript" src="<c:url value='/js/jszip.min.js' />"></script>
 <script type="text/javascript" src="<c:url value='/js/common/outProcessUtil.js' />"></script>
 <style>
-</style> 
+</style>
 
 <script type="text/javascript">
 var isu_dt = '${isu_dt}';
 var isu_sq = '${isu_sq}';
 var isu_doc = '';
 var approval = '${approval}';
+var fillSeq = '${fillSeq}';
 $(function() {
 	init();
 });
@@ -107,7 +108,25 @@ function fnApproval(){
     params.fileKey = makeFileKey();
     params.contentsStr = makeContentsStr();
     params.title = '[회계전표 ' + $('#txtFillDt').html().replace(/ /gi, '') + '] ' + isu_doc.replace("\r\n", "");
+
+	insertBudgetTemp(params);
+
     outProcessLogOn2(params);
+}
+
+function insertBudgetTemp(params){
+	params.isuDt = isu_dt;
+	params.isuSq = isu_sq;
+	params.fillSeq = fillSeq;
+	$.ajax({
+		url: _g_contextPath_+'/budget/insertBudgetTemp',
+		dataType: "json",
+		type: 'post',
+		async: false,
+		data: params,
+		success: function(data){
+		}
+	});
 }
 
 function makeContentsStr(){

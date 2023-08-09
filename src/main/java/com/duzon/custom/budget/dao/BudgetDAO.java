@@ -412,6 +412,14 @@ public class BudgetDAO extends AbstractDAO{
 		return (Map<String, Object>)selectOne("BudgetMaria.getAdocuDocInfo", adocu);
 	}
 
+	public Map<String, Object> getAdocuDocInfo2(Map<String, Object> adocu) {
+		return (Map<String, Object>)selectOne("BudgetMaria.getAdocuDocInfo2", adocu);
+	}
+
+	public List<Map<String, Object>> getAdocuDocInfoList(Map<String, Object> adocu) {
+		return selectList("BudgetMaria.getAdocuDocInfoList", adocu);
+	}
+
 	public void saveDeptBgt(Map<String, Object> map) {
 		selectOneMs("budgetMs.saveDeptBgt", map);
 	}
@@ -621,5 +629,17 @@ public class BudgetDAO extends AbstractDAO{
 
 	public int getResDocDailyExpListCnt(Map<String, Object> map) {
 		return (int) selectOne("BudgetMaria.getResDocDailyExpListCnt", map);
+	}
+
+	public Object insertBudgetTemp(Map<String, Object> params){
+		return insert("BudgetMaria.insertBudgetTemp", params);
+	}
+
+	public void updateBudgetTemp(Map<String, Object> params){
+		update("BudgetMaria.updateBudgetTemp", params);
+	}
+
+	public List<Map<String, Object>> getAdocuDocInfoTempList(Map<String, Object> params){
+		return selectList("BudgetMaria.getAdocuDocInfoTempList", params);
 	}
 }

@@ -630,14 +630,43 @@ public class BudgetServiceImpl implements BudgetService {
 	public List<Map<String, Object>> getAdocuList(Map<String, Object> map) {
 		map.put("field", map.get("sort[0][field]"));
 		map.put("dir", map.get("sort[0][dir]"));
+		List<Map<String, Object>> resultList = new ArrayList<>();
 		List<Map<String, Object>> adocuList = budgetDAO.getAdocuList(map);
-		for (Map<String, Object> adocu : adocuList) {
-			Map<String, Object> resultMap = budgetDAO.getAdocuDocInfo(adocu);
+		for(int i = 0 ; i < adocuList.size() ; i++){
+			Map<String, Object> result = new HashMap<>();
+			Map<String, Object> resultMap = budgetDAO.getAdocuDocInfo(adocuList.get(i));
+			List<Map<String, Object>> tempList = budgetDAO.getAdocuDocInfoTempList(adocuList.get(i));
 			if(resultMap != null) {
-				adocu.putAll(resultMap);
+ 				if(tempList.size() > 0){
+					result = adocuList.get(i);
+					for(int j = 0 ; j < tempList.size() ; j++){
+						if(tempList.get(j).get("fill_seq").toString().equals(adocuList.get(i).get("fill_seq").toString())){
+
+						}else{
+							Map<String, Object> result2 = new HashMap<String, Object>();
+							for(Map.Entry<String, Object> e : result.entrySet()) {
+								result2.put(e.getKey(), e.getValue());
+							}
+							result2.put("doc_id", tempList.get(j).get("doc_id"));
+							Map<String, Object> resultMap2 = budgetDAO.getAdocuDocInfo2(result2);
+							result2.putAll(resultMap2);
+							resultList.add(result2);
+						}
+					}
+					result.putAll(resultMap);
+					resultList.add(result);
+				}else{
+					result = adocuList.get(i);
+					result.putAll(resultMap);
+					resultList.add(result);
+				}
+
+			}else{
+				result = adocuList.get(i);
+				resultList.add(result);
 			}
 		}
-		return adocuList;
+		return resultList;
 	}
 
 	@Override
@@ -679,6 +708,7 @@ public class BudgetServiceImpl implements BudgetService {
 			Thread t = new Thread(new PdfEcmThread(bodyMap, resAlphaG20Service, pdfServerRootPath, null));
 			t.start();
 		}
+		budgetDAO.updateBudgetTemp(bodyMap);
 	}
 
 	@Override
@@ -1362,5 +1392,12 @@ public class BudgetServiceImpl implements BudgetService {
 	@Override
 	public int getResDocDailyExpListCnt(Map<String, Object> map) {
 		return budgetDAO.getResDocSubmitAdminListCnt(map);
+	}
+
+	@Override
+	public Map<String, Object> insertBudgetTemp(Map<String, Object> params) {
+		Map<String, Object> resultMap = new HashMap<>();
+		resultMap.put("rs", budgetDAO.insertBudgetTemp(params));
+		return resultMap;
 	}
 }
