@@ -534,7 +534,7 @@ var $dataSource = new kendo.data.DataSource({		//그리드데이터소스
 			return;
 		}
 		var dataItem = $('#grid').data('kendoGrid').dataItem($('.rowCheckbox:checked').closest('tr'));
-		var url = _g_contextPath_+ "/budget/pop/adocuViewPop?isu_dt=" + dataItem.ISU_DT + "&isu_sq=" + dataItem.ISU_SQ + "&approval=Y";
+		var url = _g_contextPath_+ "/budget/pop/adocuViewPop?isu_dt=" + dataItem.ISU_DT + "&isu_sq=" + dataItem.ISU_SQ + "&approval=Y&fillSeq=" + dataItem.fill_seq;
 		var options = "width=800, height=900, top=50, left=50, scrollbars=YES, resizable=YES";
 		
 		openDialog(url, 'viewer', options, function(win) {
