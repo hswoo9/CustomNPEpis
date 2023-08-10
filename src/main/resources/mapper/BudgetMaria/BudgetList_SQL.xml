@@ -1213,10 +1213,12 @@
 
 	<select id="BudgetMaria.getAdocuDocInfoTempList" parameterType="map" resultType="map">
 		SELECT
-		    *
+		    *,
+			LEFT(fill_seq, 8) AS FILL_DT,
+		    RIGHT(fill_seq, 5) AS FILL_NB
 		FROM
 		    DJ_EPIS.BUDGET_TEMP
-		WHERE APPR_STATUS IN('002', '008')
+		WHERE APPR_STATUS IN('20', '80')
 		AND APPRO_KEY = concat('DJADOCUEA_', #{ISU_DT}, '_', #{ISU_SQ})
 	</select>
 </mapper>

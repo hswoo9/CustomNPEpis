@@ -6,12 +6,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -645,11 +640,19 @@ public class BudgetServiceImpl implements BudgetService {
 						}else{
 							Map<String, Object> result2 = new HashMap<String, Object>();
 							for(Map.Entry<String, Object> e : result.entrySet()) {
-								result2.put(e.getKey(), e.getValue());
+								if(e.getKey().equals("fill_seq")){
+									result2.put(e.getKey(), tempList.get(j).get("fill_seq"));
+								}else{
+									result2.put(e.getKey(), e.getValue());
+								}
 							}
 							result2.put("doc_id", tempList.get(j).get("doc_id"));
+							result2.put("FILL_DT", tempList.get(j).get("FILL_DT") == null ? new Date() : tempList.get(j).get("FILL_DT").toString());
+							result2.put("FILL_NB", tempList.get(j).get("FILL_NB") == null ? 0 : Integer.parseInt(tempList.get(j).get("FILL_NB").toString()));
 							Map<String, Object> resultMap2 = budgetDAO.getAdocuDocInfo2(result2);
-							result2.putAll(resultMap2);
+							if(resultMap2 != null){
+								result2.putAll(resultMap2);
+							}
 							resultList.add(result2);
 						}
 					}
