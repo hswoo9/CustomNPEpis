@@ -1218,7 +1218,7 @@
 		    RIGHT(fill_seq, 5) AS FILL_NB
 		FROM
 		    DJ_EPIS.BUDGET_TEMP
-		WHERE APPR_STATUS IN('20', '80')
+		WHERE APPR_STATUS IN('20', '80', '90', '100')
 		AND APPRO_KEY = concat('DJADOCUEA_', #{ISU_DT}, '_', #{ISU_SQ})
 	</select>
 </mapper>

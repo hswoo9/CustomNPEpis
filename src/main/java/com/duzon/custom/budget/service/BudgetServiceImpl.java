@@ -656,7 +656,17 @@ public class BudgetServiceImpl implements BudgetService {
 							resultList.add(result2);
 						}
 					}
-					result.putAll(resultMap);
+					boolean checked = true;
+					for(int j = 0 ; j < tempList.size() ; j++){
+						if(!tempList.get(j).get("fill_seq").toString().equals(adocuList.get(i).get("fill_seq").toString())){
+							if(tempList.get(j).get("doc_id").toString().equals(resultMap.get("appr_dikey").toString())){
+								checked = false;
+							}
+						}
+					}
+					if(checked){
+						result.putAll(resultMap);
+					}
 					resultList.add(result);
 				}else{
 					result = adocuList.get(i);
