@@ -153,8 +153,9 @@ var dataSource = new kendo.data.DataSource({
       		success : function(result) {
       			var arr = new Array();
       			$.each(result.result, function (i,v) {
-					 arr.push(v.erp_emp_num);
-      				
+					if(v.erp_emp_num != "" && v.erp_emp_num != null){
+						arr.push(v.erp_emp_num);
+					}
 				});
       			var a = arr.join();
       			aq = a;
