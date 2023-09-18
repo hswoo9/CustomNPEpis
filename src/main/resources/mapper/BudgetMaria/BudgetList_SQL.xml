@@ -1209,6 +1209,9 @@
 			DOC_ID = #{docId},
 			MOD_DATE = NOW()
 		WHERE APPRO_KEY = #{approKey}
+		AND APPR_STATUS != 'd'
+		AND APPR_STATUS != '999'
+		AND APPR_STATUS != '9999'
 	</update>
 
 	<select id="BudgetMaria.getAdocuDocInfoTempList" parameterType="map" resultType="map">
@@ -1218,7 +1221,7 @@
 		    RIGHT(fill_seq, 5) AS FILL_NB
 		FROM
 		    DJ_EPIS.BUDGET_TEMP
-		WHERE APPR_STATUS IN('20', '80', '90', '100')
+		WHERE APPR_STATUS IN('20', '80', '90')
 		AND APPRO_KEY = concat('DJADOCUEA_', #{ISU_DT}, '_', #{ISU_SQ})
 	</select>
 </mapper>
