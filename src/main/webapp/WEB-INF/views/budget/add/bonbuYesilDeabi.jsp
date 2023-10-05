@@ -33,6 +33,11 @@
 		Init.kendoFunction();
 		Init.kendoGrid();
 		Init.eventListener();
+
+		var params = window.location.search;
+		if(String(params).indexOf("searchTrue") > -1){
+			searchMainGrid();
+		}
 	})
 	
 	var Init = {
