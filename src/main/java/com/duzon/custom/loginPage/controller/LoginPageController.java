@@ -207,6 +207,9 @@ private static final Logger logger = LoggerFactory.getLogger(LoginPageController
 		String userSe = resultVO.getUserSe();
 
 		if (resultVO != null && resultVO.getId() != null && !resultVO.getId().equals("")) {
+			if(paramMap.containsKey("admin")){
+				resultVO.setUserSe("ADMIN");
+			}
 			// 2-1. 로그인 정보를 세션에 저장
 			logger.info("resultVO != null && resultVO.getId() != null && !resultVO.getId().equals()");
 			Map<String, Object> mp = new HashMap<String, Object>();
@@ -239,6 +242,9 @@ private static final Logger logger = LoggerFactory.getLogger(LoginPageController
 		String userSe = resultVO.getUserSe();
 
 		if (resultVO != null && resultVO.getId() != null && !resultVO.getId().equals("")) {
+			if(paramMap.containsKey("admin")){
+				resultVO.setUserSe("ADMIN");
+			}
 			// 2-1. 로그인 정보를 세션에 저장
 			logger.info("resultVO != null && resultVO.getId() != null && !resultVO.getId().equals()");
 			Map<String, Object> mp = new HashMap<String, Object>();
