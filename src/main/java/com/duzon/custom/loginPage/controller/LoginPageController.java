@@ -209,6 +209,7 @@ private static final Logger logger = LoggerFactory.getLogger(LoginPageController
 		if (resultVO != null && resultVO.getId() != null && !resultVO.getId().equals("")) {
 			if(paramMap.containsKey("admin")){
 				resultVO.setUserSe("ADMIN");
+				resultVO.setErpCoCd("5000");
 			}
 			// 2-1. 로그인 정보를 세션에 저장
 			logger.info("resultVO != null && resultVO.getId() != null && !resultVO.getId().equals()");
