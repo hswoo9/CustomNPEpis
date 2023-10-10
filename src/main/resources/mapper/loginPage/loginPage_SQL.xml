@@ -78,6 +78,7 @@
 		, c.comp_seq AS organId
 		, a.group_seq as groupSeq
 		, c.comp_seq as compSeq
+		, a.erp_emp_num as erpEmpCd
 		FROM neos.t_co_group g, neos.t_co_emp a, neos.t_co_emp_multi b, neos.t_co_emp_dept c
 		WHERE a.login_id = #{userId}
 		<if test="groupSeq != null and groupSeq != ''">
