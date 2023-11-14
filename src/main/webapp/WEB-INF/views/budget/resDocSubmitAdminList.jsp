@@ -90,7 +90,7 @@ var $dataSource = new kendo.data.DataSource({		//그리드데이터소스
 
 								for(var j = 0; j < rs.list.length; j++){
 									var docSeq = rs.list[j].docSeq;
-									if (docSeq === '17873' || docSeq === '44499' || docSeq === '43745' || docSeq === '53614') {
+									if (docSeq === '17873' || docSeq === '44499' || docSeq === '43745' || docSeq === '53614' || obj.docSeq === '65413') {
 										rs.list[j].useName = '확정';
 									}
 									$dataSource.add(rs.list[j]);
@@ -146,7 +146,7 @@ var $dataSource = new kendo.data.DataSource({		//그리드데이터소스
 			}
 			
 			response.list.map(function(obj){
-			 	if (obj.docSeq === '17873' || obj.docSeq === '44499' || obj.docSeq === '43745' || obj.docSeq === '53614') {
+			 	if (obj.docSeq === '17873' || obj.docSeq === '44499' || obj.docSeq === '43745' || obj.docSeq === '53614' || obj.docSeq === '65413') {
 			 		obj.useName = '확정';
 			 	}
 			});
