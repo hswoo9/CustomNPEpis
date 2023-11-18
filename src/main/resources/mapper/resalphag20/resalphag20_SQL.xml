@@ -362,6 +362,15 @@
 			FROM neos.a_docinfo
 		WHERE c_dikeycode = #{C_DIKEYCODE}
 	</select>
+
+	<select id="getNewDocOrg" parameterType="map" resultType="map">
+		SELECT
+			replace(b.file_path, 'http://10.10.10.114:80', '/home') as c_difilepath
+		FROM dj_epis.a_doc_info a
+		LEFT JOIN dj_epis.v_file_info b
+		ON a.atfile_sn = b.file_no
+		WHERE a.doc_id = #{C_DIKEYCODE}
+	</select>
 	
 	<select id="getOrderedOnnnaraDocAttach" parameterType="map" resultType="map">
 	select * 

@@ -694,6 +694,11 @@ public class ResAlphaG20ServiceImpl implements ResAlphaG20Service {
 	}
 
 	@Override
+	public Map<String, Object> getNewDocOrg(Map<String, Object> paramMap) {
+		return resAlphaG20DAO.getNewDocOrg(paramMap);
+	}
+
+	@Override
 	public Map<String, Object> userCardDetailInfo(Map<String, Object> paramMap) {
 		
 		Map<String, Object> map = resAlphaG20DAO.userCardDetailInfo(paramMap);

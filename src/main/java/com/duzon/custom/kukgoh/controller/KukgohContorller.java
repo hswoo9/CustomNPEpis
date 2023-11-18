@@ -721,9 +721,20 @@ public class KukgohContorller {
 		logger.info("kukgoh/insertAttachFile");
 		
 		Map<String, Object> filePathMap = resAlphaG20Service.getDocOrg(map);
-		
-		map.put("enaraFilePath", String.valueOf(filePathMap.get("c_difilepath")));
-		
+		if(filePathMap != null){
+			logger.info("						if(!filePathMap.isEmpty()){											");
+			map.put("enaraFilePath", String.valueOf(filePathMap.get("c_difilepath")));
+		}else{
+			logger.info(" 						else 																");
+			/*Map<String, Object> newFilePathMap = resAlphaG20Service.getNewDocOrg(map);
+			if(newFilePathMap != null){
+				logger.info("					if(!newFilePathMap.isEmpty()){             							");
+				map.put("enaraFilePath", String.valueOf(newFilePathMap.get("c_difilepath")));
+			}*/
+			map.put("enaraFilePath", "/home/upload/ea/epis/approveDocFile/normal/");
+
+		}
+
 		kukgohService.insertAttachFile(map, multi);
 		return map;
 	}	

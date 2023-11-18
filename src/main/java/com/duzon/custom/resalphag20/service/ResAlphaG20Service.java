@@ -71,7 +71,8 @@ public interface ResAlphaG20Service {
 	void savePdfEcmFile(PdfEcmFileVO vo);
 	
 	Map<String, Object> getDocOrg(Map<String, Object> paramMap);
-	
+	Map<String, Object> getNewDocOrg(Map<String, Object> paramMap);
+
 	Map<String, Object> userCardDetailInfo(Map<String, Object> paramMap);
 	
 	Map<String, Object> selectETaxDetailInfo(Map<String, Object> paramMap);

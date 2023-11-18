@@ -155,6 +155,10 @@ public class ResAlphaG20DAO extends AbstractDAO{
 	public Map<String, Object> getDocOrg(Map<String, Object> map) {
 		return (Map<String, Object>) selectOne("resalphag20.getDocOrg", map);
 	}
+
+	public Map<String, Object> getNewDocOrg(Map<String, Object> map) {
+		return (Map<String, Object>) selectOne("resalphag20.getNewDocOrg", map);
+	}
 	
 	@SuppressWarnings("unchecked")
 	public List<Map<String, Object>> getOrderedOnnnaraDocAttach(Map<String, Object> param) {
