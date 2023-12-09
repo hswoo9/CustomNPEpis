@@ -563,7 +563,10 @@
 			, amt.erp_gisu_sq AS 'erpGisuSq'
 			, amt.erp_bg_sq AS 'erpBgSq'
 			, ds.use_yn AS 'useYn'
-			, case when ds.use_yn = 'N' then '처리제외' else '미확정' end AS 'useName'
+			, case
+			    when ds.use_yn = 'N' then '처리제외'
+			    when ds.custom_use_yn = 'Y' then '확정'
+				else '미확정' end AS 'useName'
 			, ds.deadline AS 'deadline'
 		FROM	neos.t_exnp_resdoc	d
 		INNER JOIN neos.t_exnp_reshead h
