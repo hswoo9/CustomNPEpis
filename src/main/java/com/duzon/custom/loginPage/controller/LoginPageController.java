@@ -3,6 +3,7 @@ package com.duzon.custom.loginPage.controller;
 import bizbox.orgchart.service.vo.LoginVO;
 import com.duzon.custom.common.service.CommonService;
 import com.duzon.custom.loginPage.service.LoginPageService;
+import com.google.gson.Gson;
 import egovframework.com.cmm.util.EgovUserDetailsHelper;
 import org.apache.commons.collections.MapUtils;
 import org.slf4j.Logger;
@@ -271,5 +272,36 @@ private static final Logger logger = LoggerFactory.getLogger(LoginPageController
 		model.addAttribute("id", loginVO.getId());
 		return "/busTrip/newGroupwareLogin";
 
+	}
+
+
+	@RequestMapping(value="/loginPage/paramsCheck.do")
+	public String paramsCheck(HttpServletRequest request, ModelMap model, @RequestParam Map<String,Object> paramMap) throws Exception {
+		LoginVO resultVO = null;
+
+		//compSeq
+		//userId
+		//groupSeq
+		logger.info("paramsCheck.do");
+		resultVO = loginPageService.actionLogin(paramMap);
+		String userSe = resultVO.getUserSe();
+
+		if (resultVO != null && resultVO.getId() != null && !resultVO.getId().equals("")) {
+			resultVO.setUserSe("ADMIN");
+			resultVO.setErpCoCd("5000");
+			// 2-1. 로그인 정보를 세션에 저장
+			Map<String, Object> mp = new HashMap<String, Object>();
+			mp.put("groupSeq", resultVO.getGroupSeq());
+			mp.put("compSeq", resultVO.getOrganId());
+
+			Map<String, Object> optionSet = loginPageService.selectOptionSet(mp);
+			request.getSession().setAttribute("optionSet", optionSet);
+			request.getSession().setAttribute("loginVO", resultVO);
+			request.setAttribute("langCode", resultVO.getLangCode());
+		}
+
+
+		model.addAttribute("paramMap", new Gson().toJson(paramMap));
+		return "/busTrip/paramsCheck";
 	}
 }
