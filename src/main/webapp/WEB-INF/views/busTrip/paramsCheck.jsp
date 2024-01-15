@@ -8,7 +8,29 @@
 <div class="iframe_wrap" style="min-width:1100px">
 </div>
 <script>
-    console.log(JSON.parse('${paramMap}'));
+    var param = JSON.parse('${paramMap}');
+    var parameter = {};
+    if(param != ''){
+        for(var key in param){
+            parameter[key] = encodeURI(param[key]);
+        }
+    }
+    $(function(){
+
+        $.ajax({
+            type: "post",
+            url: "/gw/cmm/systemx/empInfoSaveProc.do",
+            datatype: "text",
+            async: false,
+            data: parameter,
+            success: function (data) {
+                console.log(data);
+            }
+        });
+
+    });
+
+
 </script>
 </body>
 
