@@ -970,6 +970,7 @@
         ON RES.DOC_SEQ = DI.DOC_ID
         WHERE ETAX.ISS_NO = #{issNo}
         GROUP BY RES.RES_DOC_SEQ
+        ORDER BY DI.DOC_ID DESC LIMIT 1
     </select>
 
     <select id="etaxNeosApproveCheck" parameterType="map" resultType="map">
@@ -984,5 +985,6 @@
         ON RES.DOC_SEQ = DI.C_DIKEYCODE
         WHERE ETAX.ISS_NO = #{issNo}
         GROUP BY RES.RES_DOC_SEQ
+        ORDER BY DI.C_DIKEYCODE DESC LIMIT 1
     </select>
 </mapper>
