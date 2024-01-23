@@ -6,6 +6,7 @@
 <%@ taglib prefix="tiles"   uri="http://tiles.apache.org/tags-tiles" %>
 <body>
 <div class="iframe_wrap" style="min-width:1100px">
+    <iframe src="" id="iframe" onload="" frameborder="0" scrolling="no" style="overflow-x:hidden; overflow:auto; width:250px; min-height:500px;"></iframe>
 </div>
 <script>
     var param = JSON.parse('${paramMap}');
@@ -15,8 +16,11 @@
             parameter[key] = encodeURI(param[key]);
         }
     }
-    $(function(){
+    var loginVO = '${loginVO}';
 
+    var submitCount = 0;
+
+    function insertEmpInfo(){
         $.ajax({
             type: "post",
             url: "/gw/cmm/systemx/empInfoSaveProc.do",
@@ -25,9 +29,41 @@
             data: parameter,
             success: function (data) {
                 console.log(data);
+                if(data.resultCode != null && data.resultCode != null){
+                    if(data.result == "권한이 없습니다" && data.resultCode == "fail"){
+                        if(submitCount < 2){
+                            $("#iframe").attr("src", "/gw/changeUserSe.do?userSe=ADMIN");
+                            $("#iframe").load(function(){
+                                insertEmpInfo();
+                                submitCount++;
+                            });
+                        }
+                    }else if(data.resultCode == "SUCCESS"){
+                        alert("등록이 완료되었습니다.");
+                        window.parent.postMessage(
+                            {
+                                func: "dataSet",
+                                result: data
+                            },
+                            '*'
+                        );
+                        //window.close();
+                    }
+                }
             }
         });
+    }
 
+    $(function(){
+        $("#iframe").attr("src", "/gw/adminMain.do");
+        //$("#iframe").attr("src", "/gw/changeUserSe.do?userSe=ADMIN");
+        $("#iframe").load(function(){
+            //insertEmpInfo();
+            if($(this).attr("src") == "/gw/adminMain.do"){
+                insertEmpInfo();
+            }
+        });
+        //
     });
 
 

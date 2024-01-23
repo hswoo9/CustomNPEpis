@@ -323,6 +323,12 @@ public class CommonController {
 		datas.put("memberList",  new Gson().toJson(commonService.empInformation(map)));
 		return datas;
 	}
-	
 
+	@RequestMapping(value = "/callRestEmpInsert")
+	@ResponseBody
+	public Map<String, Object> callRestEmpInsert(@RequestParam Map<String, Object> map) {
+		logger.info("getPosition");
+		System.out.println(map);
+		return map;
+	}
 }

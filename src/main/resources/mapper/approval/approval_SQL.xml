@@ -957,4 +957,32 @@
         WHERE
             DOC_ID = #{docId}
     </select>
+
+    <select id="etaxEpisApproveCheck" parameterType="map" resultType="map">
+        SELECT
+            DI.DOC_ID, DI.FORM_ID, CONCAT('EPIS') AS DOC_TYPE
+        FROM NEOS.T_EX_ETAX_AQ_TMP ETAX
+        JOIN NEOS.T_EXNP_RESTRADE TRD
+        ON ETAX.SYNC_ID = TRD.INTERFACE_SEQ
+        JOIN NEOS.T_EXNP_RESDOC RES
+        ON TRD.RES_DOC_SEQ = RES.RES_DOC_SEQ
+        JOIN DJ_EPIS.A_DOC_INFO DI
+        ON RES.DOC_SEQ = DI.DOC_ID
+        WHERE ETAX.ISS_NO = #{issNo}
+        GROUP BY RES.RES_DOC_SEQ
+    </select>
+
+    <select id="etaxNeosApproveCheck" parameterType="map" resultType="map">
+        SELECT
+            DI.C_DIKEYCODE AS DOC_ID, DI.C_TIKEYCODE AS FORM_ID, CONCAT('NEOS') AS DOC_TYPE
+        FROM NEOS.T_EX_ETAX_AQ_TMP ETAX
+        JOIN NEOS.T_EXNP_RESTRADE TRD
+        ON ETAX.SYNC_ID = TRD.INTERFACE_SEQ
+        JOIN NEOS.T_EXNP_RESDOC RES
+        ON TRD.RES_DOC_SEQ = RES.RES_DOC_SEQ
+        JOIN NEOS.A_DOCINFO DI
+        ON RES.DOC_SEQ = DI.C_DIKEYCODE
+        WHERE ETAX.ISS_NO = #{issNo}
+        GROUP BY RES.RES_DOC_SEQ
+    </select>
 </mapper>

@@ -72,5 +72,8 @@ public class ApprovalRepository extends AbstractDAO{
     public Map<String, Object> approveCheck(Map<String, Object> map){ return (Map<String, Object>) selectOne("approval.approveCheck", map);
     }
 
+    public Map<String, Object> etaxEpisApproveCheck(Map<String, Object> map){ return (Map<String, Object>) selectOne("approval.etaxEpisApproveCheck", map);}
+    public Map<String, Object> etaxNeosApproveCheck(Map<String, Object> map){ return (Map<String, Object>) selectOne("approval.etaxNeosApproveCheck", map);}
+
 
 }

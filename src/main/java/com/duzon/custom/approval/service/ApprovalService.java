@@ -76,4 +76,5 @@ public interface ApprovalService {
     void setApproveRetrieve(Map<String, Object> params);
 
     Map<String, Object> approveCheck(Map<String, Object> map);
+    Map<String, Object> etaxApproveCheck(Map<String, Object> map);
 }

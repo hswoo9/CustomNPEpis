@@ -178,4 +178,10 @@ public class ApprovalController {
 		return "jsonView";
 	}
 
+	@RequestMapping("/approval/etaxApproveCheck.do")
+	public String etaxApproveCheck(@RequestParam Map<String, Object> map, HttpServletRequest request, Model model){
+		model.addAttribute("data", approvalService.etaxApproveCheck(map));
+		return "jsonView";
+	}
+
 }

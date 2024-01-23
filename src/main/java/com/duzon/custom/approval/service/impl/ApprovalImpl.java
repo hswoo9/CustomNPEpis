@@ -388,4 +388,18 @@ public class ApprovalImpl implements ApprovalService {
     public Map<String, Object> approveCheck(Map<String, Object> map) {
         return approvalRepository.approveCheck(map);
     }
+
+    @Override
+    public Map<String, Object> etaxApproveCheck(Map<String, Object> map) {
+        Map<String, Object> djepis = approvalRepository.etaxEpisApproveCheck(map);
+        if(djepis != null){
+            return djepis;
+        }else{
+            Map<String, Object> neos = approvalRepository.etaxNeosApproveCheck(map);
+            if(neos != null){
+                return neos;
+            }
+        }
+        return new HashMap<>();
+    }
 }
