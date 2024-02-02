@@ -13,6 +13,15 @@
         AND DI.APPROVE_STAT_CODE IN('100', '101')
         AND DI.ACTIVE = 'Y'
         AND DI.DEL_FLAG = 'N'
+        <if test="searchDocNo != null and searchDocNo != ''">
+            AND DI.DOC_NO LIKE CONCAT('%', #{searchDocNo}, '%')
+        </if>
+        <if test="searchDocTitle != null and searchDocTitle != ''">
+            AND DI.DOC_TITLE LIKE CONCAT('%', #{searchDocTitle}, '%')
+        </if>
+        <if test="searchDraftEmpName != null and searchDraftEmpName != ''">
+            AND DI.DRAFT_EMP_NAME LIKE CONCAT('%', #{searchDraftEmpName}, '%')
+        </if>
     </select>
 
     <select id="getDocListDataTotalCount" parameterType="map" resultType="String">
@@ -25,6 +34,15 @@
         AND DI.APPROVE_STAT_CODE IN('100', '101')
         AND DI.ACTIVE = 'Y'
         AND DI.DEL_FLAG = 'N'
+        <if test="searchDocNo != null and searchDocNo != ''">
+            AND DI.DOC_NO LIKE CONCAT('%', #{searchDocNo}, '%')
+        </if>
+        <if test="searchDocTitle != null and searchDocTitle != ''">
+            AND DI.DOC_TITLE LIKE CONCAT('%', #{searchDocTitle}, '%')
+        </if>
+        <if test="searchDraftEmpName != null and searchDraftEmpName != ''">
+            AND DI.DRAFT_EMP_NAME LIKE CONCAT('%', #{searchDraftEmpName}, '%')
+        </if>
     </select>
 
 </mapper>

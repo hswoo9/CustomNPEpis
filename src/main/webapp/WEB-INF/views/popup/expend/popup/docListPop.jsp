@@ -32,7 +32,9 @@ $(function(){
 					type: 'post'
 				},
 				parameterMap: function(data, operation) {
-
+                    data.searchDocNo = $("#searchDocNo").val();
+                    data.searchDocTitle = $("#searchDocTitle").val();
+                    data.searchDraftEmpName = $("#searchDraftEmpName").val();
 					return data;
 				}
 			},
@@ -61,7 +63,7 @@ $(function(){
 					columns: [{
 						field: "DOC_NO",
 						headerTemplate: function(){
-							return '<input type="text" style="width:90%;" id="searchDocNo">';
+							return '<input type="text" style="width:90%;" id="searchDocNo" onkeydown="if(event.keyCode === 13) { gridReload(); }">';
 						},
 					}]
 				}, {
@@ -69,7 +71,7 @@ $(function(){
 					columns: [{
 						field: "DOC_TITLE",
 						headerTemplate: function(){
-							return '<input type="text" style="width:90%;" id="searchDocTitle">';
+							return '<input type="text" style="width:90%;" id="searchDocTitle" onkeydown="if(event.keyCode === 13) { gridReload(); }">';
 						},
 					}]
 				}, {
@@ -77,7 +79,7 @@ $(function(){
 					columns: [{
 						field: "DRAFT_EMP_NAME",
 						headerTemplate: function(){
-							return '<input type="text" style="width:90%;" id="searchDraftEmpName">';
+							return '<input type="text" style="width:90%;" id="searchDraftEmpName" onkeydown="if(event.keyCode === 13) { gridReload(); }">';
 						},
 					}]
 				}],
@@ -93,6 +95,10 @@ $(function(){
             });
         }
 	}
+
+    function gridReload(){
+        $("#mainGrid").data("kendoGrid").dataSource.read();
+    }
 
 </script>
 </body>

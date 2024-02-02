@@ -1074,7 +1074,7 @@
                 }
 
                 $(row).find('.cardPop').click(function(){
-                    var popup = window.open("../../../expend/np/user/UserCardDetailPop.do?syncId=" + aData.syncId, "" , "width=432, height=489 , scrollbars=yes");
+                    var popup = window.open("/exp/expend/np/user/UserCardDetailPop.do?syncId=" + aData.syncId, "" , "width=432, height=489 , scrollbars=yes");
                 });
 
                 if ((aData.useYn || 'Y') == 'N') {
