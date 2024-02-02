@@ -87,7 +87,7 @@
                 </dd>
 
             </dl>
-            <span class="btn_Detail"><%=BizboxAMessage.getMessage("TX000005724", "상세검색")%><img id="all_menu_btn" src='../../../Images/ico/ico_btn_arr_down01.png' /> </span>
+            <span class="btn_Detail"><%=BizboxAMessage.getMessage("TX000005724", "상세검색")%><img id="all_menu_btn" src="<c:url value='/Images/ico/ico_btn_arr_down01.png'/>" /> </span>
         </div>
         <!-- 상세검색박스 -->
         <div class="SearchDetail">
@@ -1640,7 +1640,7 @@
     /* 카드 이관관리  */
     function fnCardTransHistory() {
         /* 팝업 호출 준비 */
-        var url = "<c:url value='/exp/expend/np/user/UserCardTransHistoryPop.do'/>";
+        var url = "/exp/expend/np/user/UserCardTransHistoryPop.do";
         var height = 480;
 
         var isFirefox = typeof InstallTrigger !== 'undefined';
