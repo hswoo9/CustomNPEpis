@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Expend">
+
+    <select id="getDocListData" parameterType="map" resultType="map">
+        SELECT
+            DI.DOC_ID, DI.APPRO_KEY, DI.DOC_NO, DI.DOC_TITLE, RS.RES_DOC_SEQ, DI.DRAFT_EMP_NAME
+        FROM DJ_EPIS.A_DOC_INFO DI
+        JOIN NEOS.T_EXNP_RESDOC RS
+        ON DI.DOC_ID = RS.DOC_SEQ
+        WHERE DI.APPRO_KEY LIKE '%EXNPRESI_NP%'
+        AND DI.APPROVE_STAT_CODE IN('100', '101')
+        AND DI.ACTIVE = 'Y'
+        AND DI.DEL_FLAG = 'N'
+    </select>
+
+    <select id="getDocListDataTotalCount" parameterType="map" resultType="String">
+        SELECT
+            COUNT(*)
+        FROM DJ_EPIS.A_DOC_INFO DI
+        JOIN NEOS.T_EXNP_RESDOC RS
+        ON DI.DOC_ID = RS.DOC_SEQ
+        WHERE DI.APPRO_KEY LIKE '%EXNPRESI_NP%'
+        AND DI.APPROVE_STAT_CODE IN('100', '101')
+        AND DI.ACTIVE = 'Y'
+        AND DI.DEL_FLAG = 'N'
+    </select>
+
+</mapper>

@@ -1,0 +1,619 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- BizboxA mariaDB 회계(비영리) 카드 -->
+<mapper namespace="NpUserCard">
+
+	<select id="NpUserCard.GetNotUseList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		<![CDATA[/* mariadb : /egovframework/sqlmap/mariadb/BizboxAlpha/expend/np/user/NpUserCardSQL.xml - NpUserCard.GetNotUseList */]]>
+		<![CDATA[/* 카드 내역 미사용 처리 목록 조회 */]]>
+
+		<![CDATA[
+			/* ## SELECT ## */
+			SELECT  IFNULL(sync_id, 0) AS syncId
+		]]>
+		
+		<![CDATA[
+			/* ## FROM ## */
+			FROM    NEOS.t_ex_card_transfer
+		]]>
+		
+		<![CDATA[
+			/* ## WHERE ## */
+			WHERE   auth_date BETWEEN #{cardAuthDateFrom} AND #{cardAuthDateTo}
+			AND     comp_seq = #{compSeq}	
+			AND     use_yn = 'N'
+			AND     sync_id IS NOT NULL
+		]]>
+		
+		<![CDATA[
+			/* ## GROUP ## */
+			GROUP   BY sync_id
+		]]>
+	</select>
+
+	<select id="NpUserCard.GetTransLIst" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		<![CDATA[/* mariadb : /egovframework/sqlmap/mariadb/BizboxAlpha/expend/np/user/NpUserCardSQL.xml - NpUserCard.GetTransLIst */]]>
+		<![CDATA[/* 카드 내역 이관 목록 조회 */]]>
+
+		<![CDATA[
+			/* ## SELECT ## */
+			SELECT  IFNULL(sync_id, 0) AS syncId
+		]]>
+		
+		<![CDATA[
+			/* ## FROM ## */
+			FROM    NEOS.t_ex_card_transfer
+		]]>
+		
+		<![CDATA[
+			/* ## WHERE ## */
+			WHERE   auth_date BETWEEN #{cardAuthDateFrom} AND #{cardAuthDateTo}
+			AND     comp_seq = #{compSeq}
+			AND     transfer_seq = #{empSeq}
+			AND     use_yn = 'Y'
+			AND     sync_id IS NOT NULL
+		]]>
+		
+		<![CDATA[
+			/* ## GROUP ## */
+			GROUP   BY sync_id
+		]]>
+	</select>
+
+	<select id="NpUserCard.GetReceiveList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		<![CDATA[/* mariadb : /egovframework/sqlmap/mariadb/BizboxAlpha/expend/np/user/NpUserCardSQL.xml - NpUserCard.GetReceiveList */]]>
+		<![CDATA[/* 카드 내역 수신 목록 조회 */]]>
+
+		<![CDATA[
+			/* ## SELECT ## */
+			SELECT  IFNULL(sync_id, 0) AS syncId
+		]]>
+		
+		<![CDATA[
+			/* ## FROM ## */
+			FROM    NEOS.t_ex_card_transfer
+		]]>
+		
+		<![CDATA[
+			/* ## WHERE ## */
+			WHERE   auth_date BETWEEN #{cardAuthDateFrom} AND #{cardAuthDateTo}
+			AND     comp_seq = #{compSeq}
+			AND     receive_seq = #{empSeq}
+			AND     use_yn = 'Y'
+			AND     sync_id IS NOT NULL
+		]]>
+		
+		<![CDATA[
+			/* ## GROUP ## */
+			GROUP   BY sync_id
+		]]>
+	</select>
+
+	<select id="NpUserCard.GetCardList" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		<![CDATA[/* mariadb : /egovframework/sqlmap/mariadb/BizboxAlpha/expend/np/user/NpUserCardSQL.xml - NpUserCard.GetCardList */]]>
+		<![CDATA[/* 카드 내역 현황 조회 ( 사용자 ) */]]>
+		
+		<![CDATA[
+		
+		/* ## SELECT ## */
+		SELECT  card.georae_stat AS georaeStat /* 구분 ( 승인 / 취소 ) */
+				, CASE
+		                WHEN IFNULL(georae_stat, '') = 'Y' OR IFNULL(georae_stat, '') = '0' THEN '취소'
+		                ELSE '승인'
+		        END AS georaeStatName
+		        , card.georae_coll AS georaeColl
+		        , card.auth_date AS authDate /* 승인일시 */
+		        , card.auth_time AS authTime
+		        , card.auth_num AS authNum /* 승인번호 */
+		        , card.merc_name AS mercName /* 사용처 */
+		        , card.merc_saup_no AS mercSaupNo /* 사업자번호 */
+		        , public.card_name AS cardName /* 카드명 */
+		        , public.card_num AS cardNum /* 카드번호 */
+		        , card.request_amount AS requestAmount /* 금액 */
+		        , card.amt_md_amount AS amtMdAmount /* 공급가액 */
+		        , card.vat_md_amount AS vatMdAmount /* 부가세 */
+		        , card.ser_amount AS serAmount /* 서비스 금액 */
+		        , MAX(card.send_yn) AS send_yn /* 결의상태 */
+		        , IFNULL(public.card_public_yn, 'N') AS cardPublicYn /* 공개범위 여부 */
+		        , IFNULL(trans.trans_yn, 'N') AS transYn /* 이관 여부 */
+		        , IFNULL(trans.receive_yn, 'N') AS receiveYn /* 수신(이관) 여부 */
+		        , card.sync_id AS syncId /* 카드 내역 고유 아이디 */
+		        , public.card_code AS cardCode /* 카드 코드 */
+		        , IFNULL(trans.seq, 0) AS transSeq /* 이관, 사용여부 시퀀스 */
+		        , IFNULL(trans.use_yn, 'Y') AS useYn /* 이관, 사용여부 시퀀스 */
+		        , res.doc_no	AS docNo
+		    	, IFNULL(ea.c_dititle, eap.doc_title) AS docTitle
+		    	, IFNULL(ea.c_tikeycode, eap.form_id) AS formId
+				, res.doc_status	AS docStatus
+				, res.emp_name		AS docEmpName
+				, res.doc_seq		AS docSeq
+		]]>
+		 
+		<![CDATA[
+		/* ## FROM - 카드 사용 내역 ## */
+		FROM    NEOS.t_ex_card_aq_tmp card
+		]]>
+		
+		<![CDATA[
+				/* ## FROM - 카드 정보 ## */
+		        LEFT OUTER JOIN (
+		                SELECT  A.comp_seq
+		                        , A.card_code
+		                        , A.card_num
+		                        , A.card_num_con
+		                        , A.card_name
+		                        , CASE
+		                                WHEN IFNULL(B.card_num, 'N') != 'N' THEN 'Y'
+		                                ELSE 'N'
+		                        END AS card_public_yn
+		                FROM    (
+		                                SELECT  comp_seq
+		                                        , card_code
+		                                        , card_num
+		                                        , REPLACE(card_num, '-', '') AS card_num_con
+		                                        , card_name
+		                                FROM    NEOS.t_ex_card
+		                                WHERE   comp_seq = #{compSeq}
+		                        ) A
+		                        LEFT OUTER JOIN (
+		                                SELECT  A.comp_seq
+		                                        , A.card_num
+		                                        , REPLACE(A.card_num, '-', '') AS card_num_con
+		                                FROM    NEOS.t_ex_card_public A
+		                                        
+		                                        INNER JOIN (
+		                                                SELECT  A.gbn_org AS org_div
+		                                                        , A.dept_seq AS org_id
+		                                                FROM    (
+		                                                                SELECT  gbn_org
+		                                                                        , dept_seq
+		                                                                        , path
+		                                                                FROM    NEOS.v_org_chart_child
+		                                                        ) A INNER JOIN (
+		                                                                SELECT  path
+		                                                                FROM    NEOS.v_org_chart_child
+		                                                                WHERE   dept_seq = #{deptSeq}
+		                                                        ) B ON B.path LIKE CONCAT(A.path, '%')
+		                                                        
+                                                        UNION
+                                                        
+                                                        SELECT	'u' AS org_div
+                                                        		, #{empSeq} AS org_id
+		                                        ) B ON A.org_div = B.org_div AND A.org_id = B.org_id
+		                                GROUP   BY A.comp_seq, A.card_num
+		                        ) B ON A.card_num_con = B.card_num_con
+		                GROUP   BY A.comp_seq, A.card_code, A.card_num, A.card_num_con, A.card_name
+		        ) public ON card.card_num = public.card_num_con
+		]]>
+		
+		<![CDATA[
+				/* ## FROM - 이관, 수신, 사용여부 정보 ## */
+		        LEFT OUTER JOIN (
+		                SELECT  seq
+		                        , comp_seq
+		                        , sync_id
+		                        , card_num
+		                        , REPLACE(card_num, '-', '') AS card_num_con
+		                        , auth_num
+		                        , auth_date
+		                        , auth_time
+		                        , partner_no
+		                        , partner_name
+		                        , transfer_seq
+		                        , transfer_name
+		                        , receive_seq
+		                        , receive_name
+		                        , use_yn
+		                        , use_yn_emp_seq
+		                        , supper_key
+		                        , CASE
+		                                WHEN transfer_seq = #{empSeq} THEN 'Y'
+		                                ELSE 'N'
+		                        END AS trans_yn
+		                        , CASE
+		                                WHEN receive_seq = #{empSeq} THEN 'Y'
+		                                ELSE 'N'
+		                        END AS receive_yn
+		                FROM    NEOS.t_ex_card_transfer
+		                WHERE   comp_seq = #{compSeq}
+		                AND     auth_date BETWEEN #{cardAuthDateFrom} AND #{cardAuthDateTo}
+		        ) trans ON card.sync_id = trans.sync_id
+		]]>
+		
+		<![CDATA[
+			/* 결의정보 아우터 조인 */
+			LEFT JOIN	NEOS.t_exnp_resdoc	res
+			ON	card.if_m_id = res_doc_seq
+			LEFT JOIN	(
+				SELECT	c_dikeycode 
+					, c_dititle
+					, c_tikeycode
+				FROM	NEOS.a_docinfo
+				GROUP BY c_dikeycode
+			)	ea
+			ON	res.doc_seq = ea.c_dikeycode
+			LEFT JOIN	(
+				SELECT	doc_id
+					, doc_title
+					, form_id
+				FROM	NEOS.teag_appdoc
+			)	eap
+			ON	res.doc_seq = eap.doc_id					
+		]]>
+		
+		<![CDATA[
+        		/* 검색조건 : 승인일자 ( From ~ To ) */
+		WHERE   card.auth_date BETWEEN #{cardAuthDateFrom} AND #{cardAuthDateTo}
+		]]>
+<!-- 		<![CDATA[ -->
+<!-- 		        /* 검색조건 : 카드정보 */ -->
+<!-- 		AND     ( -->
+<!-- 		                ( IFNULL(#{searchCardInfo}, '') = '' AND ( public.card_num = public.card_num ) ) -->
+<!-- 		                OR ( IFNULL(#{searchCardInfo}, '') != '' AND ( IFNULL(#{searchCardInfo}, '') LIKE CONCAT('%|', public.card_num, '|%') ) ) -->
+<!-- 		        ) -->
+<!-- 		]]> -->
+		
+		<![CDATA[
+		        /* 검색조건 : 사용처 */
+		AND     IFNULL(card.merc_name, '') LIKE CONCAT('%', IFNULL(#{searchPartnerName}, ''), '%')
+		]]>
+		
+		<![CDATA[
+		        /* 검색조건 : 구분 ( 전체 / 승인 / 취소 ) */
+		AND     (
+		                CASE
+		                        WHEN IFNULL(card.georae_stat, '') = '1' THEN 'Y'
+		                        WHEN IFNULL(card.georae_stat, '') = 'Y' THEN 'Y'
+		                        WHEN IFNULL(card.georae_stat, '') = '0' THEN 'N'
+		                        WHEN IFNULL(card.georae_stat, '') = 'N' THEN 'N'
+		                END
+		        ) = (
+		                CASE
+		                        WHEN IFNULL(#{searchGeoraeStat}, '') = ''
+		                                THEN
+		                                        CASE
+		                                                WHEN IFNULL(card.georae_stat, '') = '1' THEN 'Y'
+		                                                WHEN IFNULL(card.georae_stat, '') = 'Y' THEN 'Y'
+		                                                WHEN IFNULL(card.georae_stat, '') = '0' THEN 'N'
+		                                                WHEN IFNULL(card.georae_stat, '') = 'N' THEN 'N'
+		                                        END
+		                        WHEN IFNULL(#{searchGeoraeStat}, '') = 'Y' THEN 'Y'
+		                        WHEN IFNULL(#{searchGeoraeStat}, '') = 'N' THEN 'N'
+		                END
+		        )
+		]]>
+		
+		<![CDATA[
+		        /* 검색조건 : 승인번호 */
+		AND     IFNULL(card.auth_num, '') LIKE CONCAT('%', IFNULL(#{searchAuthNum}, ''), '%')
+		]]>
+		
+		<![CDATA[
+		        /* 검색조건 : 사업자번호 */
+		AND     REPLACE(REPLACE(IFNULL(card.merc_saup_no, ''), ' ', ''), '-', '') LIKE CONCAT('%', REPLACE(REPLACE(IFNULL(#{searchPartnerNo}, ''), ' ', ''), '-', ''), '%')
+		]]>
+		
+		<![CDATA[
+		        /* 검색조건 : 결의상태 */
+		AND     IFNULL(card.send_yn, 'N') = (
+		                CASE
+		                        WHEN IFNULL(#{searchSendYn}, '') = '' THEN IFNULL(card.send_yn, 'N')
+		                        WHEN IFNULL(#{searchSendYn}, '') = 'UN' THEN IFNULL(card.send_yn, 'N') /* 미사용을 선택한 경우 결의여부 상관없이 처리되어야 하므로 "미사용" 검색조건을 전체와 동일하게 판단한다. */
+		                        WHEN IFNULL(#{searchSendYn}, '') = 'N' THEN 'N'
+		                        WHEN IFNULL(#{searchSendYn}, '') = 'Y' THEN 'Y'
+		                END
+		        )
+		]]>
+		
+		<![CDATA[
+		        /* 검색조건 : 미사용 ( 주의사항 : 조건 변경 시 "검색조건 : 결의상태" 영역도 함께 점검 진행 필요 ) */
+		AND     IFNULL(trans.use_yn, 'Y') = (
+					CASE
+						WHEN IFNULL(#{searchSendYn}, '') = 'UN' THEN 'N'
+						ELSE IFNULL(trans.use_yn, 'Y')
+					END
+				)
+		]]>
+		
+		<![CDATA[
+				/* 검색조건 : 결의자 */
+		]]>
+		
+		<![CDATA[
+		        /* 검색조건 : 공개범위 + 수신(이관) */
+		AND     (
+		                IFNULL(public.card_public_yn, 'N') = 'Y'
+		                OR IFNULL(trans.receive_yn, 'N') = 'Y'
+		        )
+		]]>
+		
+		<![CDATA[
+				/* 검색조건 : 카드 */
+		AND		(
+                        ( IFNULL(#{searchCardInfo}, '') = '' AND card.card_num = card.card_num )
+                        OR ( IFNULL(#{searchCardInfo}, '') != '' and IFNULL(#{searchCardInfo}, '') like concat('%|', public.card_code, '|%') )
+                )
+		AND     IFNULL(trans.trans_yn, 'N') = 'N'
+		]]>
+		ORDER	BY card.auth_date DESC, card.auth_time DESC, public.card_num
+	</select>
+
+	<select id="NpUserCard.GetTransItem" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		<![CDATA[/* mariadb : /egovframework/sqlmap/mariadb/BizboxAlpha/expend/np/user/NpUserCardSQL.xml - NpUserCard.GetTransItem */]]>
+		<![CDATA[/* 카드 이관 항목 조회 */]]>
+		
+		<![CDATA[
+			/* ## SELECT ## */
+			SELECT  seq AS seq
+			        , comp_seq AS compSeq
+			        , sync_id AS syncId
+			        , card_num AS cardNum
+			        , auth_num AS authNum
+			        , auth_date AS authDate
+			        , auth_time AS authTime
+			        , partner_no AS partnerNo
+			        , partner_name AS partnerName
+			        , amt AS reqAmt
+			        , transfer_seq AS transSeq
+			        , transfer_name AS transName
+			        , receive_seq AS receiveSeq
+			        , receive_name AS receiveName
+			        , use_yn AS useYn
+			        , supper_key AS supperKey
+		]]>
+		
+		<![CDATA[
+			/* ## FROM ## */
+			FROM    NEOS.t_ex_card_transfer
+		]]>
+		
+		<![CDATA[
+			/* ## WHERE ## */
+			WHERE   comp_seq = #{compSeq}
+			AND     sync_id = #{syncId}
+		]]>
+		
+		<![CDATA[
+			/* ## OPTION ## */
+			LIMIT	1
+		]]>
+	</select>
+
+	<insert id="NpUserCard.SetTransInsertItem" parameterType="java.util.HashMap">
+		<![CDATA[/* mariadb : /egovframework/sqlmap/mariadb/BizboxAlpha/expend/np/user/NpUserCardSQL.xml - NpUserCard.SetTransInsertItem */]]>
+		<![CDATA[/* 카드 이관 항목 생성 */]]>
+		
+		<![CDATA[
+			/* ## INSERT ## */
+			INSERT INTO NEOS.t_ex_card_transfer ( comp_seq, sync_id, card_num, auth_num, auth_date, auth_time, partner_no, partner_name, amt, transfer_seq, transfer_name, receive_seq, receive_name, use_yn, supper_key, create_date )
+		]]>
+		
+		<![CDATA[
+			/* ## VALUES ## */
+			VALUES ( #{compSeq}, #{syncId}, #{cardNum}, #{authNum}, #{authDate}, #{authTime}, #{partnerNo}, #{partnerName}, #{reqAmt}, #{empSeq}, #{empName}, #{receiveEmpSeq}, #{receiveEmpName}, 'Y', #{receiveEmpSuperKey}, NOW() )
+		]]>
+
+		<selectKey keyProperty="transSeq" resultType="int">
+			<![CDATA[
+				/* ## SELECT ## */
+				SELECT LAST_INSERT_ID();
+			]]>
+		</selectKey>
+	</insert>
+
+	<update id="NpUserCard.SetTransUpdateItem" parameterType="java.util.HashMap">
+		<![CDATA[/* mariadb : /egovframework/sqlmap/mariadb/BizboxAlpha/expend/np/user/NpUserCardSQL.xml - NpUserCard.SetTransUpdateItem */]]>
+		<![CDATA[/* 카드 이관 항목 수정 */]]>
+		
+		<![CDATA[
+			/* ## UPDATE ## */
+			UPDATE  NEOS.t_ex_card_transfer
+		]]>
+		
+		<![CDATA[
+			/* ## SET ## */
+			SET     transfer_seq = #{empSeq}
+			        , transfer_name = #{empName}
+			        , receive_seq = #{receiveEmpSeq}
+			        , receive_name = #{receiveEmpName}
+			        , supper_key = #{receiveEmpSuperKey}
+			        , create_date = NOW()
+		]]>
+		
+		<![CDATA[
+			/* ## WHERE ## */
+			WHERE   comp_seq = #{compSeq}
+			AND     sync_id = #{syncId}
+		]]>
+	</update>
+
+	<update id="NpUserCard.SetUseYNUpdateItem" parameterType="java.util.HashMap">
+		<![CDATA[/* mariadb : /egovframework/sqlmap/mariadb/BizboxAlpha/expend/np/user/NpUserCardSQL.xml - NpUserCard.SetUseYNUpdateItem */]]>
+		<![CDATA[/* 카드 사용여부 수정 */]]>
+
+		<![CDATA[
+			/* ## UPDATE ## */
+			UPDATE  NEOS.t_ex_card_transfer
+		]]>
+		
+		<![CDATA[
+			/* ## SET ## */
+			SET     use_yn = #{useYN}
+					, use_yn_emp_seq = #{empSeq}
+			        , create_date = NOW()
+		]]>
+		
+		<![CDATA[
+			/* ## WHERE ## */
+			WHERE   comp_seq = #{compSeq}
+			AND     sync_id = #{syncId}
+		]]>
+	</update>
+
+	<insert id="NpUserCard.SetUseYNInsertItem" parameterType="java.util.HashMap">
+		<![CDATA[/* mariadb : /egovframework/sqlmap/mariadb/BizboxAlpha/expend/np/user/NpUserCardSQL.xml - NpUserCard.SetUseYNInsertItem */]]>
+		<![CDATA[/* 카드 이관 항목 생성 */]]>
+		
+		<![CDATA[
+			/* ## INSERT ## */
+			INSERT INTO NEOS.t_ex_card_transfer ( comp_seq, sync_id, card_num, auth_num, auth_date, auth_time, partner_no, partner_name, amt, use_yn, use_yn_emp_seq, create_date )
+		]]>
+		
+		<![CDATA[
+			/* ## VALUES ## */
+			VALUES ( #{compSeq}, #{syncId}, #{cardNum}, #{authNum}, #{authDate}, #{authTime}, #{mercSaupNo}, #{mercName}, #{requestAmount}, #{useYN}, #{empSeq}, NOW() )
+		]]>
+
+		<selectKey keyProperty="transSeq" resultType="int">
+			<![CDATA[
+				/* ## SELECT ## */
+				SELECT LAST_INSERT_ID();
+			]]>
+		</selectKey>
+	</insert>
+
+	<select id="NpUserCard.CardLinkSelect" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		<![CDATA[/* mariadb : /egovframework/sqlmap/mariadb/BizboxAlpha/expend/np/user/NpUserCardSQL.xml - NpUserCard.CardLinkSelect */]]>
+		<![CDATA[/* 카드 연동 목록 조회 */]]>
+		
+		<![CDATA[
+		SELECT  IFNULL(B.sync_id, '') AS syncId
+		        , IFNULL(B.send_yn, '') AS sendYN
+		        , IFNULL(B.if_m_id, '') AS ifMId
+		        , IFNULL(B.if_d_id, '') AS ifDId
+		]]>
+		
+		<![CDATA[
+		FROM    (
+		                SELECT  interface_type
+		                        , interface_seq
+		                FROM    NEOS.t_exnp_restrade
+		                WHERE   res_doc_seq = #{resDocSeq}
+		                AND	res_seq = #{resSeq}
+		                AND	budget_seq = #{budgetSeq}
+		                AND	trade_seq = #{tradeSeq}
+		                AND     interface_type = 'card'
+		        ) A INNER JOIN (
+		                SELECT  sync_id
+		                        , send_yn
+		                        , if_m_id
+		                        , if_d_id
+		                FROM    NEOS.t_ex_card_aq_tmp
+		                WHERE   send_yn = #{sendYN}
+		        ) B ON A.interface_seq = B.sync_id
+		]]>
+	</select>
+	
+	<update id="NpUserCard.CardStatInfoUpdate" parameterType="java.util.HashMap">
+		<![CDATA[/* mariadb : /egovframework/sqlmap/mariadb/BizboxAlpha/expend/np/user/NpUserCardSQL.xml - NpUserCard.CardStatInfoUpdate */]]>
+		<![CDATA[/* 카드 연동 복구 */]]>
+		
+		<![CDATA[		
+		UPDATE  NEOS.t_ex_card_aq_tmp
+		SET     send_yn = #{sendYN}
+				, if_m_id = #{ifMId}
+				, if_d_id = #{ifDId}
+		WHERE   sync_id = #{syncId}
+		]]>
+	</update>
+	
+	<select id="NpUserCard.GetCardTransHistoryListSelect" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		<![CDATA[/* mariadb : /egovframework/sqlmap/mariadb/BizboxAlpha/expend/np/user/NpUserCardSQL.xml - NpUserCard.GetCardTransHistoryListSelect */]]>
+		<![CDATA[/* 카드사용내역 이관 목록 조회 */]]>
+
+		<![CDATA[
+		SELECT  A.syncId
+		        , A.receiveDate
+		        , A.receiveName
+		        , A.receiveType
+		        , A.receiveTypeName
+		        , A.authDate
+		        , A.partnerName
+		        , B.cardName
+		        , B.cardNum
+		        , A.reqAmt
+		        , A.useYn
+		        , A.sendYn
+		]]>
+		
+		<![CDATA[
+		FROM    (
+		                SELECT  sync_id AS syncId
+		                        , DATE_FORMAT(create_date, '%Y-%m-%d') AS receiveDate
+		                        , IFNULL(receive_name, '') AS receiveName
+		                        , CASE
+		                                WHEN receive_seq = IFNULL(#{empSeq}, '') THEN '1'
+		                                ELSE '0'
+		                        END AS receiveType
+		                        , CASE
+		                                WHEN receive_seq = IFNULL(#{empSeq}, '') THEN '받음'
+		                                ELSE '보냄'
+		                        END AS receiveTypeName
+		                        , DATE_FORMAT(auth_date, '%Y-%m-%d') AS authDate
+		                        , partner_name AS partnerName
+		                        , card_num
+		                        , REPLACE(card_num, '-', '') AS cardNumCon
+		                        , amt AS reqAmt
+		                        , IFNULL(use_yn, 'Y') AS useYn
+		                        , ( SELECT IFNULL(send_yn, 'N') FROM NEOS.t_ex_card_aq_tmp WHERE sync_id = A.sync_id ) AS sendYn
+		                FROM    NEOS.t_ex_card_transfer A
+		                WHERE   comp_seq = IFNULL(#{compSeq}, '')
+		                AND     ( IFNULL(receive_seq, '') = IFNULL(#{empSeq}, '') OR transfer_seq = IFNULL(#{empSeq}, '') )
+		                AND     IFNULL(receive_seq, '') != ''
+		        ) A INNER JOIN (
+		                SELECT  A.comp_seq AS compSeq
+		                        , A.card_code AS cardCode
+		                        , A.card_num AS cardNum
+		                        , A.card_num_con AS cardNumCon
+		                        , A.card_name AS cardName
+		                        , CASE
+		                                WHEN IFNULL(B.card_num, 'N') != 'N' THEN 'Y'
+		                                ELSE 'N'
+		                        END AS card_public_yn
+		                FROM    (
+		                                SELECT  comp_seq
+		                                        , card_code
+		                                        , card_num
+		                                        , REPLACE(card_num, '-', '') AS card_num_con
+		                                        , card_name
+		                                FROM    NEOS.t_ex_card
+		                                WHERE   comp_seq = IFNULL(#{compSeq}, '')
+		                        ) A
+		                        LEFT OUTER JOIN (
+		                                SELECT  A.comp_seq
+		                                        , A.card_num
+		                                        , REPLACE(A.card_num, '-', '') AS card_num_con
+		                                FROM    NEOS.t_ex_card_public A
+		                                        INNER JOIN (
+		                                                SELECT  A.gbn_org AS org_div
+		                                                        , A.dept_seq AS org_id
+		                                                FROM    (
+		                                                                SELECT  gbn_org
+		                                                                        , dept_seq
+		                                                                        , path
+		                                                                FROM    NEOS.v_org_chart_child
+		                                                        ) A INNER JOIN (
+		                                                                SELECT  path
+		                                                                FROM    NEOS.v_org_chart_child
+		                                                                WHERE   dept_seq = IFNULL(#{deptSeq}, '')
+		                                                        ) B ON B.path LIKE CONCAT(A.path, '%')
+		                                        UNION
+		                                        SELECT	'u' AS org_div
+		                                                        , IFNULL(#{empSeq}, '') AS org_id
+		                                        ) B ON A.org_div = B.org_div AND A.org_id = B.org_id
+		                                GROUP   BY A.comp_seq, A.card_num
+		                        ) B ON A.card_num_con = B.card_num_con
+		                GROUP   BY A.comp_seq, A.card_code, A.card_num, A.card_num_con, A.card_name
+		        ) B ON A.cardNumCon = B.cardNumCon
+		WHERE	(
+					( IFNULL(#{searchUseYN}, 'Y') = 'N' AND A.useYn = 'N' )
+					OR ( IFNULL(#{searchUseYN}, 'Y') != 'N' AND IFNULL(A.useYn, '') = IFNULL(A.useYn, '') )
+				)
+		AND		(
+					( IFNULL(#{searchSendYN}, '') = '' AND IFNULL(A.sendYn, '') = IFNULL(A.sendYn, '') )
+					OR ( IFNULL(#{searchSendYN}, '') = '' AND IFNULL(A.sendYn, 'N') = IFNULL(#{searchSendYN}, '') )
+				)
+		]]>
+	</select>
+</mapper>

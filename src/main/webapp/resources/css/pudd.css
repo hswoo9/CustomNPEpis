@@ -1,0 +1,1240 @@
+﻿@charset "utf-8";
+.PUDD div,div.PUDD ,.PUDD dl,.PUDD dt,.PUDD dd,.PUDD ul,.PUDD ol,.PUDD li,.PUDD h1,.PUDD h2,.PUDD h3,.PUDD h4,.PUDD h5,.PUDD h6,.PUDD p,.PUDD button,.PUDD input,.PUDD select,.PUDD td,.PUDD th,.PUDD table,.PUDD pre,.PUDD strong,.PUDD b,.PUDD textarea{font-family:inherit; margin:0;padding:0;font-size:12px;}
+.PUDD h1,.PUDD h2,.PUDD h3,.PUDD h4,.PUDD h5,.PUDD h6,.PUDD input,.PUDD button,.PUDD pre,.PUDD textarea,.PUDD select{font-size:12px;}
+.PUDD img,.PUDD iframe{border:0 none}
+.PUDD li{list-style:none}
+.PUDD input,.PUDD select,.PUDD button{vertical-align:middle}
+.PUDD input::-ms-clear {display:none;}
+.PUDD img{vertical-align:top}
+.PUDD label,.PUDD button{cursor:pointer}
+.PUDD a {text-decoration:none;}
+.PUDD button{margin:0;padding:0}
+.PUDD button *{position:relative}
+.PUDD button img{left:-3px;*left:auto}
+.PUDD option{padding-right:6px}
+.PUDD table{border-collapse:collapse;border-spacing:0;width:100%;table-layout:fixed;}
+.PUDD input[type="text"],
+.PUDD input[type="password"],
+.PUDD input[type="search"] {font-family:'돋움',Dotum,'굴림',Gulim,sans-serif !important;text-indent:0px !important}
+
+*{-webkit-overflow-scrolling:touch;} /* 모바일에서 터치 부드러운 효과 적용 */
+
+/*Text color*/
+.PUDD .text_red{color:#ff0000;}
+.PUDD .text_blue{color:#000fff;}
+	
+/*Padding, Margin*/ 
+.PUDD .mr3 {margin-right:3px !important;}
+
+/*autocomplet*/
+.autoComplete{display:none;position:fixed;border:1px solid #cccccc;background:#ffffff;z-index:102;width:100%;max-height:150px;overflow-x:hidden;overflow-y:auto;text-align:left;}
+.autoComplete li{height:22px;line-height:22px;padding:0 12px;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;display:list-item;}
+.autoComplete li:hover{cursor:pointer;background:#f5f5f5;}
+.autoComplete li.on{background:#f5f5f5;}
+.autoComplete li .marking{background:#fff1c0;}
+
+/*clonelist*/
+.cloneList{display:none;position:fixed;border:1px solid #cccccc;background:#ffffff;z-index:1;width:100%;max-height:150px;overflow-x:hidden;overflow-y:auto;z-index:100;}
+.cloneList li{height:22px;line-height:22px;padding:0 6px;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;text-align:left;display: list-item; width: auto;}
+.cloneList li:hover{cursor:pointer;background:#f5f5f5;}
+.cloneList li.on{background:#f5f5f5;}
+.cloneList li.no-data{text-align: center;height: 100px;line-height: 100px;color: #a9a9a9;}
+.cloneList li.no-data:hover{cursor:default;background:#ffffff;}
+
+/*dropCalWrap*/
+.dropCalWrap{display:none;position:absolute;left:0;z-index:3010;margin:-1px 0 0 0}
+
+
+/**************************************************
+   sample code
+**************************************************/
+.devBox{padding:30px;}
+.devBox h1{font-size:30px;margin:0 0 20px 0;}
+.devBox .componentBox{padding:10px;border:1px solid #eaeaea;}
+.devBox .componentBox p{font-size:12px;margin:0 0 10px 0;padding:5px;background:#f1f1f1;line-height:20px;}
+.devBox .componentBox pre{font-size:12px;margin:0 0 10px 0;padding:5px;background:#f1f1f1;line-height:20px; white-space: pre-wrap;}
+
+
+/**************************************************
+   PUDD_tootip
+**************************************************/
+/*toolTip*/
+.PUDD .toolTip{display:none;position:fixed;min-width:12px;padding:10px;color:#ffffff;background:#000000;z-index:100;}
+.PUDD .toolTip span.arrow{width:0px;height:0px;border-bottom: 10px solid black;border-right: 10px solid transparent;border-left: 10px solid  transparent;position: absolute;top: -8px;left: 6px;}
+.PUDD input:hover + .toolTip{display:block;}
+
+.puddTooltip{display:none;position:fixed;min-width:12px;padding:10px;color:#ffffff;background:#000000;z-index:100;}
+.puddTooltip span.arrow{width:0px;height:0px;border-bottom: 10px solid black;border-right: 10px solid transparent;border-left: 10px solid  transparent;position: absolute;top: -8px;left: 6px;}
+
+
+/**************************************************
+   PUDD_Input
+**************************************************/
+/*inputField*/
+.PUDD.PUDD-UI-inputField{position:relative;display:inline-block;height:24px;vertical-align:middle;}
+.PUDD.PUDD-UI-inputField input{width:100%;height:inherit;padding:0 6px;border:1px solid #cccccc;font-size:12px;background:#ffffff;outline:none;box-sizing:border-box;}
+.PUDD.PUDD-UI-inputField input[disabled]{color:#8d8d8d;background:#f3f3f3;cursor:not-allowed;}
+.PUDD.PUDD-UI-inputField input[readonly]{color:#8d8d8d;}
+.PUDD.PUDD-UI-inputField.PUDD-COLOR-blue input[readonly]:focus{border:1px solid #cccccc;}
+.PUDD.PUDD-UI-inputField .informationText{text-align:left;}
+.PUDD.PUDD-UI-inputField svg {display:inline-block;height:14px;width:14px;user-select:none;pointer-events:none;position:absolute;top:50%;right:6px;margin:-7px 0 0 0;}
+
+.PUDD.PUDD-UI-inputField.Success input{padding: 0 24px 0 6px;border:1px solid #8fe1bd;font-size:12px;background:#ffffff;outline:none;box-sizing:border-box;}
+.PUDD.PUDD-UI-inputField.Success svg{fill:#1fc47c;height:14px;width:14px;}
+.PUDD.PUDD-UI-inputField.Success .informationText{margin:5px 0px 0px 5px;font-size:12px;color:#8fe1bd;}
+
+.PUDD.PUDD-UI-inputField.Error input{padding: 0 24px 0 6px;border:1px solid #febc2c;font-size:12px;background:#ffffff;outline:none;box-sizing:border-box;}
+.PUDD.PUDD-UI-inputField.Error svg{fill:#febc2c;height:14px;width:14px;}
+.PUDD.PUDD-UI-inputField.Error .informationText{margin:5px 0px 0px 5px;font-size:12px;color:#febc2c;}
+
+.PUDD.PUDD-UI-inputField.Warning input{padding: 0 24px 0 6px;border:1px solid #fc5356;font-size:12px;background:#ffffff;outline:none;box-sizing:border-box;}
+.PUDD.PUDD-UI-inputField.Warning svg{fill:#fc5356;height:14px;width:14px;}
+.PUDD.PUDD-UI-inputField.Warning .informationText{margin:5px 0px 0px 5px;font-size:12px;color:#fc5356;}
+
+/*passwordField*/
+.PUDD.PUDD-UI-passwordField{position:relative;display:inline-block;height:24px;vertical-align:middle;}
+.PUDD.PUDD-UI-passwordField input{width:100%;height:inherit;padding: 0 24px 0 6px;border:1px solid #cccccc;font-size:12px;background:#ffffff;outline:none;box-sizing:border-box;}
+.PUDD.PUDD-UI-passwordField input[disabled]{color:#8d8d8d;background:#f3f3f3;cursor:not-allowed;}
+.PUDD.PUDD-UI-passwordField svg{display:inline-block;fill:#4b4b4b;height:14px;width:14px;user-select:none;pointer-events:none;position:absolute;top:50%;right:6px;margin:-7px 0 0 0;}
+.PUDD.PUDD-UI-passwordField .informationText{text-align:left;}
+
+.PUDD.PUDD-UI-passwordField.Success input{padding: 0 24px 0 6px;border:1px solid #8fe1bd;font-size:12px;background:#ffffff;outline:none;box-sizing:border-box;}
+.PUDD.PUDD-UI-passwordField.Success svg{display:inline-block;fill:#1fc47c;height:14px;width:14px;user-select:none;pointer-events:none;position:absolute;top:50%;right:6px;margin:-7px 0 0 0;}
+.PUDD.PUDD-UI-passwordField.Success .informationText{margin:5px 0px 0px 5px;font-size:12px;color:#8fe1bd;}
+
+.PUDD.PUDD-UI-passwordField.Error input{padding: 0 24px 0 6px;border:1px solid #febc2c;font-size:12px;background:#ffffff;outline:none;box-sizing:border-box;}
+.PUDD.PUDD-UI-passwordField.Error svg{display:inline-block;fill:#febc2c;height:14px;width:14px;user-select:none;pointer-events:none;position:absolute;top:50%;right:6px;margin:-7px 0 0 0;}
+.PUDD.PUDD-UI-passwordField.Error .informationText{margin:5px 0px 0px 5px;font-size:12px;color:#febc2c;}
+
+.PUDD.PUDD-UI-passwordField.Warning input{padding: 0 24px 0 6px;border:1px solid #fc5356;font-size:12px;background:#ffffff;outline:none;box-sizing:border-box;}
+.PUDD.PUDD-UI-passwordField.Warning svg{display:inline-block;fill:#fc5356;height:14px;width:14px;user-select:none;pointer-events:none;position:absolute;top:50%;right:6px;margin:-7px 0 0 0;}
+.PUDD.PUDD-UI-passwordField.Warning .informationText{margin:5px 0px 0px 5px;font-size:12px;color:#fc5356;}
+
+/*searchField*/
+.PUDD.PUDD-UI-searchField{position:relative;display:inline-block;height:24px;vertical-align:middle;}
+.PUDD.PUDD-UI-searchField input{width:100%;height:inherit;padding: 0 24px 0 6px;border:1px solid #cccccc;font-size:12px;background:#ffffff;outline:none;box-sizing:border-box;}
+.PUDD.PUDD-UI-searchField input[disabled]{color:#8d8d8d;background:#f3f3f3;cursor:not-allowed;}
+
+.PUDD.PUDD-UI-searchField .btn{position:absolute;width:24px;height:24px;top:0;right:0;}
+.PUDD.PUDD-UI-searchField svg{display:inline-block;height:14px;width:14px;user-select:none;pointer-events:none;position:absolute;top:50%;right:6px;margin:-7px 0 0 0;}
+.PUDD.PUDD-UI-searchField .btn:hover svg{fill:#4b4b4b;}
+.PUDD.PUDD-UI-searchField input[disabled] + svg{fill:#4b4b4b;}
+
+/*theme class*/
+.PUDD.PUDD-UI-inputField.PUDD-COLOR-blue input:focus{border:1px solid #2196f3;}
+.PUDD.PUDD-UI-passwordField.PUDD-COLOR-blue input:focus{border:1px solid #2196f3;}
+.PUDD.PUDD-UI-searchField.PUDD-COLOR-blue input:focus{border:1px solid #2196f3;}
+.PUDD.PUDD-UI-searchField.PUDD-COLOR-blue svg{fill:#1c90fb;}
+.PUDD.PUDD-UI-fileField.PUDD-COLOR-blue input:focus{border:1px solid #2196f3;}
+
+
+/**************************************************
+   PUDD_Checkbox / Radio
+**************************************************/
+.PUDD.PUDD-UI-ChkRadi input[type="checkbox"] {position: absolute; z-index: -10; visibility:hidden;height:14px; width:14px;}
+.PUDD.PUDD-UI-ChkRadi { position: relative; display: inline-block; cursor: pointer; vertical-align: middle;user-select: none; margin-right: 10px; outline: none;margin-top:-2px;}
+.PUDD.PUDD-UI-ChkRadi svg{top:50%;margin-top:-7px;display: inline-block; fill: rgb(0, 0, 0); user-select: none; position: absolute; left: 0px; /*z-index: 10;*/ cursor: pointer;background:#fff;}
+.PUDD.PUDD-UI-ChkRadi label {display: inline-block; user-select: none;}
+.PUDD.PUDD-UI-ONLY.PUDD-UI-ChkRadi {margin-right:2px;}
+.PUDD.PUDD-SET-ChkRadi {display:inline-block;overflow: hidden;}
+.PUDD.PUDD-SET-ChkRadi.PUDD-UI-Vertical {}
+.PUDD.PUDD-SET-ChkRadi.PUDD-UI-Vertical > div {clear:both;display: block;}
+.PUDD.PUDD-UI-ChkRadi polygon {display:none;}
+.PUDD.PUDD-UI-ChkRadi rect {display:none;}
+.PUDD.PUDD-UI-ChkRadi circle {display:none;}
+.PUDD.PUDD-UI-ChkRadi.UI-ON polygon {display:inline;}
+.PUDD.PUDD-UI-ChkRadi.UI-ON rect {display:inline;}
+.PUDD.PUDD-UI-ChkRadi.UI-ON circle {display:inline;}
+.PUDD.PUDD-UI-ChkRadi.UI-Disa label {cursor: not-allowed;}
+.PUDD.PUDD-UI-ChkRadi.UI-Disa svg {cursor: not-allowed;}
+.PUDD.PUDD-UI-ChkRadi label {padding-left:18px;margin-top:0px;}
+.PUDD.PUDD-UI-ChkRadi.PUDD-UI-ONLY label {padding-left:14px;}
+
+.PUDD.PUDD-UI-Vertical {overflow:visible;}
+.PUDD.PUDD-UI-Vertical .PUDD-UI-ChkRadi {margin-bottom:5px;}
+.PUDD.PUDD-UI-Horizon .PUDD-UI-ChkRadi {margin-right:10px;}
+.PUDD.PUDD-UI-ChkRadi input[type="radio"] {position: absolute; z-index: -10; visibility:hidden;height:14px; width:14px;}
+.PUDD.PUDD-UI-ChkRadi input[type="radio"] {position: absolute; z-index: -10; visibility:hidden;height:14px; width:14px;}
+.PUDD.PUDD-UI-ChkRadi input[type="radio"] {position: absolute; z-index: -10; visibility:hidden;height:14px; width:14px;}
+
+.PUDD.PUDD-UI-ChkRadi svg {height:14px; width:14px;}
+.PUDD.PUDD-UI-radio.PUDD-UI-ChkRadi svg {background:#fff !important;border-radius:50% 50%;}
+
+@media screen and (-webkit-min-device-pixel-ratio:0){.PUDD.PUDD-UI-ChkRadi svg{margin-top:-7px;} .PUDD.PUDD-UI-ChkRadi {margin-top:0px;} .PUDD.PUDD-UI-ChkRadi label {margin-top:0px;} }/*크롬 조정*/
+
+/*그리드체크박스*/
+.PUDD-UI-GridTable .PUDD.PUDD-UI-ChkRadi svg {margin-top:-5px;margin-left:-2px;}
+@media screen and (-webkit-min-device-pixel-ratio:0){.PUDD-UI-GridTable .PUDD.PUDD-UI-ChkRadi svg {margin-top:-7px;}}/*크롬 조정*/
+
+/*체크박스를 뒤로 보낼때*/
+.PUDD.PUDD-UI-ChkRadi.ChkRight input[type="checkbox"] {right:0;}
+.PUDD.PUDD-UI-ChkRadi.ChkRight svg {left:inherit;right:0;}
+.PUDD.PUDD-UI-ChkRadi.ChkRight label{margin-right:18px;padding-left:0;}
+
+/*체크,라디오공통 색*/
+.PUDD.PUDD-COLOR-blue.PUDD-UI-ChkRadi svg path{fill:#B5B4B4;}
+.PUDD.PUDD-COLOR-blue.PUDD-UI-ChkRadi svg polygon {fill:#2A93F7;}
+.PUDD.PUDD-COLOR-blue.PUDD-UI-ChkRadi svg rect {fill:#2A93F7;}
+.PUDD.PUDD-COLOR-blue.PUDD-UI-ChkRadi svg circle {fill:#2A93F7;}
+.PUDD.PUDD-COLOR-blue.PUDD-UI-ChkRadi.UI-Disa svg path{fill:#B5B4B4;}
+.PUDD.PUDD-COLOR-blue.PUDD-UI-ChkRadi.UI-Disa svg g path {fill:#EEEEEC;}
+.PUDD.PUDD-COLOR-blue.PUDD-UI-ChkRadi.UI-Disa svg polygon {fill:#C4C3C3;}
+.PUDD.PUDD-COLOR-blue.PUDD-UI-ChkRadi.UI-Disa svg rect {fill:#C4C3C3;}
+.PUDD.PUDD-COLOR-blue.PUDD-UI-ChkRadi.UI-Disa svg circle {fill:#C4C3C3;}
+.PUDD.PUDD-COLOR-blue.PUDD-UI-ChkRadi.UI-Dash.UI-Disa svg g > path{fill:#B5B4B4}
+.PUDD.PUDD-COLOR-blue.PUDD-UI-ChkRadi.UI-Dash.UI-Disa svg g > g > path{fill:#EEEEEC}
+
+.PUDD.PUDD-COLOR-yellow.PUDD-UI-ChkRadi svg {background-color:#FEBC2C;}
+.PUDD.PUDD-COLOR-yellow.PUDD-UI-ChkRadi svg path{fill:#FEBC2C;}
+.PUDD.PUDD-COLOR-yellow.PUDD-UI-ChkRadi svg polygon {fill:#fff;}
+.PUDD.PUDD-COLOR-yellow.PUDD-UI-ChkRadi svg rect {fill:#fff;}
+.PUDD.PUDD-COLOR-yellow.PUDD-UI-ChkRadi svg circle {fill:#FD9656;}
+
+.PUDD.PUDD-COLOR-green.PUDD-UI-ChkRadi svg {background-color:#1FC47C;}
+.PUDD.PUDD-COLOR-green.PUDD-UI-ChkRadi svg path{fill:#1FC47C;}
+.PUDD.PUDD-COLOR-green.PUDD-UI-ChkRadi svg polygon {fill:#fff;}
+.PUDD.PUDD-COLOR-green.PUDD-UI-ChkRadi svg rect {fill:#fff;}
+.PUDD.PUDD-COLOR-green.PUDD-UI-ChkRadi svg circle{fill:#1FC47C;}
+
+.PUDD.PUDD-COLOR-strongblue.PUDD-UI-ChkRadi svg {background-color:#2A93F7;}
+.PUDD.PUDD-COLOR-strongblue.PUDD-UI-ChkRadi svg path{fill:#2A93F7;}
+.PUDD.PUDD-COLOR-strongblue.PUDD-UI-ChkRadi svg polygon {fill:#fff;}
+.PUDD.PUDD-COLOR-strongblue.PUDD-UI-ChkRadi svg rect {fill:#fff;}
+.PUDD.PUDD-COLOR-strongblue.PUDD-UI-ChkRadi svg circle{fill:#2A93F7;}
+
+/**************************************************
+   PUDD_Button
+**************************************************/
+/*icon 호출*/
+.PUDD input[type="button"].ico.ico_clip {background: url('pudd_img/ico/ico_file.png') no-repeat; background-position:center; background-size:12px 13px;}
+.PUDD input[disabled].ico.ico_clip{background:#f2f2f2 url('pudd_img/ico/ico_file.png') no-repeat; background-size:12px 13px;}
+
+.PUDD input[type="button"].ico.reload_btn {background:#fff url('pudd_img/ico/ico_reload.png') no-repeat center; }
+.PUDD input[disabled].ico.reload_btn{background:#fff url('pudd_img/ico/ico_reload.png') no-repeat center;}
+
+/*default Button*/
+.PUDD input[type="button"]{cursor:pointer;}
+.PUDD input[type="button"]:hover{border:1px solid #8c8c8c;}
+
+.PUDD.PUDD-UI-Button{position:relative; display:inline-block;  /*height: 24px;*/vertical-align: middle}
+.PUDD.PUDD-UI-Button input{background:#fff; padding: 0 10px; line-height:1.9em; border: 1px solid #d3d3d3; border-image: none; width: 100%; height:100%; color:#4a4a4a; font-size: 12px; text-decoration: none; vertical-align: top; display: inline-block; position: relative; cursor: pointer; box-sizing: border-box; font-weight:normal;}
+.PUDD.PUDD-UI-Button input:hover{border:1px solid #8c8c8c;}
+.PUDD.PUDD-UI-Button input[disabled]{background:#f2f2f2; border: 1px solid #e0e0e0; color:#8d8d8d;}
+
+/*iconSvg Button*/
+.PUDD.PUDD-UI-iconSvgButton{position:relative; display:inline-block;  min-width:24px; /*height: 24px;*/}
+.PUDD.PUDD-UI-iconSvgButton input{width:100%; height:100%; color:#4a4a4a; padding:10px; border:1px solid #d3d3d3;font-size:12px;background:#ffffff;outline:none;box-sizing:border-box; cursor: pointer;}
+.PUDD.PUDD-UI-iconSvgButton input:hover{border:1px solid #d3d3d3;}
+.PUDD.PUDD-UI-iconSvgButton svg{display:inline-block;fill:#000000;position:absolute;width:18px; height:18px; left:50%; top:50%; margin-top:-9px; margin-left:-9px; pointer-events:none;}
+
+/*iconImg Button*/
+.PUDD.PUDD-UI-iconImgButton{position:relative; display:inline-block;  width:24px; /*height: 24px;*/}
+.PUDD.PUDD-UI-iconImgButton input{width:100%; height:100%; min-height:24px;line-height:24px; border:1px solid #d3d3d3;background:#ffffff;box-sizing:border-box; cursor: pointer;}
+.PUDD.PUDD-UI-iconImgButton input:hover{border:1px solid #8c8c8c;}
+
+/*iconSvg+text Button*/
+.PUDD.PUDD-UI-iconSvgtextButton {position:relative; display:inline-block;  /*height: 24px;*/}
+.PUDD.PUDD-UI-iconSvgtextButton input{width:100%; height: 100%; line-height:24px; border: 1px solid #d3d3d3; background:#fff; border-image: none; color:#4a4a4a; letter-spacing: -0.5px; font-size: 12px; text-decoration: none; vertical-align: top; display: inline-block; position: relative; cursor: pointer; box-sizing: border-box;}
+.PUDD.PUDD-UI-iconSvgtextButton input[disabled]{background:#f2f2f2; border: 1px solid #e0e0e0; color:#8d8d8d;}	
+.PUDD.PUDD-UI-iconSvgtextButton svg{display:inline-block;fill:#000000;position:absolute;top:0px;right:0px;vertical-align:top; z-index:10;}
+.PUDD.PUDD-UI-iconSvgtextButton .svgR_box{margin: -8px 5px 0px 0px; top: 50%; width: 16px; height: 16px; right: 0px; vertical-align: middle; float: right; position: absolute;}
+.PUDD.PUDD-UI-iconSvgtextButton .svgL_box{margin: -8px 0px 0px 5px; top: 50%; width: 16px; height: 16px; left: 0px; vertical-align: middle; float: left; position: absolute;}
+.PUDD.PUDD-UI-iconSvgtextButton .ico_al{padding: 0px 10px 0px 25px;}	
+.PUDD.PUDD-UI-iconSvgtextButton .ico_ar{padding: 0px 25px 0px 10px;}	
+
+/*iconImg+text Button*/
+.PUDD.PUDD-UI-iconImgtextButton {position:relative; display:inline-block;  /*height: 24px;*/}
+.PUDD.PUDD-UI-iconImgtextButton input{width:100%; height: 100%; line-height:24px; border: 1px solid #d3d3d3; background:#fff; border-image: none; color:#4a4a4a; letter-spacing: -0.5px; font-size: 12px; text-decoration: none; vertical-align: top; display: inline-block; position: relative; cursor: pointer; box-sizing: border-box;}
+.PUDD.PUDD-UI-iconImgtextButton input[disabled]{background:#f2f2f2; border: 1px solid #e0e0e0; color:#8d8d8d;}
+.PUDD.PUDD-UI-iconImgtextButton .ico_ar{background-position:right 5px center !important; padding: 0px 22px 0px 10px;}
+.PUDD.PUDD-UI-iconImgtextButton .ico_al{background-position:left 5px center !important; padding: 0px 10px 0px 22px;}
+
+/*gridTable Button*/
+.PUDD.PUDD-UI-GridTable .PUDD-UI-Button input[type="button"]{height:19px !important;}
+.PUDD.PUDD-UI-GridTable .PUDD-UI-Button input[type="button"]{font-size:11px; line-height:14px; padding:3px 5px; letter-spacing:-1px;}
+.PUDD.PUDD-UI-GridTable .PUDD-UI-Button input[type="button"].gray_btn{border:1px solid #8e8e8e; background:#8e8e8e; color:#fff;}
+
+/*theme Button*/
+.PUDD.PUDD-UI-Button.PUDD-COLOR-blue input.submit{background:#1c90fb; border: 1px solid #1c90fb; color:#fff; box-sizing:border-box;}
+.PUDD.PUDD-UI-Button.PUDD-COLOR-blue input.submit:hover{background:#006dd2; border:1px solid #006dd2;}
+/* .PUDD.PUDD-UI-Button.PUDD-COLOR-blue .PUDD.PUDD-UI-iconSvgButton:hover svg{fill:#1c90fb;} */
+
+.PUDD.PUDD-UI-Button.PUDD-COLOR-blue input.gray_btn {background:#adadad; border: 1px solid #adadad; color:#fff; box-sizing:border-box;}
+.PUDD.PUDD-UI-Button.PUDD-COLOR-blue input.gray_btn:hover {background:#929292; border:1px solid #929292;}
+
+/**************************************************
+   PUDD_Textarea
+**************************************************/
+.PUDD.PUDD-UI-textArea{position:relative;display:inline-block;margin-right:-4px}
+.PUDD.PUDD-UI-textArea textarea{width:100%;height:100%;padding:5px 17px 5px 5px;border:1px solid #cccccc;font-size:12px;background:#ffffff;outline:none;box-sizing:border-box;resize:none;}
+.PUDD.PUDD-UI-textArea textarea[disabled]{color:#8d8d8d;background:#f3f3f3;cursor:not-allowed;}
+.PUDD.PUDD-UI-textArea textarea[readonly]{color:#8d8d8d;}
+.PUDD.PUDD-UI-textArea.PUDD-COLOR-blue textarea[readonly]:focus{border:1px solid #cccccc;}
+.PUDD.PUDD-UI-textArea .informationText {text-align:left;}
+
+.PUDD.PUDD-UI-textArea.Success textarea{border:1px solid #8fe1bd;}
+.PUDD.PUDD-UI-textArea.Success .informationText{margin:5px 0px 0px 5px;font-size:12px;color:#8fe1bd;}
+
+.PUDD.PUDD-UI-textArea.Error textarea{border:1px solid #febc2c;}
+.PUDD.PUDD-UI-textArea.Error .informationText{margin:5px 0px 0px 5px;font-size:12px;color:#febc2c;}
+
+.PUDD.PUDD-UI-textArea.Warning textarea{border:1px solid #fc5356;}
+.PUDD.PUDD-UI-textArea.Warning .informationText{margin:5px 0px 0px 5px;font-size:12px;color:#fc5356;}
+
+.PUDD.PUDD-UI-textArea .hintText{position: absolute;top: 6px;left: 6px;font-size: inherit;color: #cccccc;pointer-events:none;}
+
+/*theme class*/
+.PUDD.PUDD-UI-textArea.PUDD-COLOR-blue textarea:focus{border:1px solid #2196f3;}
+
+
+/**************************************************
+   PUDD_Select
+**************************************************/
+/*select*/
+.PUDD.PUDD-UI-selectBox{position:relative;display:inline-block;height:24px;vertical-align:middle;}
+.PUDD.PUDD-UI-selectBox .hiddenSelect{overflow:hidden;position:absolute;top:-10000px;left:-10000px;width:1px;height:1px}
+
+.PUDD.PUDD-UI-selectBox .selectField{width:100%;height:inherit;padding: 2px 33px 2px 6px;border:1px solid #cccccc;font-size:12px;background:#ffffff;outline:none;box-sizing:border-box;cursor: pointer;text-align:left;}
+.PUDD.PUDD-UI-selectBox .selectField .selectText{display:block;height:100%;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;pointer-events: none;line-height:18px;}
+.PUDD.PUDD-UI-selectBox .selectField .editText{display:none;width:100%;height:100%;line-height:18px;margin:0;padding:0;border:0;outline:none;}
+.PUDD.PUDD-UI-selectBox .selectField.disabled{color:#8d8d8d;background:#f3f3f3;cursor:not-allowed;}
+.PUDD.PUDD-UI-selectBox .selectField.disabled.on{color:#8d8d8d;background:#f3f3f3;cursor:not-allowed;}
+.PUDD.PUDD-UI-selectBox .selectField.disabled.onText{color:#8d8d8d;background:#f3f3f3;cursor:not-allowed;}
+.PUDD.PUDD-UI-selectBox .selectField.disabled .editText{color:#8d8d8d;background:#f3f3f3;cursor:not-allowed;pointer-events:none;}
+
+.PUDD.PUDD-UI-selectBox .selectFieldBtn{position:absolute;width:24px;height:24px;top:0;right:0;padding: 0px;border:solid transparent;border-width:0 0 0 1px;text-align: center;vertical-align: top;background: transparent;box-sizing: border-box;outline: none;}
+.PUDD.PUDD-UI-selectBox .selectFieldBtn .arr{display: inline-block;overflow: hidden;background: url('pudd_img/ico/sp_lux.png') -50px -50px no-repeat;line-height: 100em;vertical-align: middle;width: 8px;height: 5px;text-align: center;animation: spinDown 0.3s both cubic-bezier(0, 0, 0.2, 1);}
+
+.PUDD.PUDD-UI-selectBox .selectField:hover .selectFieldBtn{border:solid #cccccc;border-width:0 0 0 1px;}
+.PUDD.PUDD-UI-selectBox .selectField.on .arr{animation: spinUp 0.3s both cubic-bezier(0, 0, 0.2, 1);}
+.PUDD.PUDD-UI-selectBox .selectField.onText .arr{animation: spinUp 0.3s both cubic-bezier(0, 0, 0.2, 1);}
+
+.PUDD.PUDD-UI-selectBox.PUDD-COLOR-blue .selectField.disabled.on{border:1px solid #cccccc;}
+.PUDD.PUDD-UI-selectBox.PUDD-COLOR-blue .selectField.disabled.on .selectFieldBtn .arr{border:solid transparent;border-width:0 0 0 1px;animation:unset;}
+.PUDD.PUDD-UI-selectBox.PUDD-COLOR-blue .selectField.disabled.onText{border:1px solid #cccccc;}
+.PUDD.PUDD-UI-selectBox.PUDD-COLOR-blue .selectField.disabled.onText .selectFieldBtn .arr{border:solid transparent;border-width:0 0 0 1px;animation:unset;}
+.PUDD.PUDD-UI-selectBox.PUDD-COLOR-blue .selectField.disabled:hover .selectFieldBtn{border:solid transparent;border-width:0 0 0 1px;}
+.PUDD.PUDD-UI-selectBox.PUDD-COLOR-blue .selectField.disabled .selectFieldBtn .arr{border:solid transparent;border-width:0 0 0 1px;animation:unset;}
+
+/*multiselect*/
+.PUDD.PUDD-UI-multiSelectBox{position:relative;display:inline-block;min-height:24px;min-width:150px;vertical-align:middle;}
+.PUDD.PUDD-UI-multiSelectBox .hiddenSelect{overflow:hidden;position:absolute;top:-10000px;left:-10000px;width:1px;height:1px}
+
+.PUDD.PUDD-UI-multiSelectBox .selectField{width:100%;min-height:24px;height:100%;padding: 0 33px 0 2px;border:1px solid #cccccc;font-size:12px;background:#ffffff;outline:none;box-sizing:border-box;cursor: pointer;}
+.PUDD.PUDD-UI-multiSelectBox .selectField .multiBox{height:inherit;overflow:hidden;}
+.PUDD.PUDD-UI-multiSelectBox .selectField .multiBox:after{content:"";display:block;clear:both;height:0;visibility:hidden;}
+.PUDD.PUDD-UI-multiSelectBox .selectField .multiBox li{float:left;clear:none;margin:1px;padding: 2px;border:1px solid #accfff;background-color:#eff7ff;color:#4a4a4a;box-sizing: border-box;}
+.PUDD.PUDD-UI-multiSelectBox .selectField .multiBox .del_btn{display:inline-block;width:7px;height:7px;margin: 1px 3px 0 5px;background:url('pudd_img/ico/sp_lux.png') -143px -278px no-repeat;}
+
+.PUDD.PUDD-UI-multiSelectBox .selectField.disabled{color:#8d8d8d;background:#f3f3f3;cursor:not-allowed;}
+.PUDD.PUDD-UI-multiSelectBox .selectField.disabled.on{color:#8d8d8d;background:#f3f3f3;cursor:not-allowed;}
+.PUDD.PUDD-UI-multiSelectBox .selectField.disabled.onText{color:#8d8d8d;background:#f3f3f3;cursor:not-allowed;}
+.PUDD.PUDD-UI-multiSelectBox .selectField.disabled .multiBox li{float:left;clear:none;margin:1px;padding:2px;border:1px solid #cccccc;background:#f3f3f3;color:#8d8d8d;box-sizing: border-box;}
+.PUDD.PUDD-UI-multiSelectBox .selectField.disabled .multiBox .del_btn{pointer-events: none;}
+
+.PUDD.PUDD-UI-multiSelectBox .selectFieldBtn{position:absolute;width:24px;height:inherit;top:0;right:0;padding: 0px;border:solid transparent;border-width:0 0 0 1px;text-align: center;vertical-align: top;background: transparent;box-sizing: border-box;outline: none;}
+.PUDD.PUDD-UI-multiSelectBox .selectFieldBtn .arr{display: inline-block;overflow: hidden;background: url('pudd_img/ico/sp_lux.png') -50px -50px no-repeat;line-height: 100em;vertical-align: middle;width: 8px;height: 5px;text-align: center;animation: spinDown 0.3s both cubic-bezier(0, 0, 0.2, 1);}
+
+.PUDD.PUDD-UI-multiSelectBox .selectField:hover .selectFieldBtn{border:solid #cccccc;border-width:0 0 0 1px;}
+.PUDD.PUDD-UI-multiSelectBox .selectField.on .arr{animation: spinUp 0.3s both cubic-bezier(0, 0, 0.2, 1);}
+.PUDD.PUDD-UI-multiSelectBox .selectField.onText .arr{animation: spinUp 0.3s both cubic-bezier(0, 0, 0.2, 1);}
+
+.PUDD.PUDD-UI-multiSelectBox .selectField.scroll{overflow:auto;}
+.PUDD.PUDD-UI-multiSelectBox .selectField.scroll .multiBox{overflow:visible;}
+.PUDD.PUDD-UI-multiSelectBox .selectField.scroll .selectFieldBtn{display:none;}
+
+.PUDD.PUDD-UI-multiSelectBox.PUDD-COLOR-blue .selectField.disabled.on{border:1px solid #cccccc;}
+.PUDD.PUDD-UI-multiSelectBox.PUDD-COLOR-blue .selectField.disabled.on .selectFieldBtn .arr{border:solid transparent;border-width:0 0 0 1px;animation:unset;}
+.PUDD.PUDD-UI-multiSelectBox.PUDD-COLOR-blue .selectField.disabled.onText{border:1px solid #cccccc;}
+.PUDD.PUDD-UI-multiSelectBox.PUDD-COLOR-blue .selectField.disabled.onText .selectFieldBtn .arr{border:solid transparent;border-width:0 0 0 1px;animation:unset;}
+.PUDD.PUDD-UI-multiSelectBox.PUDD-COLOR-blue .selectField.disabled:hover .selectFieldBtn{border:solid transparent;border-width:0 0 0 1px;}
+.PUDD.PUDD-UI-multiSelectBox.PUDD-COLOR-blue .selectField.disabled .selectFieldBtn .arr{border:solid transparent;border-width:0 0 0 1px;animation:unset;}
+
+@keyframes spinDown {0%{transform:translateY(0px) rotate(-180deg);}}
+@keyframes spinUp {100%{transform:translateY(-2px) rotate(180deg);}}
+
+/*theme class*/
+.PUDD.PUDD-UI-selectBox.PUDD-COLOR-blue .selectField.on{border:1px solid #2196f3;}
+.PUDD.PUDD-UI-selectBox.PUDD-COLOR-blue .selectField.on .selectFieldBtn{border:solid #2196f3;border-width:0 0 0 1px;}
+.PUDD.PUDD-UI-selectBox.PUDD-COLOR-blue .selectField.onText{border:1px solid #2196f3;}
+.PUDD.PUDD-UI-selectBox.PUDD-COLOR-blue .selectField.onText .selectFieldBtn{border:solid #2196f3;border-width:0 0 0 1px;}
+.PUDD.PUDD-UI-multiSelectBox.PUDD-COLOR-blue .selectField.on{border:1px solid #2196f3;}
+.PUDD.PUDD-UI-multiSelectBox.PUDD-COLOR-blue .selectField.on .selectFieldBtn{border:solid #2196f3;border-width:0 0 0 1px;}
+.PUDD.PUDD-UI-multiSelectBox.PUDD-COLOR-blue .selectField.onText{border:1px solid #2196f3;}
+.PUDD.PUDD-UI-multiSelectBox.PUDD-COLOR-blue .selectField.onText .selectFieldBtn{border:solid #2196f3;border-width:0 0 0 1px;}
+
+
+/**************************************************
+   PUDD_Calendar
+**************************************************/
+.PUDD.PUDD-UI-calender{position:relative;display:inline-block;min-width: 200px;vertical-align:top;background:#ffffff;}
+.PUDD.PUDD-UI-calender .calendarWrap{position:relative;width:100%;height:100%;border:1px solid #a3a3a3;box-sizing:border-box;overflow:hidden}
+.PUDD.PUDD-UI-calender .periodWrap{position:relative;min-width:400px;width:100%;height:100%;border:1px solid #a3a3a3;box-sizing:border-box;}
+.PUDD.PUDD-UI-calender .periodWrap:after{content:"";display:block;clear:both;height:0;visibility:hidden;}
+.PUDD.PUDD-UI-calender .periodWrap .calendarWrap{border:none;} 
+.PUDD.PUDD-UI-calender.hover .periodWrap .calendarWrap{border:none;}
+.PUDD.PUDD-UI-calender .periodWrap .calendarWrap.fromDate{float:left;width:199px;border-right:1px solid transparent;}
+.PUDD.PUDD-UI-calender .periodWrap .calendarWrap.toDate{float:left;width:199px;border-left:1px solid #e6e6e6;}
+.PUDD.PUDD-UI-calender.hover .periodWrap .calendarWrap.fromDate{border-right:1px solid transparent;}
+.PUDD.PUDD-UI-calender.hover .periodWrap .calendarWrap.toDate{border-left:1px solid #e6e6e6;}
+
+.PUDD.PUDD-UI-calender .selectDate{position:relative;height: 34px;line-height: 32px;text-align:center;vertical-align:top;background:#fafafa;}
+.PUDD.PUDD-UI-calender .selectDate .dateText{font-size: 14px;font-weight:bold;color:#000000;:tahoma,sans-serif;}
+
+.PUDD.PUDD-UI-calender .selectDate .prevYear{position:absolute;top: 5px;left:15px;width:23px;height: 23px;border: 1px solid transparent;box-sizing:border-box;text-align:center;background:transparent;cursor:pointer;outline:none;font-size: 0;}
+.PUDD.PUDD-UI-calender .selectDate .prevYear .arr{display: inline-block;width: 10px;height: 9px;margin: 6px 0 0 0;overflow:hidden;text-align:center;background: url('pudd_img/ico/sp_lux.png') -50px -100px no-repeat;vertical-align: top;opacity:0.5;}
+.PUDD.PUDD-UI-calender .selectDate .prevYear:hover .arr{opacity:1;}
+.PUDD.PUDD-UI-calender .selectDate .prevMonth{position:absolute;top: 5px;left:40px;width:23px;height: 23px;border: 1px solid transparent;box-sizing:border-box;text-align:center;background:transparent;cursor:pointer;outline:none;font-size: 0;}
+.PUDD.PUDD-UI-calender .selectDate .prevMonth .arr{display: inline-block;width: 10px;height: 9px;margin: 6px 0 0 0;overflow:hidden;text-align:center;background: url('pudd_img/ico/sp_lux.png') -50px -75px no-repeat;vertical-align: top;opacity:0.5;}
+.PUDD.PUDD-UI-calender .selectDate .prevMonth:hover .arr{opacity:1;}
+.PUDD.PUDD-UI-calender .selectDate .nextYear{position:absolute;top: 5px;right:15px;width:23px;height: 23px;border: 1px solid transparent;box-sizing:border-box;text-align:center;background:transparent;cursor:pointer;outline:none;font-size: 0;}
+.PUDD.PUDD-UI-calender .selectDate .nextYear .arr{display: inline-block;width: 10px;height: 9px;margin: 6px 0 0 0;overflow:hidden;text-align:center;background: url('pudd_img/ico/sp_lux.png') -75px -100px no-repeat;vertical-align: top;opacity:0.5;}
+.PUDD.PUDD-UI-calender .selectDate .nextYear:hover .arr{opacity:1;}
+.PUDD.PUDD-UI-calender .selectDate .nextMonth{position:absolute;top: 5px;right:40px;width:23px;height: 23px;border: 1px solid transparent;box-sizing:border-box;text-align:center;background:transparent;cursor:pointer;outline:none;font-size: 0;}
+.PUDD.PUDD-UI-calender .selectDate .nextMonth .arr{display: inline-block;width: 10px;height: 9px;margin: 6px 0 0 0;overflow:hidden;text-align:center;background: url('pudd_img/ico/sp_lux.png') -75px -75px no-repeat;vertical-align: top;opacity:0.5;}
+.PUDD.PUDD-UI-calender .selectDate .nextMonth:hover .arr{opacity:1;}
+
+.PUDD.PUDD-UI-calender .selectDate .prevYear:hover, .PUDD-UI-calender .selectDate .prevMonth:hover,
+.PUDD.PUDD-UI-calender .selectDate .nextMonth:hover, .PUDD-UI-calender .selectDate .nextYear:hover{border:1px solid #cccccc;border-radius:10%}
+
+.PUDD.PUDD-UI-calender .calendarTable{padding:10px;}
+.PUDD.PUDD-UI-calender .calendarTable table{border-collapse:collapse;border-spacing:0px;border:0px;table-layout:auto;text-align:center;width:100%;height:inherit;}
+.PUDD.PUDD-UI-calender .calendarTable table th,
+.PUDD.PUDD-UI-calender .calendarTable table td{position:relative;box-sizing:border-box;min-height:20px;line-height:20px;}
+.PUDD.PUDD-UI-calender .calendarTable table th{color:#8d8d8d;font-size:11px;background: none;padding: 0;text-align: center;border: none;}
+.PUDD.PUDD-UI-calender .calendarTable table td{color:#4a4a4a;font-size:12px;padding: 0;border: none;}
+.PUDD.PUDD-UI-calender .calendarTable table td a{display:block;text-align:center;color:#4a4a4a;border:1px solid transparent;min-height:20px;line-height:20px;border-radius:10%}
+.PUDD.PUDD-UI-calender .calendarTable table td:hover a{border:1px solid #cccccc}
+.PUDD.PUDD-UI-calender .calendarTable table td.today a{border:1px solid #cccccc;background:#faebd7;}
+.PUDD.PUDD-UI-calender .calendarTable table td a.focused{border:1px solid #cccccc}
+
+.PUDD.PUDD-UI-calender .calendarTable table th.sun{color:#ff0000;}
+.PUDD.PUDD-UI-calender .calendarTable table td.sun a{color:#ff0000;}
+.PUDD.PUDD-UI-calender .calendarTable table td.otherMonth a{color:#c2c2c2 !important;}
+.PUDD.PUDD-UI-calender .calendarTable table td.period{background:#f0f0f0;}
+
+.PUDD.PUDD-UI-calender .fnBottom{border-top:1px solid #e6e6e6;padding:10px;clear:both;}
+.PUDD.PUDD-UI-calender .fnBottom:after{content:"";display:block;clear:both;height:0;visibility:hidden;}
+.PUDD.PUDD-UI-calender .fnBottom .todayBtn{float:left;width:auto;border:1px solid #e0e0e0;padding:3px 6px 2px;cursor:pointer;color:#343434;}
+.PUDD.PUDD-UI-calender .fnBottom .todayBtn:hover{border:1px solid #8c8c8c;}
+.PUDD.PUDD-UI-calender .fnBottom .fnBtn{float:right;}
+.PUDD.PUDD-UI-calender .fnBottom .fnBtn:after{content:"";display:block;clear:both;height:0;visibility:hidden;}
+.PUDD.PUDD-UI-calender .fnBottom .fnBtn .botBtn:first-child{margin-left:0;}
+.PUDD.PUDD-UI-calender .fnBottom .fnBtn .botBtn{float:left;width:auto;border:1px solid #e0e0e0;padding:3px 6px 2px;cursor:pointer;margin-left:3px;}
+.PUDD.PUDD-UI-calender .fnBottom .fnBtn .botBtn:hover{border:1px solid #8c8c8c;}
+.PUDD.PUDD-UI-calender .fnBottom .infoText{float:left;color:#999999;margin:4px 0 0 5px;}
+
+.PUDD.PUDD-UI-calender .complexBtn{border-bottom:1px solid #e6e6e6;padding:10px;clear:both;}
+.PUDD.PUDD-UI-calender .complexBtn:after{content:"";display:block;clear:both;height:0;visibility:hidden;}
+.PUDD.PUDD-UI-calender .complexBtn .fnBtn:after{content:"";display:block;clear:both;height:0;visibility:hidden;}
+.PUDD.PUDD-UI-calender .complexBtn .fnBtn .Btn:first-child{margin-left:0;}
+.PUDD.PUDD-UI-calender .complexBtn .fnBtn .Btn{float:left;width:auto;border:1px solid #e0e0e0;cursor:pointer;}
+.PUDD.PUDD-UI-calender .complexBtn .fnBtn .Btn:hover{border:1px solid #8c8c8c;}
+.PUDD.PUDD-UI-calender .complexBtn .fnBtn .group1{margin-bottom:3px;}
+.PUDD.PUDD-UI-calender .complexBtn .fnBtn .group1:after{content:"";display:block;clear:both;height:0;visibility:hidden;}
+.PUDD.PUDD-UI-calender .complexBtn .fnBtn .group1 .Btn{padding: 5px 0 4px;margin-left:3px;text-align: center;width: 48.7px;font-size: 11px;}
+.PUDD.PUDD-UI-calender .complexBtn .fnBtn .group2{margin-bottom:3px;}
+.PUDD.PUDD-UI-calender .complexBtn .fnBtn .group2:after{content:"";display:block;clear:both;height:0;visibility:hidden;}
+.PUDD.PUDD-UI-calender .complexBtn .fnBtn .group2 .Btn{padding: 5px 0 4px;margin-left: 3px;text-align: center;width: 57.7px;font-size: 11px;}
+.PUDD.PUDD-UI-calender .complexBtn .fnBtn .group3{}
+.PUDD.PUDD-UI-calender .complexBtn .fnBtn .group3:after{content:"";display:block;clear:both;height:0;visibility:hidden;}
+.PUDD.PUDD-UI-calender .complexBtn .fnBtn .group3 .Btn{padding: 5px 0 4px;margin-left: 3px;text-align: center;width: 26.3px;font-size: 11px;}
+
+.PUDD.PUDD-UI-calender .monthBtn{border-bottom:1px solid #e6e6e6;padding:10px;clear:both;}
+.PUDD.PUDD-UI-calender .monthBtn:after{content:"";display:block;clear:both;height:0;visibility:hidden;}
+.PUDD.PUDD-UI-calender .monthBtn .fnBtn:after{content:"";display:block;clear:both;height:0;visibility:hidden;}
+.PUDD.PUDD-UI-calender .monthBtn .fnBtn .Btn:first-child{margin-left:0;}
+.PUDD.PUDD-UI-calender .monthBtn .fnBtn .Btn{float:left;width:auto;border:1px solid #e0e0e0;cursor:pointer;}
+.PUDD.PUDD-UI-calender .monthBtn .fnBtn .Btn:hover{border:1px solid #8c8c8c;}
+.PUDD.PUDD-UI-calender .monthBtn .fnBtn .group{margin-bottom:3px;}
+.PUDD.PUDD-UI-calender .monthBtn .fnBtn .group:after{content:"";display:block;clear:both;height:0;visibility:hidden;}
+.PUDD.PUDD-UI-calender .monthBtn .fnBtn .group .Btn{text-align: center;width: 39px;padding: 5px 0 4px;margin-left:3px;}
+
+/*theme class*/
+.PUDD.PUDD-UI-calender.PUDD-COLOR-blue .calendarTable table td a.selected{color:#ffffff !important;border:1px solid transparent;background:#1c90fb;}
+.PUDD.PUDD-UI-calender.PUDD-COLOR-blue .monthBtn .fnBtn .group .Btn:hover{border:1px solid #1c90fb;}
+.PUDD.PUDD-UI-calender.PUDD-COLOR-blue .monthBtn .fnBtn .group .Btn.on{color:#ffffff !important;border:1px solid transparent;background:#1c90fb;}
+.PUDD.PUDD-UI-calender.PUDD-COLOR-blue.hover .calendarWrap{border:1px solid #2196f3;}
+.PUDD.PUDD-UI-calender.PUDD-COLOR-blue.hover .periodWrap{border:1px solid #2196f3;}
+.PUDD.PUDD-UI-calender.PUDD-COLOR-blue.hover .periodWrap .calendarWrap.fromDate{border-width:0 1px 0 0;}
+.PUDD.PUDD-UI-calender.PUDD-COLOR-blue.hover .periodWrap .calendarWrap.toDate{border-width:0 0 0 1px;}
+
+/**************************************************
+   PUDD_datePicker
+**************************************************/
+
+/*datePicker*/
+.PUDD.PUDD-UI-datePicker{position:relative;display:inline-block;width:113px;height:24px;vertical-align:middle;z-index: 50;}
+.PUDD.PUDD-UI-datePicker.day{position:relative;display:inline-block;width:130px;height:24px;vertical-align:middle;z-index: 50;}
+.PUDD.PUDD-UI-datePicker:after{content:"";display:block;clear:both;height:0;visibility:hidden;}
+.PUDD.PUDD-UI-datePicker input{width:100%;height:inherit;padding: 1px 24px 1px 6px;border:1px solid #cccccc;font-size:12px;background:#ffffff;outline:none;box-sizing:border-box;cursor: pointer;}
+.PUDD.PUDD-UI-datePicker input[disabled]{color:#8d8d8d;background:#f3f3f3;cursor:not-allowed;}
+
+
+.PUDD.PUDD-UI-datePicker .periodGroup{width: 238px;}
+.PUDD.PUDD-UI-datePicker.day .periodGroup{width: 272px;}
+.PUDD.PUDD-UI-datePicker .periodGroup:after{content:"";display:block;clear:both;height:0;visibility:hidden;}
+
+.PUDD.PUDD-UI-datePicker .periodGroup .fromDate{float:left;width:113px;height:24px;position:relative;}
+.PUDD.PUDD-UI-datePicker .periodGroup .toDate{float:left;width:113px;height:24px;position:relative;}
+.PUDD.PUDD-UI-datePicker.day .periodGroup .fromDate{float:left;width:130px;height:24px;position:relative;}
+.PUDD.PUDD-UI-datePicker.day .periodGroup .toDate{float:left;width:130px;height:24px;position:relative;}
+.PUDD.PUDD-UI-datePicker .periodGroup .dash{float:left;margin:0 -4px;width:20px;height:24px;line-height:24px;text-align:center;}
+
+.PUDD.PUDD-UI-datePicker .periodGroup input{width:100%;height:inherit;padding: 1px 24px 1px 6px;border:1px solid #cccccc;font-size:12px;background:#ffffff;outline:none;box-sizing:border-box;cursor: pointer;}
+.PUDD.PUDD-UI-datePicker .periodGroup input[disabled]{color:#8d8d8d;background:#f3f3f3;cursor:not-allowed;}
+
+.PUDD.PUDD-UI-datePicker .btn{position:absolute;width:27px;height:24px;top:0;right:0;padding:0px;border:0px none;text-align:center;vertical-align:top;background:transparent;box-sizing:border-box;outline:none;pointer-events:none;}
+.PUDD.PUDD-UI-datePicker svg{display:inline-block;height:14px;width:14px;user-select:none;pointer-events:none;position:absolute;top:50%;right:6px;margin:-7px 0 0 0;fill:#4b4b4b;}
+.PUDD.PUDD-UI-datePicker:hover .btn{border:solid #cccccc;border-width:0 0 0 1px;}
+
+/*.PUDD.PUDD-UI-datePicker .dropCalWrap{display:none;position:fixed;top:100%;left:0;z-index:1;margin:-1px 0 0 0} //캘린더박스를 외부에서 생성되도록 개발 수정되어 내부소스 주석처리함 */
+
+.PUDD.PUDD-UI-datePicker.singleForm{min-width:196px;}
+.PUDD.PUDD-UI-datePicker.doubleForm{min-width:238px;}
+.PUDD.PUDD-UI-datePicker.day.singleForm{min-width: 240px;}
+.PUDD.PUDD-UI-datePicker.day.doubleForm{min-width: 272px;}
+
+/*theme class*/
+.PUDD.PUDD-UI-datePicker.PUDD-COLOR-blue input:focus{border:1px solid #2196f3;}
+.PUDD.PUDD-UI-datePicker.PUDD-COLOR-blue input:focus + .btn{border:solid #2196f3;border-width:0 0 0 1px;}
+.PUDD.PUDD-UI-datePicker.PUDD-COLOR-blue input.on {border:1px solid #2196f3;}
+.PUDD.PUDD-UI-datePicker.PUDD-COLOR-blue input.on + .btn{border:solid #2196f3;border-width:0 0 0 1px;}
+
+/**************************************************
+   PUDD_file
+**************************************************/
+
+/*fileField*/
+.PUDD.PUDD-UI-fileField{position:relative;display:inline-block;overflow:hidden;}
+.PUDD.PUDD-UI-fileField input.hiddenField{overflow:hidden;position:absolute;top:-10000px;left:-10000px;width:1px;height:1px}
+.PUDD.PUDD-UI-fileField input.cloneField{min-width:140px;float:left;height:inherit;min-height:27px;padding: 0px 6px;border:1px solid #cccccc;font-size:12px;background:#ffffff;outline:none;box-sizing:border-box;}
+.PUDD.PUDD-UI-fileField input.cloneField[disabled]{color:#8d8d8d;background:#f3f3f3;cursor:not-allowed;}
+.PUDD.PUDD-UI-fileField .btn_file {float:left;margin-left:4px;/*margin-right:4px;*/}
+.PUDD.PUDD-UI-fileField.PUDD-COLOR-blue input.cloneField[readonly]:focus{border:1px solid #cccccc;}
+
+.PUDD.PUDD .File_topbox {padding-bottom:7px;;}
+.PUDD.PUDD-UI-fileField .btn_file{background:#fff;padding: 0px 10px;height:27px;line-height:1.9em;border: 1px solid #d3d3d3;border-image: none;color:#4a4a4a;letter-spacing: -0.5px;font-size: 12px;text-decoration: none;vertical-align: middle;display: inline-block;cursor: pointer;box-sizing: border-box;}
+.PUDD.PUDD-UI-fileField .btn_file:hover{border:1px solid #8c8c8c;}
+.PUDD.PUDD-UI-fileField .btn_total {background:#fff url("pudd_img/ico/btn_down01png.png") no-repeat;background-size: 14px 13px;   background-position: left 6px center;;padding: 0px 10px;padding-left:26px;height:27px;line-height:27px;border: 1px solid #d3d3d3;border-image: none;color:#4a4a4a;letter-spacing: -0.5px;font-size: 12px;text-decoration: none;vertical-align: middle;display: inline-block;cursor: pointer;box-sizing: border-box;}
+.PUDD.PUDD-UI-fileField .btn_total:hover{border:1px solid #8c8c8c;}
+.PUDD.PUDD-UI-fileField.UI-Union .PUDD.PUDD-UI-Button {float: right;margin-left: -1px;}
+.PUDD.PUDD .File_topbox .btn_file{ margin-left:0px;}
+.PUDD.PUDD-UI-fileField .PUDD.PUDD-UI-Button {margin-left:4px;}
+.PUDD.PUDD-UI-fileField .PUDD.PUDD-UI-Button .btn_file{margin-left:0px;}
+
+
+/**************************************************
+   PUDD_GridTable, pager
+**************************************************/
+/* Table icon */
+.PUDD.PUDD-UI-GridTable .ico_new{display:inline-block; width:9px; height:9px; background:url('pudd_img/ico/ico_new.png') no-repeat; vertical-align:middle; margin-top:-3px;}
+.PUDD.PUDD-UI-GridTable .ico_file{display:inline-block; width:13px; height:13px; background-size:9px 9px; background:url('pudd_img/ico/ico_file.png') no-repeat; vertical-align:middle; margin-top:-3px;}
+.PUDD.PUDD-UI-GridTable .ellipsis{white-space:nowrap;text-overflow:ellipsis;overflow:hidden;}
+
+/* Table Align + padding */
+.PUDD .ta_le {text-align:left !important; padding-left:5px !important;}
+.PUDD .ta_cen {text-align:center !important;}
+.PUDD .ta_ri {text-align:right !important; padding-right:5px !important;}
+.PUDD .fwb {font-weight:bold;}
+
+/* Paging */
+.PUDD.PUDD-UI-pager {padding:15px; position:relative;text-align:center;}
+.PUDD.PUDD-UI-pager .paging {margin-right:10px;display:inline-block}
+.PUDD.PUDD-UI-pager .gt_count{display:inline-block; vertical-align: middle; margin-top: -2px;}
+.PUDD.PUDD-UI-pager .page_info{position: absolute;top: 14px;right: 10px;height: 20px;line-height: 20px;}
+.PUDD.PUDD-UI-pager .paging {text-align:center;clear:both;}
+.PUDD.PUDD-UI-pager .paging span {display:inline-block; text-indent:-5000px; width:15px; height:15px; line-height:21px; border:1px solid #cccccc; vertical-align:middle; margin-top:-2px;}
+.PUDD.PUDD-UI-pager .paging span:hover {border:1px solid #1088e3;}
+.PUDD.PUDD-UI-pager .paging .first{background: url("pudd_img/ico/btn_page_first.png") center center no-repeat;}
+.PUDD.PUDD-UI-pager .paging .pre{background: url("pudd_img/ico/btn_page_pre.png") center center no-repeat;}
+.PUDD.PUDD-UI-pager .paging .last{background: url("pudd_img/ico/btn_page_last.png") center center no-repeat;}
+.PUDD.PUDD-UI-pager .paging .nex{background: url("pudd_img/ico/btn_page_next.png") center center no-repeat;}
+.PUDD.PUDD-UI-pager .paging .first a,
+.PUDD.PUDD-UI-pager .paging .last a,
+.PUDD.PUDD-UI-pager .paging .pre_pre a, 
+.PUDD.PUDD-UI-pager .paging .pre a, 
+.PUDD.PUDD-UI-pager .paging .nex_nex a, 
+.PUDD.PUDD-UI-pager .paging .nex a {display:block;}
+.PUDD.PUDD-UI-pager .paging .first.disabled,
+.PUDD.PUDD-UI-pager .paging .last.disabled,
+.PUDD.PUDD-UI-pager .paging .pre.disabled,
+.PUDD.PUDD-UI-pager .paging .nex.disabled,
+.PUDD.PUDD-UI-pager .paging .pre_pre.disabled,
+.PUDD.PUDD-UI-pager .paging .nex_nex.disabled{border:1px solid #cccccc;cursor:not-allowed;}
+.PUDD.PUDD-UI-pager .paging .first.disabled a,
+.PUDD.PUDD-UI-pager .paging .last.disabled a,
+.PUDD.PUDD-UI-pager .paging .pre_pre.disabled a, 
+.PUDD.PUDD-UI-pager .paging .pre.disabled a, 
+.PUDD.PUDD-UI-pager .paging .nex_nex.disabled a,
+.PUDD.PUDD-UI-pager .paging .nex.disabled a,
+.PUDD.PUDD-UI-pager .paging .nex a.disabled {display:inline;}
+
+.PUDD.PUDD-UI-pager .paging ol {display:inline-block;margin:0 5px; height:14px; line-height:20px;}
+.PUDD.PUDD-UI-pager .paging ol li {float:left; display:inline-block;text-align:center;background:#fff;width:auto;}
+.PUDD.PUDD-UI-pager .paging ol li a {display:inline-block;text-align:center; min-width:16px; color:#4a4a4a;background:#fff; height:18px; text-decoration:none; padding:2px 0 0 0;}
+@media screen and (-webkit-min-device-pixel-ratio:0){.PUDD.PUDD-UI-pager .paging ol li a {padding:0;}}
+
+.PUDD.PUDD-UI-pager .paging ol li a:hover {background:#1c90fb; color:#fff;}
+.PUDD.PUDD-UI-pager .paging ol li.on a {color:#058df5; font-weight:bold;}
+.PUDD.PUDD-UI-pager .paging ol li.on a:hover {color:#fff;}
+
+/* GridTable */
+.PUDD.PUDD-UI-GridTable{position:relative; width:100%; overflow:hidden;}
+.PUDD.PUDD-UI-GridTable .grid-wrap{background:#f0f0f0;border:solid;border-color:#000 #e1e1e1 #e1e1e1 #e1e1e1;border-width: 2px 0px 0px 1px;box-sizing:border-box;}
+.PUDD.PUDD-UI-GridTable .grid-header{background:#f0f0f0;position:relative;overflow:hidden;margin-left:-1px;}
+.PUDD.PUDD-UI-GridTable .grid-header:after{position:absolute;top:0;right:0;width:17px;height:100px; background:#f0f0f0;}
+.PUDD.PUDD-UI-GridTable .grid-header thead th{height:30px;border-width: 1px;border-style:solid;border-color:#e1e1e1;text-align:center;background:#f0f0f0;padding:0;font-weight:bold;}
+.PUDD.PUDD-UI-GridTable .grid-header .p-icon{cursor:pointer; display:inline-block; width:12px; height:8px; margin:0 0 0 2px; vertical-align:middle;}
+.PUDD.PUDD-UI-GridTable .grid-header .p-icon.p-i-arrow-n{background: url("pudd_img/ico/sp_lux.png") -275px -250px no-repeat;}  /*(오름차순)*/
+.PUDD.PUDD-UI-GridTable .grid-header .p-icon.p-i-arrow-s{background: url("pudd_img/ico/sp_lux.png") -287px -260px no-repeat;}  /*(내림차순)*/
+.PUDD.PUDD-UI-GridTable .grid-footer{background:#f0f0f0;}
+.PUDD.PUDD-UI-GridTable .grid-footer tfoot td{height:27px;border-width: 1px;border-style:solid;border-color:#e1e1e1;text-align:center;word-break: break-all;}
+
+.PUDD.PUDD-UI-GridTable .grid-content{background:#fafafa;overflow:auto;margin-top:-1px;margin-left:-1px;}
+.PUDD.PUDD-UI-GridTable .grid-content tbody th{height:23px;padding:3px 5px; line-height:1.5;border-width:1px;border-style:solid;border-color:#e1e1e1;word-break: break-all; text-align:center;}
+.PUDD.PUDD-UI-GridTable .grid-content tbody th.bbn{border-bottom:none;}
+.PUDD.PUDD-UI-GridTable .grid-content tbody td{background:#fff;height:23px;padding:3px 5px;line-height:1.5;border-width:1px;border-style:solid;border-color:#e1e1e1;word-break: break-all;text-align:center;}
+.PUDD.PUDD-UI-GridTable .grid-content tr.on td{background:#f2f7ff;}
+.PUDD.PUDD-UI-GridTable .grid-content tr:hover td{background:#f2f7ff; cursor:pointer;}
+.PUDD.PUDD-UI-GridTable .grid-content a{color:#000; cursor:pointer;}
+.PUDD.PUDD-UI-GridTable .grid-content a:hover{color:#058df5;  text-decoration:underline;}
+.PUDD.PUDD-UI-GridTable .grid-content .total td{background:#f0f0f0;}
+.PUDD.PUDD-UI-GridTable .grid-content tr.red_line td{color: red; text-decoration: line-through;}
+.PUDD.PUDD-UI-GridTable .grid-content tr.red_line td a {color: red !important;}
+.PUDD.PUDD-UI-GridTable .grid-content tr.red_line td span {color: red !important;}
+.PUDD.PUDD-UI-GridTable .le {text-align:left !important; padding-left:5px;}
+.PUDD.PUDD-UI-GridTable .ri {text-align:right !important; padding-right:5px;}
+
+/*GridTable scrollable style*/
+.PUDD.PUDD-UI-GridTable.scrollable .grid-wrap{background:#f0f0f0;border:solid;border-color:#000 #e1e1e1 #e1e1e1 #e1e1e1;border-width:2px 1px 1px 2px;box-sizing:border-box;}
+.PUDD.PUDD-UI-GridTable.scrollable .grid-header{margin-right:17px;border-width:0;border-style: solid;border-color: #e1e1e1;}
+.PUDD.PUDD-UI-GridTable.scrollable .grid-footer{margin-right:17px;border-width: 0 1px 0 0;border-style: solid;border-color: #e1e1e1;}
+.PUDD.PUDD-UI-GridTable.scrollable .grid-header.mac{margin-right:15px;}
+.PUDD.PUDD-UI-GridTable.scrollable .grid-footer.mac{margin-right:15px;}
+.PUDD.PUDD-UI-GridTable.scrollable .grid-content{overflow-y:scroll; overflow-x:auto;}
+.PUDD.PUDD-UI-GridTable.scrollable .grid-content tbody td{border-width: 0 1px 1px 0;}
+.PUDD.PUDD-UI-GridTable.scrollable .grid-content tr:last-child td{border-bottom:1px solid #e1e1e1;}
+
+.PUDD.PUDD-UI-GridTable.scrollable .grid-header thead th:first-child{border-left:none !important;}
+.PUDD.PUDD-UI-GridTable.scrollable .grid-footer tfoot td:first-child{border-left:none !important}
+.PUDD.PUDD-UI-GridTable.scrollable .grid-content tbody th:first-child{border-left:none !important}
+.PUDD.PUDD-UI-GridTable.scrollable .grid-content tbody td:first-child{border-left:none !important;}
+.PUDD.PUDD-UI-GridTable.scrollable .grid-content tbody tr:last-child td{border-bottom:1px solid #e1e1e1;}
+
+/*GridTable hover_no style */
+.PUDD.PUDD-UI-GridTable.hover_no .grid-content tr:hover td,
+.PUDD.PUDD-UI-GridTable.hover_no .grid-content tr.on td,
+.PUDD.PUDD-UI-GridTable.hover_no .grid-content tr.on:hover td{background:#fff; cursor:default;}
+.PUDD.PUDD-UI-GridTable .grid-content tr:hover td.hover_no{background:#fff;}
+.PUDD.PUDD-UI-GridTable .grid-content tr.on td.hover_no{background:#fff;}
+
+/*GridTable checkbox style */
+.PUDD.PUDD-UI-GridTable input[type="checkbox"]{margin-left:1px;vertical-align: middle; visibility:hidden;}
+.PUDD.PUDD-UI-GridTable input[type="checkbox"]:before{padding-right:10px;}
+.PUDD.PUDD-UI-GridTable input[type="checkbox"] + label {margin-left:-19px;display: inline-block;min-height:12px;height:auto;background: url("pudd_img/ico/checkbox_bg.png") no-repeat left center; padding: 2px 0 0px 14px;overflow: hidden;vertical-align: middle;text-indent:4px;}
+.PUDD.PUDD-UI-GridTable input[type="checkbox"]:checked + label{background: url("pudd_img/ico/checkbox_black.png") no-repeat left center;}
+.PUDD.PUDD-UI-GridTable input[type="checkbox"]:disabled + label{background: url("pudd_img/ico/checkbox_disa.png") no-repeat left center;}
+
+/* radio style */
+.PUDD.PUDD-UI-GridTable input[type="radio"]{margin-top:1px;margin-left:1px;vertical-align: middle; visibility:hidden;}
+.PUDD.PUDD-UI-GridTable input[type="radio"] + label {margin-left:-17px !important;display: inline-block;min-height:11px;height:auto;background: url("pudd_img/ico/radio_bg.png") no-repeat left center;padding: 3px 0 2px 16px !important;overflow: hidden;vertical-align: middle;text-indent:4px;}
+.PUDD.PUDD-UI-GridTable input[type="radio"]:checked + label{background: url("pudd_img/ico/radio_black.png") no-repeat left center;}
+.PUDD.PUDD-UI-GridTable input[type="radio"]:disabled + label{background: url("pudd_img/ico/radio_disa.png") no-repeat left center;}
+.PUDD.PUDD-UI-GridTable input[type=radio] + label.k-radio-label {margin-left:0px !important;}
+@media screen and (-webkit-min-device-pixel-ratio:0) {input[type="radio"] + label {min-height:12px;padding: 2px 0 2px 16px !important;}}
+
+.PUDD.PUDD-COLOR-blue.PUDD-UI-GridTable input[type="checkbox"]:checked + label{background: url("pudd_img/ico/checkbox_blue.png") no-repeat left center;}
+.PUDD.PUDD-COLOR-blue.PUDD-UI-GridTable input[type="radio"]:checked + label{background: url("pudd_img/ico/radio_blue.png") no-repeat left center;}
+
+.PUDD.PUDD-UI-pager select {border:1px solid #c3c3c3;margin-top:-2px;}
+.PUDD.PUDD-UI-pager select {height:22px;border:1px solid #c3c3c3;padding-left:5px;padding-right:18px;color:#515967; -webkit-appearance: none;  /* 네이티브 외형 감추기 */
+			-moz-appearance: none;appearance: none;background:#fff url("pudd_img/ico/select_arr01.png") right 4px center no-repeat;;}
+.PUDD.PUDD-UI-pager select{padding-right:0px \0/IE8+9;;}
+.PUDD.PUDD-UI-pager select::-ms-expand {display: none;}
+.PUDD.PUDD-UI-pager select + option {background:#fff;height:30px;}
+
+/*GridTable disabled style */
+.PUDD.PUDD-UI-GridTable tr.disa:hover td {cursor:default !important;}
+.PUDD.PUDD-UI-GridTable .disa td {background:#d3d3d3 !important;color:#aaa !important;}
+.PUDD.PUDD-UI-GridTable .disa .PUDD.PUDD-UI-Button input[type="button"] {background:#f2f2f2; border: 1px solid #e0e0e0 ; color:#8d8d8d;outline:none;}
+.PUDD.PUDD-UI-GridTable .disa .PUDD.PUDD-COLOR-blue.PUDD-UI-ChkRadi svg path{fill:#B5B4B4;}
+.PUDD.PUDD-UI-GridTable .disa .PUDD.PUDD-COLOR-blue.PUDD-UI-ChkRadi svg g path {fill:#EEEEEC;}
+.PUDD.PUDD-UI-GridTable .disa .PUDD.PUDD-COLOR-blue.PUDD-UI-ChkRadi svg polygon {fill:#C4C3C3;}
+.PUDD.PUDD-UI-GridTable .disa .PUDD.PUDD-COLOR-blue.PUDD-UI-ChkRadi svg rect {fill:#C4C3C3;}
+.PUDD.PUDD-UI-GridTable .disa .PUDD.PUDD-COLOR-blue.PUDD-UI-ChkRadi svg circle {fill:#C4C3C3;}
+.PUDD.PUDD-UI-GridTable .disa .PUDD.PUDD-COLOR-blue.PUDD-UI-ChkRadi.UI-Dash svg g > path{fill:#B5B4B4}
+.PUDD.PUDD-UI-GridTable .disa .PUDD.PUDD-COLOR-blue.PUDD-UI-ChkRadi.UI-Dash svg g > g > path{fill:#EEEEEC}
+.PUDD.PUDD-UI-GridTable .disa .PUDD.PUDD-UI-ChkRadi label {cursor: not-allowed;}
+.PUDD.PUDD-UI-GridTable .disa .PUDD.PUDD-UI-ChkRadi svg {cursor: not-allowed;}
+
+/**************************************************
+   PUDD_editTable
+**************************************************/
+
+/*editTable*/
+.PUDD.PUDD-UI-editTable{position:relative;width:100%;overflow:hidden;border:solid;border-color:#000 #e1e1e1 #e1e1e1 #e1e1e1;border-width:2px 1px 1px 1px;box-sizing:border-box;background:#fafafa;}
+.PUDD.PUDD-UI-editTable .leftArea{vertical-align:top;background:#fafafa;}
+.PUDD.PUDD-UI-editTable .leftArea .leftHeader{overflow:hidden;}
+.PUDD.PUDD-UI-editTable .leftArea .leftContent{overflow:hidden;}
+.PUDD.PUDD-UI-editTable .rightArea{vertical-align:top;background:url("pudd_img/ico/editTable_headerBg.png") repeat-y top right;}
+.PUDD.PUDD-UI-editTable .rightArea .rightHeader{margin-right:17px;background:#fafafa;overflow:hidden;}
+.PUDD.PUDD-UI-editTable .rightArea .rightHeader.mac{margin-right:15px;}
+.PUDD.PUDD-UI-editTable .rightArea .rightContent{overflow:scroll;background:#fafafa;}
+
+.PUDD.PUDD-UI-editTable table.editTable{width:100%;text-align:center;background:#fff;table-layout:fixed;}
+
+.PUDD.PUDD-UI-editTable table.editTable th{height:30px;box-sizing:border-box;background:#f0f0f0;}
+.PUDD.PUDD-UI-editTable table.editTable td{height:30px;box-sizing:border-box;padding: 0;word-break:break-all;}
+.PUDD.PUDD-UI-editTable table.editTable td.center{text-align:center;padding:0 5px;}
+.PUDD.PUDD-UI-editTable table.editTable td.td_le{text-align:left;padding:0 0 0 5px;}
+.PUDD.PUDD-UI-editTable table.editTable td.td_ri{text-align:right;padding:0 5px 0 0;}
+.PUDD.PUDD-UI-editTable table.editTable tr.on td{background:#f2f7ff;}
+.PUDD.PUDD-UI-editTable table.editTable td.ellipsis{white-space:nowrap;text-overflow:ellipsis;overflow:hidden;}
+.PUDD.PUDD-UI-editTable table.editTable td.disabled{background: #fafafa;}
+
+.PUDD.PUDD-UI-editTable .leftArea .leftContent table td:focus{outline:none;}
+.PUDD.PUDD-UI-editTable .rightArea .rightContent table td:focus{outline:none;}
+
+.PUDD.PUDD-UI-editTable table.editTable td.highLight{position:relative;}
+.PUDD.PUDD-UI-editTable table.editTable td.highLight .highLightIn{position:absolute;height:inherit;padding:0;top:0;left:0;right:0;bottom:0;border:1px solid #007cc0 !important;box-sizing: border-box;}
+.PUDD.PUDD-UI-editTable table.editTable td.highLight .requiredValue{position:absolute;height:inherit;padding:0;top:0;left:0;right:0;bottom:0;border:1px solid #ff0000 !important;box-sizing: border-box;}
+
+.PUDD.PUDD-UI-editTable table.editTable td.center input.inpTextBox{width:90%;height:100%;padding:0 5%;border:none;text-align:center;outline:none;background:#ffffff !important;}
+.PUDD.PUDD-UI-editTable table.editTable td.td_le input.inpTextBox{width:95%;height:100%;padding:0 0 0 5%;border:none;text-align:left;outline:none;background:#ffffff !important;}
+.PUDD.PUDD-UI-editTable table.editTable td.td_ri input.inpTextBox{width:95%;height:100%;padding:0 5% 0 0;border:none;text-align:right;outline:none;background:#ffffff !important;}
+
+.PUDD.PUDD-UI-editTable table.editTable td.center input.inpCodeBox{width:90%;height:100%;padding:0 5%;border:none;text-align:center;outline:none;background:#ffffff !important;}
+.PUDD.PUDD-UI-editTable table.editTable td.td_le input.inpCodeBox{width:95%;height:100%;padding:0 0 0 5%;border:none;text-align:left;outline:none;background:#ffffff !important;}
+.PUDD.PUDD-UI-editTable table.editTable td.td_ri input.inpCodeBox{width:95%;height:100%;padding:0 5% 0 0;border:none;text-align:right;outline:none;background:#ffffff !important;}
+.PUDD.PUDD-UI-editTable table.editTable td input.inpCodeBox + span.code{position:absolute;top: 1px;right: 1px;width:0px;height:0px;border-style:solid;border-width: 0px 5px 5px 0;border-color: transparent #007cc0 transparent transparent;}
+
+.PUDD.PUDD-UI-editTable .leftHeader table.editTable th{border:solid #e1e1e1;border-width:0 1px 1px 0 !important;}
+.PUDD.PUDD-UI-editTable .leftContent table.editTable td{border:solid #e1e1e1;border-width:0 1px 1px 0 !important;}
+.PUDD.PUDD-UI-editTable .rightHeader table.editTable th{border:solid #e1e1e1;border-width:0 0 1px 1px !important;}
+.PUDD.PUDD-UI-editTable .rightHeader table.editTable th:first-child{border:solid #e1e1e1;border-width:0 0 1px 0 !important;}
+.PUDD.PUDD-UI-editTable .rightContent table.editTable td{border:solid #e1e1e1;border-width:0 0 1px 1px !important;}
+.PUDD.PUDD-UI-editTable .rightContent table.editTable td:first-child{border:solid #e1e1e1;border-width:0 0 1px 0 !important;}
+
+.PUDD.PUDD-UI-editTable.pager_on{padding:0 0 52px 0;overflow:visible;}
+.PUDD.PUDD-UI-editTable .PUDD-UI-pager{position: absolute;left: -1px;right: -1px;bottom: -1px;background: #ffffff;border-top: 1px solid #e1e1e1;}
+.PUDD.PUDD-UI-editTable .PUDD-UI-pager .PUDD.PUDD-UI-selectBox .selectField{border: 1px solid #cccccc;}
+.PUDD.PUDD-UI-editTable .PUDD-UI-pager .PUDD.PUDD-UI-selectBox.PUDD-COLOR-blue .selectField:focus{border:1px solid #2196f3;}
+.PUDD.PUDD-UI-editTable .PUDD-UI-pager .PUDD.PUDD-UI-selectBox.PUDD-COLOR-blue .selectField:focus .selectFieldBtn{border:solid #2196f3;border-width:0 0 0 1px;}
+
+/*editTable 내 컴포넌트가 들어갔을때*/
+.PUDD.PUDD-UI-editTable .PUDD.PUDD-UI-selectBox{width:100%;height:100%;margin:0;}
+.PUDD.PUDD-UI-editTable .PUDD.PUDD-UI-selectBox .selectField{border:0px;}
+.PUDD.PUDD-UI-editTable .PUDD.PUDD-UI-selectBox.PUDD-COLOR-blue .selectField:focus{border:0px;}
+.PUDD.PUDD-UI-editTable .PUDD.PUDD-UI-selectBox .selectField:hover .selectFieldBtn{border:solid transparent;border-width:0 0 0 1px;}
+.PUDD.PUDD-UI-editTable .PUDD.PUDD-UI-selectBox.PUDD-COLOR-blue .selectField:focus .selectFieldBtn{border:solid transparent;border-width:0 0 0 1px;}
+.PUDD.PUDD-UI-editTable .PUDD.PUDD-UI-selectBox .selectField .selectText{display:inline-block;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;pointer-events: none;vertical-align:middle;}
+.PUDD.PUDD-UI-editTable .PUDD.PUDD-UI-selectBox .selectFieldBtn{top:50%;margin:-12px 0 0 0;}	
+
+.PUDD.PUDD-UI-editTable .PUDD.PUDD-UI-datePicker{width:100%;height:100%;margin:0;}
+.PUDD.PUDD-UI-editTable .PUDD.PUDD-UI-datePicker.singleForm{min-width:100%;}
+.PUDD.PUDD-UI-editTable .PUDD.PUDD-UI-datePicker input{border:0px;}
+.PUDD.PUDD-UI-editTable .PUDD.PUDD-UI-datePicker .btn{top:50%;margin:-12px 0 0 0;}
+.PUDD.PUDD-UI-editTable .PUDD.PUDD-UI-datePicker:hover .btn{border:solid transparent;border-width:0 0 0 1px;}
+.PUDD.PUDD-UI-editTable .PUDD.PUDD-UI-datePicker.PUDD-COLOR-blue input:focus{border:0px;}
+.PUDD.PUDD-UI-editTable .PUDD.PUDD-UI-datePicker.PUDD-COLOR-blue input:focus + .btn{border:solid transparent;border-width:0 0 0 1px;}
+.PUDD.PUDD-UI-editTable .PUDD.PUDD-UI-datePicker.PUDD-COLOR-blue input.on {border:0px;}
+.PUDD.PUDD-UI-editTable .PUDD.PUDD-UI-datePicker.PUDD-COLOR-blue input.on + .btn{border:solid transparent;border-width:0 0 0 1px;}
+
+.PUDD.PUDD-UI-editTable .PUDD.PUDD-UI-calender .calendarTable table th,
+.PUDD.PUDD-UI-editTable .PUDD.PUDD-UI-calender .calendarTable table td{border:0;background:none;}
+	
+/**************************************************
+   PUDD_loading
+**************************************************/
+.PUDD-UI-Loading{position:absolute;width:100%;height:100%;top:0;left:0;bottom:0;right:0;}
+.PUDD-UI-Loading .dim{position:absolute;width:100%;height:100%;top:0;left:0;bottom:0;right:0;background:#000;opacity:0.03;filter:alpha(opacity=3);z-index:100;}
+.PUDD-UI-Loading .loadingGif{position: absolute;top: 50%;left: 50%;width: 128px;height: 128px;margin: -64px 0 0 -64px;background: url("pudd_img/ico/pudd_loading.gif") no-repeat;background-size: contain;z-index:101;}
+
+/**************************************************
+   PUDD_Dialog
+**************************************************/
+
+.PUDD.PUDD-UI-Dialog {/*height: 100%;width: 100%;*//*position: fixed;top: 0px;left: 0px; */ -webkit-animation-duration: 0.4s;
+  animation-duration: 0.4s;
+  /*-webkit-animation-fill-mode: both;*/
+  /*animation-fill-mode: both;*/
+  }
+/*.PUDD.PUDD-UI-Dialog .PUDD-UI-Wrap {border:1px solid #B3B3B3; border-radius:5px;position:absolute;top:50%;left:50%;background:#fff; -webkit-animation-duration: 0.5s;*/
+.PUDD.PUDD-UI-Dialog .PUDD-UI-Wrap {border:1px solid #B3B3B3; border-radius:5px;position:absolute;background:#fff; -webkit-animation-duration: 0.4s;
+  animation-duration: 0.4s;
+  /*-webkit-animation-fill-mode: both;*/
+  /*animation-fill-mode: both; display:none;}*/
+  /*animation-fill-mode: both;*/
+  }
+
+@keyframes bounceIn2 {
+  from, 0%, to {
+     -webkit-animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
+    animation-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
+  }
+  0% {
+    opacity: 0;
+    -webkit-transform: scale3d(.5, .5, .5);
+    transform: scale3d(.5, .5, .5);
+  }
+  to {
+    opacity: 1;
+    -webkit-transform: scale3d(1.0, 1.0, 1.0);
+    transform: scale3d(1.0, 1.0, 1.0);
+  }
+}
+.bounceIn2 {
+  -webkit-animation-name: bounceIn2;
+  animation-name: bounceIn2;
+}
+
+.PUDD.PUDD-UI-Dialog .PUDD-UI-Head{padding: 15px 0px 8px;border-bottom:1px solid #000;overflow:hidden;margin:0 15px;position:relative;}
+.PUDD.PUDD-UI-Dialog .PUDD-UI-Head h1 {font-size:18px;margin:0px;;}
+.PUDD.PUDD-UI-Dialog .PUDD-UI-Head-Btn {position:absolute; right:4px;top:14px;}
+.PUDD.PUDD-UI-Dialog .PUDD-UI-Head-Btn a {float:left;margin-left:6px;width:13px;height:13px;display:inline-block;padding:4px;border-radius:2px;}
+.PUDD.PUDD-UI-Dialog .PUDD-UI-Head-Btn .PUDD-UI-Clo{background: url("pudd_img/ico/ico_win_clo.png") no-repeat center center;}
+.PUDD.PUDD-UI-Dialog .PUDD-UI-Head-Btn .PUDD-UI-Max{background: url("pudd_img/ico/ico_win_max.png") no-repeat center center;}
+.PUDD.PUDD-UI-Dialog .PUDD-UI-Head-Btn .PUDD-UI-Bef{background: url("pudd_img/ico/ico_win_before.png") no-repeat center center;}
+.PUDD.PUDD-UI-Dialog .PUDD-UI-Head-Btn .PUDD-UI-Min{background: url("pudd_img/ico/ico_win_min.png") no-repeat center center;;}
+.PUDD.PUDD-UI-Dialog .PUDD-UI-Head-Btn .PUDD-UI-Clo:hover {background:#eee url("pudd_img/ico/ico_win_clo.png") no-repeat center center;;}
+.PUDD.PUDD-UI-Dialog .PUDD-UI-Head-Btn .PUDD-UI-Max:hover {background:#eee url("pudd_img/ico/ico_win_max.png") no-repeat center center;;}
+.PUDD.PUDD-UI-Dialog .PUDD-UI-Head-Btn .PUDD-UI-Bef:hover {background:#eee url("pudd_img/ico/ico_win_before.png") no-repeat center center;;}
+.PUDD.PUDD-UI-Dialog .PUDD-UI-Head-Btn .PUDD-UI-Min:hover {background:#eee url("pudd_img/ico/ico_win_min.png") no-repeat center center;;}
+
+.PUDD.PUDD-UI-Dialog .PUDD-UI-Con{min-height:10px;padding:15px;overflow-y:auto;}
+.PUDD.PUDD-UI-Dialog .PUDD-UI-Foot{text-align:center;background:#f2f2f2;;height:38px;;padding-top:12px;border-radius:0 0 5px 5px;}
+.PUDD.PUDD-UI-Dialog .PUDD-UI-Foot .PUDD-UI-Button input[type="button"] {height:27px;}
+.PUDD.PUDD-UI-Dialog .PUDD-UI-Foot .PUDD-UI-Button input[type="button"].UI-btn_blue {background: #1c90fb;border: 1px solid #1c90fb;color: #fff;}
+.PUDD.PUDD-UI-Dialog .PUDD-UI-Foot .PUDD-UI-Button input[type="button"].UI-btn_red {background: #FC5356;border: 1px solid #FC5356;color: #fff;}
+.PUDD.PUDD-UI-Dialog .PUDD-UI-Foot .PUDD-UI-Button input[type="button"].UI-btn_yellow {background: #FEBC2C;border: 1px solid #FEBC2C;color: #fff;}
+.PUDD.PUDD-UI-Dialog .PUDD-UI-Foot .PUDD-UI-Button input[type="button"].UI-btn_green {background: #1FC47C;border: 1px solid #1FC47C;color: #fff;}
+.PUDD.PUDD-UI-Dialog.PUDD-UI-Move {}
+.PUDD.PUDD-UI-Dialog.PUDD-UI-Move .PUDD-UI-Head{cursor:move;}
+.PUDD.PUDD-UI-Dialog.PUDD-UI-Message {}
+.PUDD.PUDD-UI-Dialog .PUDD-UI-Message table {width:100%;;}
+.PUDD.PUDD-UI-Dialog .PUDD-UI-Message table td {text-align:center;font-weight:bold;height:100px;line-height:20px;}
+.PUDD.PUDD-UI-Dialog .PUDD-UI-Message table td .txt {background:#fff;margin:0;padding:0px;font-size:16px;}
+.PUDD.PUDD-UI-Dialog .PUDD-UI-Message table td .svg_img {width:38px; height:38px; margin: 0 auto;vertical-align: middle;margin-bottom:7px;}
+.PUDD.PUDD-UI-Dialog.Dialog-Def .PUDD-UI-Message table td .svg_img svg {}
+.PUDD.PUDD-UI-Dialog.Dialog-Suc .PUDD-UI-Message table td .svg_img svg {fill:#1FC47C;}
+.PUDD.PUDD-UI-Dialog.Dialog-Err .PUDD-UI-Message table td .svg_img svg {fill:#FC5356}
+.PUDD.PUDD-UI-Dialog.Dialog-War .PUDD-UI-Message table td .svg_img svg {fill:#FEBC2C}
+.PUDD.PUDD-UI-Dialog.Dialog-Que .PUDD-UI-Message table td .svg_img svg {fill:#1C90FB}
+.PUDD.PUDD-UI-Dialog.Dialog-Tit .PUDD-UI-Message table td .svg_img svg {fill:#1FC47C;}
+.PUDD.PUDD-UI-Dialog.Dialog-SErr .PUDD-UI-Message table td .img {margin:10px auto;width:231px;height:132px;background:url("pudd_img/temp/error_img.png") center center no-repeat;}
+.PUDD.PUDD-UI-Dialog.Dialog-SErr .PUDD-UI-Message table td .sub_txt {font-size:13px;}
+.PUDD.PUDD-UI-Dialog.PUDD-UI-Resize {}
+.PUDD.PUDD-UI-Dialog.PUDD-UI-Resize .resize_ico {background:url("pudd_img/ico/ico_resize01.png") right bottom no-repeat;width:20px; height:20px;position:absolute;right:0;bottom:0;}
+.PUDD.PUDD-UI-Dialog .PUDD-UI-Message table td h1 {font-size:22px; font-weight:bold;margin:0;margin-top:15px;margin-bottom:10px;}
+.PUDD.PUDD-UI-Dialog .PUDD-UI-Message table td .sub_txt {font-weight:normal;margin:0;padding:0px;font-size:14px;background:#fff;}
+.PUDD.PUDD-UI-Dialog .PUDD-UI-Modal {background:#000; opacity:0.3; filter:alpha(opacity=30); width:100%;height:100%;position:fixed;top:0px; left:0px;z-index:1100;}
+.PUDD.PUDD-UI-Dialog.zin1 {z-index:1000;}
+.PUDD.PUDD-UI-Dialog.zin1 .dropCalWrap {z-index:3010;}
+.PUDD.PUDD-UI-Dialog.zin1 .PUDD-UI-Modal {z-index:1200;}
+.PUDD.PUDD-UI-Dialog.zin1 .PUDD-UI-Wrap {z-index:1300;}
+.PUDD.PUDD-UI-Dialog.zin2 {z-index:1400;}
+.PUDD.PUDD-UI-Dialog.zin2 .dropCalWrap {z-index:3010;}
+.PUDD.PUDD-UI-Dialog.zin2 .PUDD-UI-Modal {z-index:1500;}
+.PUDD.PUDD-UI-Dialog.zin2 .PUDD-UI-Wrap {z-index:1600;}
+.PUDD.PUDD-UI-Dialog.zin3 {z-index:1700;}
+.PUDD.PUDD-UI-Dialog.zin3 .dropCalWrap {z-index:3010;}
+.PUDD.PUDD-UI-Dialog.zin3 .PUDD-UI-Modal {z-index:1800;}
+.PUDD.PUDD-UI-Dialog.zin3 .PUDD-UI-Wrap {z-index:1900;}
+.PUDD.PUDD-UI-Dialog.zin4 {z-index:2000;}
+.PUDD.PUDD-UI-Dialog.zin4 .dropCalWrap {z-index:3010;}
+.PUDD.PUDD-UI-Dialog.zin4 .PUDD-UI-Modal {z-index:2100;}
+.PUDD.PUDD-UI-Dialog.zin4 .PUDD-UI-Wrap {z-index:2200;}
+.PUDD.PUDD-UI-Dialog.zin5 {z-index:2300;}
+.PUDD.PUDD-UI-Dialog.zin5 .dropCalWrap {z-index:3010;}
+.PUDD.PUDD-UI-Dialog.zin5 .PUDD-UI-Modal {z-index:2400;}
+.PUDD.PUDD-UI-Dialog.zin5 .PUDD-UI-Wrap {z-index:2500;}
+
+
+
+
+/**************************************************
+   PUDD_treeview
+**************************************************/
+/**/
+.PUDD.PUDD-UI-treeview{position:relative;overflow:auto;background:#ffffff;font-family:Dotum,'돋움'}
+.PUDD.PUDD-UI-treeview .tree_container{max-width:100%;padding:10px;}
+.PUDD.PUDD-UI-treeview .tree_container > ul.group{display:block;}
+.PUDD.PUDD-UI-treeview ul.group li.item.item_open > ul.group{display:block;}
+
+.PUDD.PUDD-UI-treeview .tree_container > ul.group > li.item{margin-left:0;background: transparent;}
+.PUDD.PUDD-UI-treeview .tree_container > ul.group > li.item.item_leaf > i.ico{background: transparent;}
+.PUDD.PUDD-UI-treeview .tree_container > ul.group > li.item.item_open > i.ico{background:transparent url("pudd_img/ico/pudd_treeview_s.png") no-repeat -18px -72px;}
+.PUDD.PUDD-UI-treeview .tree_container > ul.group > li.item.item_close > i.ico{background:transparent url("pudd_img/ico/pudd_treeview_s.png") no-repeat -18px -48px;}
+.PUDD.PUDD-UI-treeview ul.group{display:none;margin:0;padding:0;list-style-type:none;list-style-image:none;}
+.PUDD.PUDD-UI-treeview ul.group li.item,
+.PUDD.PUDD-UI-treeview ul.group li.item i.ico{background-image:url("pudd_img/ico/pudd_treeview_s.png");outline:none;}
+.PUDD.PUDD-UI-treeview ul.group li.item.item_last{background:transparent;}
+.PUDD.PUDD-UI-treeview ul.group li.item{min-width:18px;min-height:24px;line-height:24px;margin-left:18px;background-position: -180px 0;background-repeat: repeat-y;white-space: nowrap;font-size:0;}
+.PUDD.PUDD-UI-treeview ul.group li.item i.ico{display:inline-block;width:18px;height:24px;line-height:24px;text-decoration:none;margin:0;padding:0;vertical-align:top;text-align: center;}
+.PUDD.PUDD-UI-treeview ul.group li.item a.anchor{display:inline-block;color: #000;white-space: nowrap;padding: 0 3px;margin: 0;vertical-align: top;outline:none;font-size:12px;}
+.PUDD.PUDD-UI-treeview ul.group li.item a.checkwrapper{display:inline-block;padding: 0;margin: 0;vertical-align: top;outline:none;}
+.PUDD.PUDD-UI-treeview ul.group li.item a.checkwrapper .checkbox{display:inline-block;width:18px;height:24px;line-height:24px;text-decoration:none;margin:0;padding:0;vertical-align:top;text-align: center;}
+
+.PUDD.PUDD-UI-treeview ul.group li.item.item_leaf > i.ico{background-position:0px 0px}
+.PUDD.PUDD-UI-treeview ul.group li.item.item_open > i.ico{cursor:pointer;background-position:-18px -24px}
+.PUDD.PUDD-UI-treeview ul.group li.item.item_close > i.ico{cursor:pointer;background-position:-18px 0px}
+
+.PUDD.PUDD-UI-treeview ul.group li.item.item_leaf > a.anchor i.ico{background-position:-36px 0px}
+.PUDD.PUDD-UI-treeview ul.group li.item.item_open > a.anchor i.ico{background-position:-36px -24px}
+.PUDD.PUDD-UI-treeview ul.group li.item.item_close > a.anchor i.ico{background-position:-36px 0px}
+
+.PUDD.PUDD-UI-treeview ul.group li.item.item_leaf > a.anchor i.ico.group{background:transparent url("pudd_img/ico/pudd_treeview_s.png") no-repeat -54px -48px;}
+.PUDD.PUDD-UI-treeview ul.group li.item.item_open > a.anchor i.ico.group{background:transparent url("pudd_img/ico/pudd_treeview_s.png") no-repeat -54px -48px;}
+.PUDD.PUDD-UI-treeview ul.group li.item.item_close > a.anchor i.ico.group{background:transparent url("pudd_img/ico/pudd_treeview_s.png") no-repeat -54px -48px;}
+
+.PUDD.PUDD-UI-treeview ul.group li.item a.anchor i.ico.root{background:transparent url("pudd_img/ico/pudd_treeview_s.png") no-repeat -126px 0px;}
+.PUDD.PUDD-UI-treeview ul.group li.item a.anchor i.ico.file{background:transparent url("pudd_img/ico/pudd_treeview_s.png") no-repeat -126px -24px;}
+.PUDD.PUDD-UI-treeview ul.group li.item a.anchor i.ico.member{background:transparent url("pudd_img/ico/pudd_treeview_s.png") no-repeat -126px -48px;}
+.PUDD.PUDD-UI-treeview ul.group li.item a.anchor i.ico.company{background:transparent url("pudd_img/ico/pudd_treeview_s.png") no-repeat -126px -72px;}
+
+.PUDD.PUDD-UI-treeview ul.group li.item a.checkwrapper.checked .checkbox{background:transparent url("pudd_img/ico/pudd_treeview_s.png") no-repeat -72px -24px;}
+.PUDD.PUDD-UI-treeview ul.group li.item a.checkwrapper .checkbox{background:transparent url("pudd_img/ico/pudd_treeview_s.png") no-repeat -72px 0px;}
+.PUDD.PUDD-UI-treeview ul.group li.item a.checkwrapper .checkbox.undetermined{background:transparent url("pudd_img/ico/pudd_treeview_s.png") no-repeat -108px 0px;}
+
+.PUDD.PUDD-UI-treeview ul.group li.item.disabled > ul.group{display:none;}
+.PUDD.PUDD-UI-treeview ul.group li.item.disabled > i.ico{background-position:0px 0px}
+.PUDD.PUDD-UI-treeview ul.group li.item.disabled > a.anchor{color:#ccc;}
+.PUDD.PUDD-UI-treeview ul.group li.item.disabled > a.anchor i.ico{background-position:-54px 0px}
+.PUDD.PUDD-UI-treeview ul.group li.item.disabled > a.checkwrapper .checkbox{background:transparent url("pudd_img/ico/pudd_treeview_s.png") no-repeat -90px 0px;}
+.PUDD.PUDD-UI-treeview ul.group li.item.disabled > a.anchor:hover{background:transparent !important;border-radius:0;}
+.PUDD.PUDD-UI-treeview ul.group li.item.disabled > a.anchor:focus{background:transparent !important;border-radius:0;}
+.PUDD.PUDD-UI-treeview ul.group li.item.disabled > a.anchor.hover{background:transparent !important;border-radius:0;}
+.PUDD.PUDD-UI-treeview ul.group li.item.disabled > a.anchor.active{background:transparent !important;border-radius:0;}
+
+
+/*theme class*/
+.PUDD.PUDD-UI-treeview.PUDD-COLOR-blue ul.group li.item a.anchor:hover{background:#e7f4f9;border-radius:2px;}
+.PUDD.PUDD-UI-treeview.PUDD-COLOR-blue ul.group li.item a.anchor:focus{background:#e7f4f9;border-radius:2px;}
+.PUDD.PUDD-UI-treeview.PUDD-COLOR-blue ul.group li.item a.anchor.hover{background:#e7f4f9;border-radius:2px;}
+.PUDD.PUDD-UI-treeview.PUDD-COLOR-blue ul.group li.item a.anchor.active{background:#beebff;border-radius:2px;}
+
+/**************************************************
+   PUDD_actionbar
+**************************************************/
+.PUDD.PUDD-UI-actionbar{position: fixed;left: 0px;right: 0px;bottom: 0px;background: rgb(80, 89, 108);z-index: 50;min-height: 50px;transition: transform 300ms cubic-bezier(0.65, 0.05, 0.36, 1) 0ms, visibility 300ms cubic-bezier(0.65, 0.05, 0.36, 1) 0ms;visibility: hidden;transform: translateX(0px);box-sizing: border-box;}
+.PUDD.PUDD-UI-actionbar.popon{visibility: visible;transform: translate3d(0px, 0px, 0px) !important;} 
+.PUDD.PUDD-UI-actionbar .fnc_content{padding: 10px 0px;}
+.PUDD.PUDD-UI-actionbar .fnc_content:after{content:"";display:block;clear:both;height:0;visibility:hidden;}
+
+
+/**************************************************
+   PUDD_snackbar
+**************************************************/
+.PUDD.PUDD-UI-snackbar{position: fixed;left: 0px;right: 0px;bottom: 0px;z-index:10000;min-height: 50px;transition: transform 300ms cubic-bezier(0.65, 0.05, 0.36, 1) 0ms, visibility 300ms cubic-bezier(0.65, 0.05, 0.36, 1) 0ms;visibility: hidden;transform: translateX(0px);box-sizing: border-box;text-align: center;}
+.PUDD.PUDD-UI-snackbar.popon{visibility:visible;transform: translate3d(0px, 0px, 0px) !important;}
+
+.PUDD.PUDD-UI-snackbar .unit{position:relative;display: inline-block;min-width: 220px;margin: 0 auto;padding: 12px;vertical-align:top;border-radius:3px;}
+
+.PUDD.PUDD-UI-snackbar.success .unit{background:#1fc47c;}
+.PUDD.PUDD-UI-snackbar.error .unit{background:#fc5356;}
+.PUDD.PUDD-UI-snackbar.warning .unit{background:#febc2c;}
+.PUDD.PUDD-UI-snackbar.info .unit{background:#1c90fb;}
+
+.PUDD.PUDD-UI-snackbar.success .unit .ico, .PUDD.PUDD-UI-snackbar.error .unit .ico,
+.PUDD.PUDD-UI-snackbar.warning .unit .ico, .PUDD.PUDD-UI-snackbar.info .unit .ico{position: absolute;left: 12px;fill:#ffffff;width:24px;height:24px;user-select:none;}
+.PUDD.PUDD-UI-snackbar.success .unit .msg, .PUDD.PUDD-UI-snackbar.error .unit .msg,
+.PUDD.PUDD-UI-snackbar.warning .unit .msg, .PUDD.PUDD-UI-snackbar.info .unit .msg{font-size:16px;color:#ffffff;text-align: left;line-height:23px;margin: 2px 0 0 30px;vertical-align:top;}
+
+
+/**************************************************
+   PUDD_TAB (컨테이너 형태에서 PUDD 제거)
+**************************************************/
+.PUDD-UI-Tab .PUDD-UI-Tab-Menu ul li {}
+.PUDD-UI-Tab .PUDD-UI-Tab-Menu{overflow:hidden; clear:both;background:url("pudd_img/ico/tab_dot01.png") repeat-x bottom;position:relative;height:34px;}
+.PUDD-UI-Tab .PUDD-UI-Tab-Menu ul {margin-left:0px;position:absolute; top:0px;left:0px;box-sizing:border-box;
+			transition-property: top, left, width, height;
+              transition-duration: 0.3s;
+            transition-timing-function: cubic-bezier(1.680, -0.550, 0.265, 1.550);
+			}
+.PUDD-UI-Tab .PUDD-UI-Tab-Menu ul li {border-top:1px solid #c9cac9;border-right:1px solid #c9cac9;border-bottom:1px solid #c9cac9;white-space: nowrap;display: table-cell;text-align:center;}
+.PUDD-UI-Tab .PUDD-UI-Tab-Menu ul li:first-child {border-left:1px solid #c9cac9;}
+.PUDD-UI-Tab .PUDD-UI-Tab-Menu ul li a {color:#4a4a4a;font-weight:600;padding: 0 19px;height:32px;line-height:32px;background:#f9f9f9;display:block;}
+.PUDD-UI-Tab .PUDD-UI-Tab-Menu ul li span {margin-left:5px;color:#058df5}
+.PUDD-UI-Tab .PUDD-UI-Tab-Menu ul li .txt {margin-left:0px;color:#4a4a4a;}
+.PUDD-UI-Tab .PUDD-UI-Tab-Menu ul li.on {border-bottom:1px solid #fff;}
+.PUDD-UI-Tab .PUDD-UI-Tab-Menu ul li.on a {background:#fff;}
+.PUDD-UI-Tab .PUDD-UI-Tab-Menu ul li.on a span {}
+
+.PUDD-UI-Tab.st2 .PUDD-UI-Tab-Menu ul li a {font-weight:normal;padding:0px; text-align:center;width:96px;;}
+.PUDD-UI-Tab.st2 .PUDD-UI-Tab-Menu ul li.on a {font-weight:bold;}
+
+.PUDD-UI-Tab .PUDD-UI-Tab-Menu .pre {display:inline-block;border:1px solid #c9cac9;height:32px; width:24px;position:absolute;top:0px;left:0px;z-index:2;background:#fff url("pudd_img/ico/btn_arr02.png") center center no-repeat;display:none;}
+.PUDD-UI-Tab .PUDD-UI-Tab-Menu .nex {display:inline-block;border:1px solid #c9cac9;height:32px; width:24px;position:absolute;top:0px;right:0px;z-index:2;background:#fff url("pudd_img/ico/btn_arr01.png") center center no-repeat;display:none;}
+.PUDD-UI-Tab .PUDD-UI-Tab-Menu .pre:hover {border:1px solid #058df5;}
+.PUDD-UI-Tab .PUDD-UI-Tab-Menu .nex:hover {border:1px solid #058df5;}
+.PUDD-UI-Tab .PUDD-UI-Tab-Menu .PUDD-UI-Tab-ul li {vertical-align:top;position: relative;}
+.PUDD-UI-Tab .PUDD-UI-Tab-Menu .PUDD-UI-Tab-ul li .del{display: block;position: absolute;top: 10px;right: 7px;width: 9px;height: 9px;background: url(pudd_img/ico/ico_win_clo.png) no-repeat center;cursor:pointer}
+.PUDD-UI-Tab .PUDD-UI-Tab-Menu .PUDD-UI-Tab-ul li .del ~ a{padding: 0 24px 0 19px;}
+.PUDD-UI-Tab .PUDD-UI-Tab-Menu .tab_plus {min-width:auto !important;padding: 0 10px;position:absolute;top:0; left:0;height:32px; line-height:32px;background:#f9f9f9;display:block;border-top:1px solid #c9cac9;border-right:1px solid #c9cac9;}
+.PUDD-UI-Tab .PUDD-UI-Tab-Menu .tab_plus img {vertical-align:middle;}
+.PUDD-UI-Tab .PUDD-UI-Tab-Menu .pudd_file_plus {margin-top:8px;margin-left:0px;width:13px; height:15px; background:url("pudd_img/ico/ico_file_plus01.png")no-repeat center center;display:inline-block;}
+.PUDD-UI-Tab .PUDD-Tab-Area {text-align:left;font-size:12px;}
+
+
+/**************************************************
+   PUDD_Stepper
+**************************************************/
+.PUDD.PUDD-UI-Stepper {position:relative;}
+.PUDD.PUDD-UI-Stepper .Stepper-TEXT {height:24px;outline: none; box-sizing: border-box;padding:0 14px 0 6px;width:100%;border:1px solid #dcdcdc;}
+.PUDD.PUDD-UI-Stepper .Stepper-Button {position:absolute; right:0px; top:1px; overflow: hidden;clear: both; width:15px;}
+.PUDD.PUDD-UI-Stepper .Stepper-UP{float:left;border:none;border-bottom:1px solid #dcdcdc;border-left:1px solid #dcdcdc; width:14px; height:10px;background:#fff;;position:relative;vertical-align:top;}
+.PUDD.PUDD-UI-Stepper .Stepper-DOWN{float:left;border:none;border-top:1px solid #dcdcdc; border-left:1px solid #dcdcdc;width:14px; height:10px;background:#fff;;position:relative;vertical-align:top;margin-top:2px;}
+.PUDD.PUDD-UI-Stepper .Stepper-UP-span {height:4px;width:8px;background:url("pudd_img/ico/sp_lux.png") -75px -60px no-repeat;display:inline-block;position: absolute;top: 50%;left: 50%;margin: -2px 0px 0px -4px;}
+.PUDD.PUDD-UI-Stepper .Stepper-DOWN-span {height:4px;width:8px;background:url("pudd_img/ico/sp_lux.png") -50px -60px no-repeat;display:inline-block;position: absolute;top: 50%;left: 50%; margin: -2px 0px 0px -4px;}
+.PUDD.PUDD-UI-Stepper .Stepper-UP:focus {outline:none;}
+.PUDD.PUDD-UI-Stepper .Stepper-DOWN:.focus {outline:none;}
+.PUDD.PUDD-UI-Stepper .Stepper-TEXT:focus {border:1px solid #2196f3;}
+.PUDD.PUDD-UI-Stepper.disabled .Stepper-TEXT{cursor:not-allowed;background:#f3f3f3;}
+.PUDD.PUDD-UI-Stepper.disabled .Stepper-TEXT:focus{background:#f3f3f3;cursor:not-allowed;border:1px solid #dcdcdc;}
+.PUDD.PUDD-UI-Stepper.disabled .Stepper-UP{cursor:not-allowed;}
+.PUDD.PUDD-UI-Stepper.disabled .Stepper-UP-span {background: url("pudd_img/ico/sp_lux.png") -225px -275px no-repeat;}
+.PUDD.PUDD-UI-Stepper.disabled .Stepper-DOWN-span {background: url("pudd_img/ico/sp_lux.png") -225px -285px no-repeat;}
+.PUDD.PUDD-UI-Stepper.disabled .Stepper-DOWN{cursor:not-allowed;;}
+
+
+
+
+/**************************************************
+   PUDD-selective_input
+**************************************************/
+.PUDD.PUDD-UI-selective-input{position:relative;display:inline-block;min-height:24px;vertical-align:middle;}
+.PUDD.PUDD-UI-selective-input .selectField{width:100%;min-height:24px;height:100%;padding: 0 0 0 0px;border:1px solid #cccccc;font-size:12px;background:#ffffff;outline:none;box-sizing:border-box;cursor:text;}
+.PUDD.PUDD-UI-selective-input .selectField:after{content:"";display:block;clear:both;height:0;visibility:hidden;}
+.PUDD.PUDD-UI-selective-input .selectField:focus{border:1px solid #3badde;}
+
+.PUDD.PUDD-UI-selective-input .selectField.disabled{color:#8d8d8d;background:#f3f3f3;cursor:not-allowed;}
+.PUDD.PUDD-UI-selective-input .selectField.disabled:before{content:"";position:absolute;top:0;left:0;right:0;bottom:0;background:transparent;cursor:not-allowed;z-index:1}
+.PUDD.PUDD-UI-selective-input .selectField.disabled:focus{background:#f3f3f3;cursor:not-allowed;}
+.PUDD.PUDD-UI-selective-input .selectField.disabled .addresObjView{border-color:#cccccc !important;background:transparent !important;color: #cccccc !important;}
+.PUDD.PUDD-UI-selective-input .selectField.disabled .addresObjView .btn_edit{display:none !important;}
+.PUDD.PUDD-UI-selective-input .selectField.disabled .addresObjView .btn_del{display:none !important;}
+.PUDD.PUDD-UI-selective-input .selectField.disabled .addresObjView .addr_input{display:none !important;}
+.PUDD.PUDD-UI-selective-input .selectField.disabled .addresObjViewText{margin: 0 5px !important;}
+
+.PUDD.PUDD-UI-selective-input .selectField .addresObjView{position: relative;float:left;min-height:14px;line-height:14px;margin: 1px 0;padding: 2px;color: #000000;line-height: normal;border: 1px solid #adcfff;background-color: #eff7ff;cursor:text;margin-left:1px;outline:none;}
+.PUDD.PUDD-UI-selective-input .selectField .addresObjView .addresObjViewText{margin: 0 5px !important;white-space:nowrap;}
+.PUDD.PUDD-UI-selective-input .selectField .addresObjView.write .addresObjViewText{visibility:hidden}
+.PUDD.PUDD-UI-selective-input .selectField .addresObjView.edit .addresObjViewText{visibility:hidden}
+.PUDD.PUDD-UI-selective-input .selectField .addresObjView .btn_edit{display: inline-block;width: 8px;height: 8px;background:url('pudd_img/ico/btn_mail_s.png') no-repeat 0 -8px;outline:none;margin: 0 5px 0 0;}
+.PUDD.PUDD-UI-selective-input .selectField .addresObjView .btn_del{display: inline-block;width: 8px;height: 8px;background:url('pudd_img/ico/btn_mail_s.png') no-repeat -8px -8px;outline:none;margin: 0 5px 0 0;}
+.PUDD.PUDD-UI-selective-input .selectField .addresObjView .addr_input{display:none;}
+.PUDD.PUDD-UI-selective-input .selectField .addresObjView.write .addr_input{display:block;position: absolute;top: -1px;left: -1px;right: -1px;bottom: -1px;}
+.PUDD.PUDD-UI-selective-input .selectField .addresObjView.write .addr_input .editInput{width: 100%;height: 100%;text-align: left;padding:2px;border: 1px solid transparent;background-color: #ffffff;box-sizing: border-box;outline: none;}
+.PUDD.PUDD-UI-selective-input .selectField .addresObjView.edit .addr_input{display:block;position: absolute;top: -1px;left: -1px;right: -1px;bottom: -1px;}
+.PUDD.PUDD-UI-selective-input .selectField .addresObjView.edit .addr_input .editInput{width: 100%;height: 100%;text-align: left;padding:2px;border: 1px solid #3badde;background-color: #ffffff;box-sizing: border-box;outline: none;}
+
+.PUDD.PUDD-UI-selective-input .selectField .addresObjView.error{position: relative;display: inline-block;margin: 1px 0;padding: 2px;color: #000000;line-height: normal;border: 1px solid #ffb3ad;background-color: #ffeff0;cursor: text;margin-left:1px;outline:none;}
+.PUDD.PUDD-UI-selective-input .selectField .addresObjView.error .btn_edit{display:inline-block;width: 8px;height: 8px;background:url('pudd_img/ico/btn_mail_s.png') no-repeat -16px -8px;outline:none}
+.PUDD.PUDD-UI-selective-input .selectField .addresObjView.error .btn_del{display:inline-block;width: 8px;height: 8px;background:url('pudd_img/ico/btn_mail_s.png') no-repeat -24px -8px;outline:none}
+.PUDD.PUDD-UI-selective-input .selectField .addresObjView.error.edit .addr_input .editInput{width: 100%;height: 100%;text-align: left;padding:2px;border: 1px solid #f38383;background-color: #ffffff;box-sizing: border-box;outline: none;}
+
+.PUDD.PUDD-UI-selective-input .cloneHiddenAddr{overflow: hidden;position: absolute;top: -10000px;left: -10000px;width: 1px;height: 1px;}
+
+.PUDD.PUDD-UI-selective-input.PUDD-COLOR-blue .selectField:focus{border:1px solid #2196f3;}
+.PUDD.PUDD-UI-selective-input.PUDD-COLOR-blue .selectField.disabled:focus{border:1px solid #cccccc;}
+
+
+/**************************************************
+   PUDD-UI-progress
+**************************************************/
+.PUDD.PUDD-UI-progress.PUDD-UI-linear .progressBg{width:100%; background:#bdbdbd; margin: 0px; overflow: hidden; height: 25px; border-radius: 25px;}
+.PUDD.PUDD-UI-progress.PUDD-UI-linear .progressBg .bar{height: 100%;}
+.PUDD.PUDD-UI-progress.PUDD-UI-linear .percent{width:100%; text-align: center; font-size:20px;padding:10px 0 0 0;}
+.PUDD.PUDD-UI-progress.PUDD-UI-linear .percent .percent_text{font-weight:bold; padding:0 5px 0 0; font-size: 26px;}
+
+.PUDD.PUDD-UI-progress.PUDD-UI-circular {position:relative;}
+.PUDD.PUDD-UI-progress.PUDD-UI-circular .svgDiv {width:100%; height:100%;}
+.PUDD.PUDD-UI-progress.PUDD-UI-circular .svgDiv svg {}
+.PUDD.PUDD-UI-progress.PUDD-UI-circular .svgDiv .circleBar {stroke-linecap: round; animation: progress 1s ease-out forwards;}
+@keyframes progress {
+  0% {
+    stroke-dasharray: 0 100;
+  }
+}
+.PUDD.PUDD-UI-progress.PUDD-UI-circular .txtDiv {position:absolute;top:0px;left:0px;width:100%;height:100%;text-align:center;font-weight:bold;display:table;z-index:2003;}
+.PUDD.PUDD-UI-progress.PUDD-UI-circular .txtDiv .percent {display: table-cell;vertical-align: middle;font-size:15px;}
+.PUDD.PUDD-UI-progress.PUDD-UI-circular .txtDiv .percent .percent_text {font-size:24px;}
+
+.PUDD.PUDD-UI-progress.PUDD-UI-circular.PUDD-UI-loading {position:absolute;top:50%;left:50%;}
+.PUDD.PUDD-UI-progress.PUDD-UI-circular.PUDD-UI-loading .svgDiv {animation: ratation 1s forwards infinite;animation-timing-function: linear;}
+.PUDD.PUDD-UI-progress.PUDD-UI-circular.PUDD-UI-loading .svgDiv .circleBar {stroke-linecap: round; animation: loading 1s infinite;animation-timing-function: linear;}
+.PUDD.PUDD-UI-progress.PUDD-UI-circular.PUDD-UI-loading  .txtDiv .percent .percent_text {font-size:15px;padding-right:0px;}
+
+@keyframes loading {
+  to {
+    stroke-dasharray: 5 100;
+  }
+  50% {
+    stroke-dasharray: 30 100;
+  }
+  from {
+    stroke-dasharray: 5 100;
+  }
+}
+
+@keyframes ratation {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.PUDD.PUDD-UI-progress.PUDD-UI-loading2 {position:absolute;top:50%;left:50%;z-index:2003;}
+.PUDD.PUDD-UI-progress.PUDD-UI-loading2 .ringSet {margin: 0 auto;width: 79px;}
+.PUDD.PUDD-UI-progress.PUDD-UI-loading2 .ringSet .action1 {animation: half 0.3s forwards;}
+.PUDD.PUDD-UI-progress.PUDD-UI-loading2 .ringSet .action2 {animation: half_revers 0.3s;}
+.PUDD.PUDD-UI-progress.PUDD-UI-loading2 .ringSet .ringDiv1{float:left;}
+.PUDD.PUDD-UI-progress.PUDD-UI-loading2 .ringSet .ringDiv2{float:left;margin-left: -16px;}
+.PUDD.PUDD-UI-progress.PUDD-UI-loading2 .ringSet .ringDiv3{float:left;margin-left: -16px;}
+.PUDD.PUDD-UI-progress.PUDD-UI-loading2 .ringSet .ring{background:#fff; width:16px; height:16px; border-radius:50% 50%; float:left;}
+.PUDD.PUDD-UI-progress.PUDD-UI-loading2 .ringSet .ring.on{background:transparent;box-shadow: 0 0 0 4px #84c9ff inset;}
+.PUDD.PUDD-UI-progress.PUDD-UI-loading2 .ringSet .ring.ico1{margin-right:5px;}
+.PUDD.PUDD-UI-progress.PUDD-UI-loading2 .ringSet .ring.ico2{}
+.PUDD.PUDD-UI-progress.PUDD-UI-loading2 .ringSet .ring.ico3{margin-right:5px; visibility:hidden;}
+.PUDD.PUDD-UI-progress.PUDD-UI-loading2 .ringSet .ring.ico4{}
+.PUDD.PUDD-UI-progress.PUDD-UI-loading2 .ringSet .ring.ico5{margin-right:5px; visibility:hidden;}
+.PUDD.PUDD-UI-progress.PUDD-UI-loading2 .ringSet .ring.ico6{}
+.PUDD.PUDD-UI-progress.PUDD-UI-loading2 .textBox {clear: both;font-size: 14px;color: #ffffff;padding: 10px 0 0 0;}
+
+
+@keyframes half {
+  to {
+    transform: rotate(180deg);
+  }
+   80% {
+    transform: rotate(210deg);
+  }
+  from {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes half_revers {
+  to {
+    transform: rotate(360deg);
+  }
+   80% {
+    transform: rotate(390deg);
+  }
+  from {
+   transform: rotate(180deg);
+  }
+}
+
+
+.PUDD .circularBar_svg{position: relative;margin: auto;}
+.PUDD .circularBar_text{font-size:17px; margin-top:20px; color:#fff; font-weight:bold;}
+
+
+/**************************************************
+   PUDD_download
+**************************************************/
+/*대용량 엑셀 다운로드*/
+.PUDD.excelDown ul{max-height:100px; overflow:auto;}
+.PUDD.excelDown ul li{text-align:left; padding-left:15px; background:url("pudd_img/ico/ico_dot.png") no-repeat 4px 8px; line-height:20px; white-space:nowrap;overflow:hidden; /*text-overflow:ellipsis;*/}
+.PUDD .excelTotal{border-top:1px dotted #dcdcdc; padding:10px 0 0 0; margin:10px 0 0 0;}
+
+
+/**************************************************
+   PUDD_modal
+**************************************************/
+.PUDD.modal {background:#000; opacity:0.3; filter:alpha(opacity=30); width:100%;height:100%;position:fixed;top:0px; left:0px; z-index:1000;}
+.PUDD.modal2 {background:#000; opacity:0.7; filter:alpha(opacity=70); width:100%;height:100%;position:fixed;top:0px; left:0px; z-index:1000;}
+
+
+/**************************************************
+   PUDD-UI-silder
+**************************************************/
+.PUDD.PUDD-UI-slider{position:relative;}
+
+.PUDD.PUDD-UI-slider .als-prev{position: absolute;left:0;width:15px;padding: 0 15px;height: 79px;background: url("pudd_img/ico/ico_prev.png") no-repeat center;}
+.PUDD.PUDD-UI-slider .als-prev:hover{background:url("pudd_img/ico/ico_prev_on.png") no-repeat center;}
+.PUDD.PUDD-UI-slider .als-next{position: absolute;top: 0;right:0;width:15px;padding: 0 15px;height: 79px;background: url("pudd_img/ico/ico_next.png") no-repeat center;}
+.PUDD.PUDD-UI-slider .als-next:hover{background:url("pudd_img/ico/ico_next_on.png") no-repeat center;}
+
+.PUDD.PUDD-UI-slider .slider_main{margin: 0 45px;padding: 25px 30px;box-sizing:border-box; overflow:hidden; position:relative; height: 79px;}
+/*.PUDD.PUDD-UI-slider .slider_main{margin: 0 45px;padding: 25px 30px;box-sizing:border-box; position:relative; height: 79px;}*/
+.PUDD.PUDD-UI-slider .slider_con{position:relative;}
+/*.PUDD.PUDD-UI-slider .slider_con{position:relative; height:19px; overflow:hidden; }*/
+.PUDD.PUDD-UI-slider .slider_wrap{position:absolute; top:3px; width:100%;}
+.PUDD.PUDD-UI-slider .slider_wrap div:first-child{border-left:1px solid #ccc; box-sizing:border-box;}
+.PUDD.PUDD-UI-slider .slider_cell{position:relative;border-right:1px solid #ccc; border-bottom:3px solid #ccc; box-sizing:border-box; height:15px; text-align:left;display:table-cell;}
+.PUDD.PUDD-UI-slider .slider_cell.clone{border-bottom:3px solid #1c90fb;}
+
+.PUDD.PUDD-UI-slider .lineBar{position: relative; height:3px; /*top:26px;*/ background:#1c90fb;}
+.PUDD.PUDD-UI-slider .lineBar.sep{position:absolute; left:0; top:15px; z-index:101;}
+.PUDD.PUDD-UI-slider .ico_pointer{float:right; position: relative; box-sizing: border-box; cursor: pointer; width:12px; height:12px; background:#1c90fb; border-radius: 50%; transform: translate(-50%, -40%); overflow: visible; right:-12px;}
+.PUDD.PUDD-UI-slider .ico_pointer.sep{position:absolute; float:left; top:15px; z-index:101;margin-left:2px;}
+
+@media screen and (-webkit-min-device-pixel-ratio:0){
+.PUDD.PUDD-UI-slider .ico_pointer.sep{margin-left:2px;}
+}
+
+.PUDD.PUDD-UI-slider ul.scaleLeft{position: absolute; height: 100%;}
+.PUDD.PUDD-UI-slider ul.scaleLeft li.ver{position: absolute;min-width:60px;margin-top: -27px;margin-left:-35px;text-align:center;font-size:11px;padding: 2px 3px 1px 3px;border: 1px solid transparent;}
+.PUDD.PUDD-UI-slider ul.scaleLeft li.date{position: absolute;min-width:60px;margin-top:27px;margin-left:-35px;text-align:center;font-size:11px;padding: 2px 3px 1px 3px;border: 1px solid transparent;}
+.PUDD.PUDD-UI-slider .slider_cell:first-child ul.scaleLeft.selbg li.ver{position: absolute;min-width:60px;margin-top: -27px;margin-left: -15px;text-align:center;font-size:11px;padding: 2px 3px 1px 3px;}
+.PUDD.PUDD-UI-slider .slider_cell:first-child ul.scaleLeft.selbg li.date{position: absolute;min-width:60px;margin-top: 27px;margin-left: -15px;text-align:center;font-size:11px;padding: 2px 3px 1px 3px;}
+
+.PUDD.PUDD-UI-slider ul.scaleRight{position: relative; height: 100%;}
+.PUDD.PUDD-UI-slider ul.scaleRight li.ver{position: absolute;min-width: 60px;margin-top: -27px;margin-left: -35px;left:100%;text-align:center;font-size: 11px;padding: 2px 3px 1px 3px;border: 1px solid transparent;}
+.PUDD.PUDD-UI-slider ul.scaleRight li.date{position: absolute;min-width: 60px;margin-top:27px;margin-left: -35px;left:100%;text-align:center;font-size:11px;padding: 2px 3px 1px 3px;border: 1px solid transparent;}
+.PUDD.PUDD-UI-slider .slider_cell:last-child ul.scaleRight.selbg li.ver{position: absolute;min-width: 60px;margin-top: -27px;margin-left: -55px;left:100%;text-align:center;font-size: 11px;padding: 2px 3px 1px 3px;}
+.PUDD.PUDD-UI-slider .slider_cell:last-child ul.scaleRight.selbg li.date{position: absolute;min-width: 60px;margin-top:27px;margin-left: -55px;left:100%;text-align:center;font-size:11px;padding: 2px 3px 1px 3px;}
+
+.PUDD.PUDD-UI-slider .selbg li{border: 1px solid #1c90fb !important;padding: 2px 3px 1px 3px;background:#2f9aef;color:#fff;border-radius: 4px;z-index:1}
+.PUDD.PUDD-UI-slider .selbg li.ver{padding: 3px;}
+
+
+/**************************************************
+   PUDD-UI-textFolding
+**************************************************/
+.PUDD.PUDD-UI-textFolding{position:relative;}
+.PUDD.PUDD-UI-textFolding:after{content:"";display:block;clear:both;height:0;visibility:hidden;}
+
+.PUDD.PUDD-UI-textFolding.foldingOn .textBox.text{text-overflow: ellipsis;white-space: nowrap;overflow: hidden;font-size: inherit;color: inherit;margin: 0 40px 0 0;line-height: 1.5;}
+.PUDD.PUDD-UI-textFolding.foldingOff .textBox.text{display:block;font-size: inherit;color: inherit;text-align:justify;}
+
+.PUDD.PUDD-UI-textFolding.foldingOn .textBox.button{text-overflow: ellipsis;white-space: nowrap;overflow: hidden;font-size: inherit;color: inherit;margin: 0 60px 0 0;line-height: 1.5;}
+.PUDD.PUDD-UI-textFolding.foldingOff .textBox.button{display:block;font-size: inherit;color: inherit;text-align:justify;}
+
+.PUDD.PUDD-UI-textFolding.foldingOn .textBox.text + .textBtn{position: absolute;bottom: 0;right: 0;font-size: 12px;color: #000000;line-height: 1.5;}
+.PUDD.PUDD-UI-textFolding.foldingOff .textBox.text + .textBtn{display: inline-block;font-size: 12px;color: #000000;float: right;line-height: 1.5;}
+
+.PUDD.PUDD-UI-textFolding.foldingOn .textBox.button + .textBtn{position: absolute;bottom: 0;right: 0;font-size: 12px;color: #000000;border: 1px solid #000000;border-radius: 12px;padding: 0px 10px;box-sizing: border-box;}
+.PUDD.PUDD-UI-textFolding.foldingOff .textBox.button + .textBtn{display: inline-block;font-size: 12px;color: #000000;float: right;border: 1px solid #000000;border-radius: 12px;padding: 0px 10px;box-sizing: border-box;}
+
+.PUDD.PUDD-UI-textFolding.foldingOn.PUDD-COLOR-blue .textBox.text + .textBtn{position: absolute;bottom: 0;right: 0;font-size: 12px;color: #1c90fb;line-height: 1.5;}
+.PUDD.PUDD-UI-textFolding.foldingOff.PUDD-COLOR-blue .textBox.text + .textBtn{display: inline-block;font-size: 12px;color: #1c90fb;float: right;line-height: 1.5;}
+
+.PUDD.PUDD-UI-textFolding.foldingOn.PUDD-COLOR-blue .textBox.button + .textBtn{position: absolute;bottom: 0;right: 0;font-size: 12px;color: #1c90fb;border: 1px solid #1c90fb;border-radius: 12px;padding: 0px 10px;box-sizing: border-box;}
+.PUDD.PUDD-UI-textFolding.foldingOff.PUDD-COLOR-blue .textBox.button + .textBtn{display: inline-block;font-size: 12px;color: #1c90fb;float: right;border: 1px solid #1c90fb;border-radius: 12px;padding: 0px 10px;box-sizing: border-box;}
+
+
+/**************************************************
+   PUDD-UI-Badge
+**************************************************/
+.PUDD.PUDD-UI-Badge{position:relative;display: inline-block;vertical-align: middle;font-size: 0;}
+.PUDD.PUDD-UI-Badge:after{content:"";display:block;clear:both;height:0;visibility:hidden;}
+.PUDD.PUDD-UI-Badge .badgeContent{display: inline-block;font-size: 12px;font-family: 돋움, Dotum, Helvetica, "Apple SD Gothic Neo", sans-serif;font-weight: normal;color: #ffffff;text-align: center;vertical-align: initial;white-space: nowrap;min-width: 11px;padding: 2px 6px 1px;border-radius: 12px;background: #ff0000;}
+.PUDD.PUDD-UI-Badge.small .badgeContent{font-size: 11px;font-family: 돋움, Dotum, Helvetica, "Apple SD Gothic Neo", sans-serif;font-weight: normal;color: #ffffff;text-align: center;vertical-align: initial;white-space: nowrap;min-width: 9px;padding: 2px 4px 1px;border-radius: 12px;background: #ff0000;letter-spacing: -0.5px;display: inline-block;}
+.PUDD.PUDD-UI-Badge.big .badgeContent{font-size: 14px;font-family: 돋움, Dotum, Helvetica, "Apple SD Gothic Neo", sans-serif;font-weight: normal;color: #ffffff;text-align: center;vertical-align: initial;white-space: nowrap;min-width: 13px;padding: 3px 8px 2px;border-radius: 12px;background: #ff0000;}
+
+.PUDD.PUDD-UI-Badge.floatRight {display: initial;vertical-align: initial;font-size: 0;z-index: 10;position: absolute;top: 0;left: 100%;right: initial;margin: -5px 0 0 -12px;}
+.PUDD.PUDD-UI-Badge.floatRight.small {display: initial;vertical-align: initial;font-size: 0;z-index: 10;position: absolute;top: 0;left: 100%;right: initial;margin: -5px 0 0 -9px;}
+.PUDD.PUDD-UI-Badge.floatRight.big {display: initial;vertical-align: initial;font-size: 0;z-index: 10;position: absolute;top: 0;left: 100%;right: initial;margin: -8px 0 0 -14px;}
+.PUDD.PUDD-UI-Badge.floatLeft {display: initial;vertical-align: initial;font-size: 0;z-index: 10;position: absolute;top: 0;left: initial;right: 100%;margin: -5px -12px 0 0;}
+.PUDD.PUDD-UI-Badge.floatLeft.small {display: initial;vertical-align: initial;font-size: 0;z-index: 10;position: absolute;top: 0;left: initial;right: 100%;margin: -5px -9px 0 0;}
+.PUDD.PUDD-UI-Badge.floatLeft.big {display: initial;vertical-align: initial;font-size: 0;z-index: 10;position: absolute;top: 0;left: initial;right: 100%;margin: -8px -14px 0 0;}
+
+
+
+
+
+
+

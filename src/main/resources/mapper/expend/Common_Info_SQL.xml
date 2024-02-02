@@ -1,0 +1,379 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="CommonDAO">
+
+	<!-- /* 전자결재 버전 정조 조회 - comp_seq 버전 - DAO */ -->
+	<select id="SelectCommonCompEaTypeInfo" parameterType="map" resultType="String"><![CDATA[
+		/* mariadb - CommonInfoDAO - CommonDAO.SelectCommonCompEaTypeInfo */
+		SELECT IFNULL(ea_type, '') AS ea_type
+		  FROM NEOS.t_co_comp
+		 WHERE comp_seq = #{compSeq}
+		 LIMIT 1
+	]]></select>
+
+	<!-- /* 전자결재 버전 정조 조회 - emp_seq 버전 - DAO */ -->
+	<select id="SelectCommonEmpEaTypeInfo" parameterType="map" resultType="String"><![CDATA[
+		/* mariadb - CommonInfoDAO - CommonDAO.SelectCommonEmpEaTypeInfo */
+		/* 외부시스템 연동 호출시, comp_seq 를 받지 않으므로 우선 사용자 메인회사로 구분 처리 */
+		/* TODO : 외부시스템 연동 호출시, comp_seq 를 절달받도록 요청하여 comp_seq 판단 변경 처리 진행 */
+		SELECT  IFNULL(ea_type, '') AS ea_type
+		FROM    NEOS.t_co_comp
+		WHERE   comp_seq = (
+		                SELECT  main_comp_seq
+		                FROM    NEOS.t_co_emp
+		                WHERE   emp_seq = #{empSeq}
+		                LIMIT   1
+		        )
+	]]></select>
+
+	<!-- /* 연동시스템 정보 조회 - DAO */ -->
+	<select id="SelectCommonConnectionInfo" parameterType="map" resultType="ac.cmm.vo.ConnectionVO2"><![CDATA[
+		/* mariadb - CommonInfoDAO - CommonDAO.SelectCommonConnectionInfo */
+	    SELECT e.`database_type` AS `databaseType`
+	           , e.`driver` AS `driver`
+	           , e.`url` AS `url`
+	           , e.`userid` AS `userId`
+	           , e.`password` AS `password`
+	           , e.`erp_type_code` AS `erpTypeCode`
+	           , e.`erp_comp_seq` AS `erpCompSeq`
+	           , e.`erp_comp_name` AS `erpCompName`
+	           , e.`g20_yn` AS `g20YN`
+	           , c.`erp_use` AS `erp_use`
+	      FROM dj_epis.dj_co_erp e
+	      INNER JOIN neos.t_co_comp c
+	     WHERE e.comp_seq = #{compSeq}
+	       AND e.comp_seq = c.comp_seq
+	       AND e.achr_gbn = 'ac'
+	       AND IFNULL(c.erp_use,'N') = 'Y'
+	     LIMIT 1
+    ]]></select>
+    
+	<!-- /* 연동시스템 정보 조회 - DAO */ -->
+	<select id="SelectCommonConnectionInfoTest" parameterType="map" resultType="ac.cmm.vo.ConnectionVO2"><![CDATA[
+		/* mariadb - CommonInfoDAO - CommonDAO.SelectCommonConnectionInfoTest */
+	    SELECT e.`database_type` AS `databaseType`
+	           , e.`driver` AS `driver`
+	           , e.`url` AS `url`
+	           , e.`userid` AS `userId`
+	           , e.`password` AS `password`
+	           , e.`erp_type_code` AS `erpTypeCode`
+	           , e.`erp_comp_seq` AS `erpCompSeq`
+	           , e.`erp_comp_name` AS `erpCompName`
+	           , e.`g20_yn` AS `g20YN`
+	           , c.`erp_use` AS `erp_use`
+	      FROM dj_epis.dj_co_erp e
+	      INNER JOIN neos.t_co_comp c
+	     WHERE e.comp_seq = #{compSeq}
+	       AND e.comp_seq = c.comp_seq
+	       AND e.achr_gbn = 'ac'
+	       AND IFNULL(c.erp_use,'N') = 'Y'
+	     LIMIT 1
+    ]]></select>
+
+
+	<!-- /* 영리 전자결재 - 지출결의 양식정보 조회 - DAO */ -->
+	<select id="CommonGetExFormListInfo" resultType="map"><![CDATA[
+		/* mariadb - CommonInfoDAO - CommonDAO.CommonGetExFormListInfo */
+				SELECT  A.`form_id` AS `formSeq`
+				        , (CASE WHEN #{langCode} = 'kr' THEN  A.`form_nm` 
+				         	    WHEN #{langCode} = 'en' THEN  A.`form_nm_en` 
+				         		WHEN #{langCode} = 'jp' THEN  A.`form_nm_jp` 
+				         		WHEN #{langCode} = 'cn' THEN  A.`form_nm_cn` 
+					 	   END	)	AS formName
+				        , A.`form_tp` AS `formTp`
+				        , A.`form_d_tp` AS `formDTp`
+				        , A.`interlock_url`
+				FROM    NEOS.teag_form A
+				        INNER JOIN (
+				                SELECT 'ea0000' AS `form_tp`, 'EXPENDA' AS `form_d_tp`
+				                UNION SELECT 'ea0000' AS `form_tp`, 'EXPENDI' AS `form_d_tp`
+				                UNION SELECT 'ea0000' AS `form_tp`, 'EXPENDU' AS `form_d_tp`
+				        ) B ON A.`form_tp` = B.`form_tp` AND A.`form_d_tp` = B.`form_d_tp`
+				WHERE   A.`use_yn` = '1' OR A.`use_yn` = 'Y'
+	]]></select>
+
+	<!-- /* 영리 전자결재 - 양식정보 조회 - DAO */ -->
+	<select id="SelectCommonEapFormInfo" parameterType="map" resultType="map"><![CDATA[
+		/* mariadb - CommonInfoDAO - CommonDAO.SelectCommonEapFormInfo */
+		SELECT `form_id`
+		       , `form_nm`
+		       , IFNULL(`form_nm_en`, `form_nm`) AS `form_nm_en`
+		       , IFNULL(`form_nm_jp`, `form_nm`) AS `form_nm_jp`
+		       , IFNULL(`form_nm_cn`, `form_nm`) AS `form_nm_cn`
+		       , IFNULL(`form_short_nm`, `form_nm`) AS `form_short_nm`
+		       , `form_tp`
+		       , `form_d_tp`
+		       , IFNULL(`form_size`, '900') AS form_size
+		       , `form_mode`
+		       , IFNULL(`form_alert`, '') AS form_alert
+		       , IFNULL(`interlock_url`, '') AS interlock_url
+		       , IFNULL(`interlock_width`, '') AS interlock_width
+		       , IFNULL(`interlock_height`, '') AS interlock_height
+		       , IFNULL(`interlock_yn`, 'N') AS interlock_yn
+		  FROM NEOS.teag_form
+		 WHERE form_id = #formSeq#
+    ]]></select>
+
+
+	<select id="SelectCommonEapFormDetailInfo" parameterType="map" resultType="map">
+    <![CDATA[
+		/* ExCodeCommonFormDetailInfoSelect - BizboxA - mariaDB */
+		SELECT  form_id AS formSeq
+				, form_id AS form_id
+				, form_id AS formId
+		        , CASE
+		            WHEN #{langCode} = 'kr'
+		                THEN IFNULL(form_nm, '')
+		            WHEN #{langCode} = 'en'
+		                THEN
+		                    CASE
+		                        WHEN IFNULL(form_nm_en, '') = ''
+		                            THEN IFNULL(form_nm, '')
+		                        ELSE IFNULL(form_nm_en, '')
+		                    END
+		            WHEN #{langCode} = 'jp'
+		                THEN
+		                    CASE
+		                        WHEN IFNULL(form_nm_jp, '') = ''
+		                            THEN IFNULL(form_nm, '')
+		                        ELSE IFNULL(form_nm_jp, '')
+		                    END
+		            WHEN #{langCode} = 'cn'
+		                THEN
+		                    CASE
+		                        WHEN IFNULL(form_nm_cn, '') = ''
+		                            THEN IFNULL(form_nm, '')
+		                        ELSE IFNULL(form_nm_cn, '')
+		                    END
+		        END AS formName
+		        /* , case when cast(form_d_tp as integer) between 1 and 1000 then 'BizboxA' end */
+		        , CASE
+		            WHEN form_d_tp BETWEEN 1 AND 1000
+		                THEN 'BizboxA'
+		            WHEN form_d_tp BETWEEN 1001 AND 2000
+		                THEN 'ERPiU'
+		            WHEN form_d_tp BETWEEN 2001 AND 3000
+		                THEN 'iCUBE'
+	                WHEN form_d_tp = 'EXPENDA'
+	                	THEN 'BizboxA'
+                	WHEN form_d_tp = 'EXPENDI'
+                		THEN 'iCUBE'
+               		WHEN form_d_tp = 'EXPENDU'
+               			THEN 'ERPiU'
+		            ELSE ''
+		        END ifSystem
+		        , form_tp AS formTp
+		        , form_d_tp AS formDTp
+		        , form_mode AS formMode
+		        , IFNULL(interlock_url, '') AS interlockUrl
+		        , IFNULL(interlock_width, '900') AS interlockWidth
+		        , IFNULL(interlock_height, 'screen.height - 100') AS interlockHeight
+		        , IFNULL(interlock_yn, 'N') AS interlockYN
+		        , ( SELECT form_file_nm FROM NEOS.teag_form_file WHERE form_id = #{searchFormSeq} AND form_file_gb = '10' LIMIT 1 ) AS form_nm_basic
+		FROM    NEOS.teag_form
+		WHERE   form_id = #{searchFormSeq}
+		AND     (form_tp = 'ea0060' OR (form_tp = 'ea0000' AND (form_d_tp IN ('EXPENDA', 'EXPENDI', 'EXPENDU'))))
+		LIMIT   1
+	]]>
+	</select>
+
+
+
+	<!-- 지출결의 옵션 정보 조회 - DAO */ -->
+	<select id="SelectCommonExOptionInfo" parameterType="map" resultType="com.duzon.custom.expend.vo.ExOptionVO"><![CDATA[
+		/* mariadb - CommonDAO.SelectCommonExOptionInfo */
+			SELECT  B.option_name AS option_name
+					, A.common_code AS option_code
+					, A.common_value AS option_value
+			FROM(	
+					SELECT  CASE WHEN B.common_code IS NOT NULL THEN  B.common_code ELSE A.common_code END AS common_code
+							,CASE WHEN B.common_value IS NOT NULL THEN  B.common_value ELSE A.common_value END AS common_value
+							,CASE WHEN B.use_sw IS NOT NULL THEN  B.use_sw ELSE A.use_sw END AS use_sw
+					FROM(
+						SELECT option_code AS common_code
+								, CASE WHEN common_code IS NOT NULL THEN base_value ELSE base_name END AS common_value 
+								, use_sw
+						FROM NEOS.t_ex_option
+						WHERE comp_seq = '0' AND form_seq = '0' AND use_yn = 'Y' AND (use_sw = '' OR use_sw = #{ifSystem}) 
+					)A LEFT OUTER JOIN( 
+						SELECT option_code AS common_code
+								, CASE WHEN common_code IS NOT NULL THEN set_value ELSE set_name END AS common_value 
+								, use_sw 
+						FROM NEOS.t_ex_option
+						WHERE comp_seq = #{comp_seq} AND form_seq = #{form_seq} AND use_yn = 'Y' AND (use_sw = '' OR use_sw = #{ifSystem})
+					)B ON A.common_code = B.common_code AND A.use_sw = B.use_sw
+			)A LEFT OUTER JOIN(
+					SELECT    option_code
+							, option_name
+							, use_sw
+					FROM NEOS.t_ex_option_multi
+			)B ON A.common_code = B.option_code AND A.use_sw = B.use_sw
+    ]]></select>
+
+	<!-- /* 비영리 전자결재 - 양식정보 조회 - DAO */ -->
+	<select id="SelectCommonEaFormInfo"><![CDATA[
+	/* mariadb - CommonInfoDAO - CommonDAO.SelectCommonEaFormInfo */
+    ]]></select>
+
+	<select id="SelectCommonCodeListInfo" parameterType="map" resultType="map"><![CDATA[
+		SELECT  C.`detail_code` AS commonCode
+		        , C.`detail_name` AS commonName
+		        , IFNULL(B.`order_num`, 99999) AS order_num
+		FROM    ( SELECT `code` FROM NEOS.t_co_code WHERE `code` = #{code} AND `use_yn` = 'Y' ) A
+		        INNER JOIN ( SELECT `code`, `detail_code`, `order_num` FROM NEOS.t_co_code_detail WHERE `code` = #{code} AND `use_yn` = 'Y' ) B
+		        ON A.`code` = B.`code`
+		        INNER JOIN ( SELECT `code`, `detail_code`, `detail_name` FROM NEOS.t_co_code_detail_multi WHERE `code` = #{code} AND `use_yn` = 'Y' AND `lang_code` = #{langCode} ) C
+		        ON B.`code` = C.`code` AND B.`detail_code` = C.`detail_code`
+		ORDER   BY IFNULL(B.`order_num`, 99999)
+    ]]></select>
+
+	<!-- 전자결재 양식정보 상세 조회 ( 비영리 ) -->
+	<select id="CommonEaFormInfoSelect" parameterType="map" resultType="map"><![CDATA[
+		/* mariadb - CommonInfoDAO - CommonDAO.SelectCommonEaFormInfo */
+		SELECT  C_TIKEYCODE 
+		        , C_TINAME
+		        , C_TIUSEORGCODE
+		        , C_TIORGCODE
+		        , C_TIUSERKEY
+		        , C_TIDATE
+		        , C_TIMEMO
+		        , C_CIKIND
+		        , NEOS.get_code_detail_info('0', 'COM089', c_cikind, #{loginVO.langCode}) AS C_CIKIND_NM
+		        , C_TIUSEFLAG
+		        , C_TITEMPLATEFLAGCODE
+		        , C_TIJUNKYULJAEFLAG
+		        , CASE WHEN C_TIJUNKYULJAEFLAG = '0' THEN '전결가능' ELSE '전결불가능' END AS C_TIJUNKYULJAEFLAG_KO
+		        , C_TIHEADER
+		        , C_TIFOOTER
+		        , C_TILASTUSERKEY
+		        , DATE_FORMAT(C_TILASTDATE, '%Y-%m-%d')  C_TILASTDATE
+		        , C_TISYMBOL
+		        , (SELECT CONCAT(ORIGNL_FILE_NAME , '.' , b.file_extsn) FROM NEOS.t_co_atch_file a, NEOS.t_co_atch_file_detail b WHERE a.file_id = b.file_id AND a.use_yn = 'Y' AND b.use_yn = 'Y' AND a.file_id = C_TISYMBOL AND b.file_sn = '0') C_TISYMBOL_NM
+		        , C_TILOGO
+		        , (SELECT CONCAT(ORIGNL_FILE_NAME , '.' , b.file_extsn) FROM NEOS.t_co_atch_file a, NEOS.t_co_atch_file_detail b WHERE a.file_id = b.file_id AND a.use_yn = 'Y' AND b.use_yn = 'Y' AND a.file_id = C_TILOGO AND b.file_sn = '0') C_TILOGO_NM
+		        , C_TIFORM
+		        , (SELECT CONCAT(ORIGNL_FILE_NAME , '.' , b.file_extsn) FROM NEOS.t_co_atch_file a, NEOS.t_co_atch_file_detail b WHERE a.file_id = b.file_id AND a.use_yn = 'Y' AND b.use_yn = 'Y' AND a.file_id = C_TIFORM AND b.file_sn = '0') C_TIFORM_NM
+		        , C_TIFLAG
+		        , C_TILISTCODE
+		        , C_TISORTOPTION
+		        , RECEIVEDEPT
+		        , ( SELECT DEPT_NAME FROM NEOS.T_CO_DEPT_MULTI WHERE DEPT_SEQ = T1.RECEIVEDEPT AND LANG_CODE = #{loginVO.langCode}) AS RECEIVEDEPT_NM
+		        , C_TIREGISTPAGEURL
+		        , C_TICHGPAGEURL
+		        , C_ORD
+		        , PARENT
+		        , TYPE
+		        , IFNULL(CHILDCODE, '') AS CHILDCODE
+		        , CHILDCODEDETAIL
+		        , C_SERVICENAME
+		        , C_TICHGPAGE
+		        , C_TIDETAILPAGE
+		        , C_ISURLDIRECT
+		        , C_ISURLPOP
+		        , C_ISURLWIDTH
+		        , C_ISURLHEIGHT
+		        , C_URLPARAM
+		        , C_ARCCOMNCODE
+		        , IFNULL(C_TIVISIBLE, 'Y') AS C_TIVISIBLE
+		        , C_LNKCODE
+		        , IFNULL(C_TIAPPROVER, '001') AS C_TIAPPROVER
+		        , C_TISECRETGRADE
+		        , C_TIFORMGB
+		        , C_TIBODYFORM
+		        , C_TIUSE
+		        , CONCAT(fd.ORIGNL_FILE_NAME , '.' , fd.file_extsn) AS C_TIBODYFORM_NM
+		        , CASE WHEN IFNULL(B.detail_code_div,'') <> '' THEN B.detail_code_div ELSE T1.form_tp END AS FORM_TP
+		        , FORM_D_TP
+		FROM    NEOS.A_TEMPLATEINFO T1
+		        LEFT OUTER JOIN NEOS.t_co_atch_file_detail fd ON T1.C_TIBODYFORM = fd.file_id
+		        LEFT OUTER JOIN NEOS.teag_out_process B ON T1.form_d_tp = B.out_process_id
+		WHERE   C_TIKEYCODE = #{c_tikeycode}
+	]]></select>
+	<!-- 전자결재 양식정보 상세 조회 ( 영리 ) -->
+	<select id="CommonDAO.CommonEapFormInfoSelect" parameterType="map" resultType="map"><![CDATA[
+		/* mariadb - CommonInfoDAO - CommonDAO.SelectCommonEaFormInfo */
+	]]></select>
+
+	<select id="SelectCustomLabelListInfo" parameterType="map" resultType="map"><![CDATA[
+		/* mariadb/BizboxAlpha/common/info/Common_Info_SQL.xml / CommonDAO.SelectCustomLabelListInfo */
+		/* CustomLabelVO data 조회 */
+		SELECT 	
+			BASE.lang_code	AS 'langCode'
+			, ( 
+				CASE IFNULL(ADV.lang_name, '') WHEN '' 
+				THEN (
+					CASE IFNULL(BASE.lang_name, '') WHEN '' THEN BASE.basic_name 
+					ELSE BASE.lang_name END
+				)
+				ELSE 
+					ADV.lang_name 
+				END 
+			) 				AS 'langName'
+			, (
+				CASE IFNULL(ADV.lang_name, '') WHEN '' THEN TRUE
+				ELSE FALSE END
+			) 				AS 'isDefault'
+			, IFNULL(ADV.tooltip, BASE.tooltip) AS 'tooltip'
+		FROM	(
+			 SELECT	A.lang_code, A.basic_name, B.lang_name, A.tooltip
+			 FROM	(
+				 SELECT lang_code, basic_name, tooltip
+				 FROM	neos.t_ex_langpack
+				 WHERE 	comp_seq = 'EXP_LANGPACK'
+				 GROUP BY lang_code, basic_name 
+			 )	A
+				LEFT OUTER JOIN (
+					SELECT lang_code, lang_name
+					FROM	neos.t_ex_langpack
+					WHERE 	comp_seq = 'EXP_LANGPACK'
+					 AND 	lang_type = #{langCode}
+				)	B
+				ON 	A.lang_code = B.lang_code 
+		)	BASE
+			 LEFT JOIN	(
+				SELECT	lang_code, lang_name, tooltip
+				FROM	neos.t_ex_langpack
+				WHERE 	comp_seq = #{compSeq}
+				 AND	lang_type = #{langCode}
+			 )	ADV
+			 ON 	base.lang_code = ADV.lang_code
+	]]></select>
+
+	<select id="SelectCommonNpEAFormListInfo" parameterType="map" resultType="map">
+		/* mariadb/BizboxAlpha/common/info/Common_Info_SQL.xml / CommonDAO.SelectCommonNpEAFormListInfo */
+		/* 비영리 품의/결의 양식 리스트 조회 */	
+		SELECT	c_tikeycode		AS formSeq
+				, c_tiname		AS formName
+				, form_d_tp		AS formDTp
+				, c_tiuse		AS useYN
+				, c_ord			AS orderNum
+		FROM	NEOS.a_templateinfo
+		WHERE	form_tp = 'ea0000'
+		 AND		form_d_tp LIKE '%EXNP%'
+		 AND		(
+			c_tiorgcode = '0'
+			OR c_tiorgcode = #{compSeq}
+		 )
+		ORDER BY formDTp, orderNum ASC
+	</select>
+	
+	<select id="SelectCommonNpEAPFormListInfo" parameterType="map" resultType="map">
+		/* mariadb/BizboxAlpha/common/info/Common_Info_SQL.xml / CommonDAO.SelectCommonNpEAPFormListInfo */
+		/* 영리 품의/결의 양식 리스트 조회 */	
+		SELECT	form_id			AS formSeq
+				, form_nm		AS formName
+				, form_d_tp		AS formDTp
+				, use_yn		AS useYN
+				, co_id			AS compSeq
+				, sort_order	AS orderNum
+		FROM	NEOS.teag_form
+		WHERE	form_tp = 'ea0000'
+		 AND		form_d_tp LIKE '%EXNP%'
+		 AND		(
+			co_id = '0'
+			OR co_id = #{compSeq}
+		 )
+		ORDER BY formDTp, orderNum ASC
+	</select>
+</mapper>
