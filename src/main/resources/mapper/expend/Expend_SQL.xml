@@ -45,4 +45,68 @@
         </if>
     </select>
 
+    <select id="getResTradeList" parameterType="map" resultType="map">
+        SELECT
+            TR.RES_DOC_SEQ, TR.RES_SEQ, TR.TRADE_SEQ, TR.TR_NAME, TR.CTR_NAME, FORMAT(TR.TRADE_AMT, 0) AS TRADE_AMT
+        FROM
+            NEOS.T_EXNP_RESTRADE TR
+        WHERE TR.RES_DOC_SEQ = #{RES_DOC_SEQ}
+    </select>
+
+    <update id="updateCardTrade" parameterType="map">
+        UPDATE NEOS.T_EX_CARD_AQ_TMP
+        SET IF_M_ID = #{resDocSeq}, IF_D_ID = #{tradeSeq}, SEND_YN = 'Y'
+        WHERE SYNC_ID = #{syncId}
+    </update>
+
+    <update id="updateTradeCard" parameterType="map">
+        UPDATE NEOS.T_EXNP_RESTRADE
+        SET INTERFACE_TYPE = 'card', INTERFACE_SEQ = #{syncId}
+        WHERE TRADE_SEQ = #{tradeSeq}
+    </update>
+
+    <select id="getTradeMap" parameterType="map" resultType="map">
+        SELECT
+            *
+        FROM
+            NEOS.T_EXNP_RESTRADE
+        WHERE TRADE_SEQ = #{tradeSeq}
+    </select>
+
+    <select id="getCardMap" parameterType="map" resultType="map">
+        SELECT
+            *
+        FROM
+            NEOS.T_EX_CARD_AQ_TMP
+        WHERE SYNC_ID = #{syncId}
+    </select>
+
+    <insert id="insertTradeCardHistory" parameterType="map">
+        INSERT INTO DJ_EPIS.V_TRADE_CARD_HISTORY
+        (
+            prev_interface_type,
+            prev_interface_seq,
+            next_interface_type,
+            next_interface_seq,
+            prev_if_d_id,
+            prev_if_m_id,
+            next_if_d_id,
+            next_if_m_id,
+            reg_seq,
+            reg_date
+        )
+        VALUES
+        (
+            #{prev_interface_type},
+            #{prev_interface_seq},
+            #{next_interface_type},
+            #{next_interface_seq},
+            #{prev_if_d_id},
+            #{prev_if_m_id},
+            #{next_if_d_id},
+            #{next_if_m_id},
+            #{reg_seq},
+            now()
+        )
+    </insert>
 </mapper>

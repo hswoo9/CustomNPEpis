@@ -185,8 +185,20 @@
 
 <!-- 공통팝업 위한 기능옵션 전달 폼 -->
 <form id="frmPop2" name="frmPop2">
-    <input type="hidden" name="popUrlStr" id="txt_popup_url" width="800" value="<c:url value='/systemx/orgChart.do' />" /> <input type="hidden" id="devMode_forCmPop" name="devMode" width="500" value="dev" /> <input type="hidden" name="devModeUrl" width="500" value="http://local.duzonnext.com:8080" /> <input type="hidden" id="langCode_forCmPop" name="langCode" width="500" /> <input type="hidden" id="groupSeq_forCmPop" name="groupSeq" width="500" /> <input type="hidden" id="compSeq_forCmPop" name="compSeq" width="500" /> <input type="hidden" id="deptSeq_forCmPop" name="deptSeq" width="500" /> <input type="hidden" id="empSeq_forCmPop" name="empSeq" width="500" /> <input type="hidden" id="compFilter_forCmPop" name="compFilter" width="500" /> <input type="hidden" name="selectMode" width="500" value="u" /> <input type="hidden" name="selectItem" width="500" value="s" /> <input type="hidden" id="selectedItems_forCmPop" name="selectedItems" width="500" /> <input type="hidden"
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        name="callback" width="500" value="fnCardTransCallback" /> <input type="hidden" name="callbackUrl" width="500" value="<c:url value='/html/common/callback/cmmOrgPopCallback.jsp' />" />
+    <input type="hidden" name="popUrlStr" id="txt_popup_url" width="800" value="<c:url value='/systemx/orgChart.do' />" />
+    <input type="hidden" id="devMode_forCmPop" name="devMode" width="500" value="dev" />
+    <input type="hidden" name="devModeUrl" width="500" value="http://local.duzonnext.com:8080" />
+    <input type="hidden" id="langCode_forCmPop" name="langCode" width="500" />
+    <input type="hidden" id="groupSeq_forCmPop" name="groupSeq" width="500" />
+    <input type="hidden" id="compSeq_forCmPop" name="compSeq" width="500" />
+    <input type="hidden" id="deptSeq_forCmPop" name="deptSeq" width="500" />
+    <input type="hidden" id="empSeq_forCmPop" name="empSeq" width="500" />
+    <input type="hidden" id="compFilter_forCmPop" name="compFilter" width="500" />
+    <input type="hidden" name="selectMode" width="500" value="u" />
+    <input type="hidden" name="selectItem" width="500" value="s" />
+    <input type="hidden" id="selectedItems_forCmPop" name="selectedItems" width="500" />
+    <input type="hidden" name="callback" width="500" value="fnCardTransCallback" />
+    <input type="hidden" name="callbackUrl" width="500" value="<c:url value='/html/common/callback/cmmOrgPopCallback.jsp' />" />
 </form>
 <form id="cardTranPop" name="cardTranPop" method="post"></form>
 <form id="cardDocPop" name="cardDocPop" method="post"></form>
@@ -558,35 +570,14 @@
             return $(this).data('value');
         }).get();
 
-        if (chkSels.length > 0) {
-            var cardTransList = [];
+        if (chkSels.length == 1) {
 
-           /* $.each(chkSels, function(idx, item) {
-                if ((  (item.sendYn || 'N') == 'N' ) && ( (item.transYn || 'N') === 'N' ) ) {
-                    cardTransList.push(item);
-                }
-            });
-
-            if (cardTransList.length > 0) {
-                if (confirm('${CL.ex_transfermessage}')) {
-                    var url = "/gw/systemx/orgChart.do";
-                    var pop = window.open("", "cmmOrgPop", "width=760,height=780,scrollbars=no,screenX=150,screenY=150");
-
-                    frmPop2.target = "cmmOrgPop";
-                    frmPop2.method = "post";
-                    frmPop2.action = url;
-                    frmPop2.submit();
-                    frmPop2.target = "";
-                    pop.focus();
-                }
-            } else {
-                alert('${CL.ex_PleaseSelectAnItem}');
-            }*/
             var url = "<c:url value='/expend/docListPop.do'/>";
+            url += "?syncId=" + chkSels[0].syncId
             var height = 480;
 
             var isFirefox = typeof InstallTrigger !== 'undefined';
-            var isIE = /*@cc_on!@*/false || !!document.documentMode;
+            var isIE = false || !!document.documentMode;
             var isEdge = !isIE && !!window.StyleMedia;
             var isChrome = !!window.chrome && !!window.chrome.webstore;
             if (isFirefox) {
@@ -609,6 +600,9 @@
             cardDocPop.submit();
             cardDocPop.target = "";
 
+        } else if(chkSels.length > 1){
+            alert("하나의 내역만 선택해주세요.");
+            return;
         } else {
             alert('${CL.ex_PleaseSelectAnItem}');
         }
@@ -1540,20 +1534,53 @@
         if (agt.indexOf("safari") != -1) {
             intTop = intTop - 30;
         }
-        var url = "";
+
         var eaType = "${loginVo.eaType}";
         var popName = "";
-        if( eaType == "eap"){
-            popName = "AppDoc";
-            url = "/eap/ea/docpop/EAAppDocViewPop.do?doc_id=" + docSeq + "&form_id=" + formSeq + "&doc_auth=1";
-        }else{
-            var param = "diKeyCode=" + docSeq + "&mode=reading";
-            popName = "popDocApprovalEdit";
-            param= "multiViewYN=N&"+param;
-            url = "/ea/edoc/eapproval/docCommonDraftView.do?"+ param;
-        }
-        window.open(url, popName,'menubar=0,resizable=0,scrollbars=1,status=no,titlebar=0,toolbar=no,width='
-            + intWidth + ',height=' + intHeight + ',left=' + intLeft + ',top=' + intTop);
+
+        var id = '${loginVo.id}';
+        var  chkFlag = true;
+
+        $.ajax({
+            url : "/approval/approveCheck.do",
+            type : "POST",
+            async : false,
+            data : {
+                docId : docSeq,
+            },
+            success : function(data) {
+
+                if(data.cnt.DOC_CNT != 1){
+                    console.log("더존 전자결재 조회")
+                    chkFlag = false;
+                    var url = "";
+                    if( eaType == "eap"){
+                        popName = "AppDoc";
+                        url = "/eap/ea/docpop/EAAppDocViewPop.do?doc_id=" + docSeq + "&form_id=" + formSeq + "&doc_auth=1";
+                    }else{
+                        var param = "diKeyCode=" + docSeq + "&mode=reading";
+                        popName = "popDocApprovalEdit";
+                        param= "multiViewYN=N&"+param;
+                        url = "/ea/edoc/eapproval/docCommonDraftView.do?"+ param;
+                    }
+                    window.open(url, popName,'menubar=0,resizable=0,scrollbars=1,status=no,titlebar=0,toolbar=no,width='
+                        + intWidth + ',height=' + intHeight + ',left=' + intLeft + ',top=' + intTop);
+                }else{
+                    var mod = "V";
+                    var pop = "" ;
+                    var url = 'http://one.epis.or.kr/approval/approvalDocView.do?docId='+docSeq+'&menuCd=' + "normal" + '&mod=' + mod + '&approKey=&id=' + id;
+                    var width = "1000";
+                    var height = "950";
+                    windowX = Math.ceil( (window.screen.width  - width) / 2 );
+                    windowY = Math.ceil( (window.screen.height - height) / 2 );
+                    pop = window.open(url, '결재 문서_' + docSeq, "width=" + width + ", height=" + height + ", top="+ windowY +", left="+ windowX +", resizable=NO, scrollbars=NO");
+                }
+            }
+        });
+
+
+
+
     }
 
 
@@ -1668,6 +1695,29 @@
         cardTranPop.target = "";
 
         return;
+    }
+
+    function resCardUse(tradeSeq){
+
+        var chkSels = $("input[name=chkCard]:checkbox:checked").map(function(idx) {
+            return $(this).data('value');
+        }).get();
+
+        var syncIdArr = [];
+
+        $.each(chkSels, function(idx, item) {
+            if(item.syncId != null){
+                syncIdArr.push(String(item.syncId));
+            }
+        });
+
+        var params = {
+            tradeSeq : tradeSeq,
+            syncIdArr : JSON.stringify(syncIdArr)
+        };
+
+
+        /**/
     }
 </script>
 </body>

@@ -86,6 +86,9 @@ public class ExpendController {
     @RequestMapping(value = "/expend/docListPop.do")
     public String docListPop(@RequestParam Map<String, Object> params, Model model) {
         logger.debug("docListPop");
+        if(params.containsKey("syncId")){
+            model.addAttribute("syncId", params.get("syncId"));
+        }
         return "/popup/expend/popup/docListPop";
     }
 
@@ -118,6 +121,22 @@ public class ExpendController {
             logger.info(e.getMessage());
         }
         model.addAttribute("result", result);
+        return "jsonView";
+    }
+
+    @RequestMapping(value = "/expend/setResCardUse.do")
+    public String setResCardUse(@RequestParam Map<String, Object> params, Model model) {
+        logger.debug("setResCardUse");
+        LoginVO loginVo = (LoginVO) EgovUserDetailsHelper.getAuthenticatedUser();
+        params.put("empSeq", loginVo.getUniqId());
+        model.addAttribute("result", expendService.setResCardUse(params));
+        return "jsonView";
+    }
+
+    @RequestMapping(value = "/expend/getResTradeList.do")
+    public String getResTradeList(@RequestParam Map<String, Object> params, Model model) {
+        logger.debug("setResCardUse");
+        model.addAttribute("result", expendService.getResTradeList(params));
         return "jsonView";
     }
 

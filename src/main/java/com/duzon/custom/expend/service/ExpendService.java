@@ -9,4 +9,8 @@ public interface ExpendService {
 
     String getDocListDataTotalCount(Map<String, Object> params);
 
+    Map<String, Object> setResCardUse(Map<String, Object> params);
+
+    List<Map<String, Object>> getResTradeList(Map<String, Object> params);
+
 }
