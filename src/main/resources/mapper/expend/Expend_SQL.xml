@@ -109,4 +109,10 @@
             now()
         )
     </insert>
+
+    <update id="setCardMoney" parameterType="map">
+        UPDATE NEOS.T_EX_CARD_AQ_TMP
+        SET REQUEST_AMOUNT = #{reqAmt}, AMT_MD_AMOUNT = #{serAmount}, VAT_MD_AMOUNT = #{vatAmt}
+        WHERE SYNC_ID = #{syncId}
+    </update>
 </mapper>

@@ -40,6 +40,52 @@
         margin-top: 15px;
     }
 
+    .customTable {
+        width: 100%;
+        border-top: 1px solid #eaeaea;
+        text-align: center;
+        background: #fff;
+        table-layout: fixed;
+    }
+
+    .customTable tr th:first-child{
+        border: solid #eaeaea;
+        border-width: 0 0 1px 0px;
+    }
+
+    .customTable tr th{
+        border-top: 1px solid #eaeaea;
+        padding: 5px 0;
+        background: #f9f9f9;
+        height: 18px;
+        color: #4a4a4a;
+        word-break: break-all;
+    }
+
+    .customTable tr td{
+        border-top: 1px solid #eaeaea;
+        padding: 5px 0;
+        height: 18px;
+        color: #4a4a4a;
+        word-break: break-all;
+    }
+
+    .moneyInput {
+        text-align: right;
+        padding-right: 10px;
+    }
+
+    .sendBtn {
+        background: #fff;
+        border-radius: 0px;
+        box-shadow: none;
+        padding: 0px 12px;
+        height: 24px;
+        line-height: 24px;
+        border: 1px solid #c9cac9;
+        outline: 0;
+        color: #4a4a4a !important;
+    }
 </style>
 <body>
 <form id="excelDownload" name="excel" method="post">
@@ -133,7 +179,7 @@
             </div>
             <!-- 		<input type="checkbox" name="cancelDoneChk" id="cancelDoneChk"/>&nbsp;<label for="cancelDoneChk" class="mr10">취소완료 건 조회</label> -->
             <button id="btnCardDocStatus" class="k-button">결의상태수정</button>
-            <button id="" class="k-button">해외결재 선택 </button>
+            <button id="btnOverseasApproval" class="k-button">해외결재 선택 </button>
             <button id="btnCardTrancefer" class="k-button">${CL.ex_cardListTrans}  <!--카드내역이관--></button>
             <button id="btnCardHistroy" class="k-button">${CL.ex_transManage}</button>
             <button id="btnCardUseN" class="k-button">${CL.ex_noUser}  <!--미사용--></button>
@@ -437,6 +483,15 @@
         return;
     });
 
+    function numberWithCommas(x, type) {
+        if(type == "A" || type == "N"){
+            return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }else{
+            return "-" + x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+
+    }
+
     /* ## init ## */
     /* ====================================================================================================================================================== */
     function fnInit() {
@@ -465,6 +520,12 @@
         /* 결의상태수정 */
         $('#btnCardDocStatus').click(function() {
             fnCardDocStatus();
+            return;
+        });
+
+        /* 해외결재수정 */
+        $('#btnOverseasApproval').click(function() {
+            fnOverseasApproval();
             return;
         });
 
@@ -1022,7 +1083,7 @@
             }, {
                 no : '9',
                 render : function(idx, item) {
-                    return (item.georaeStat=='N' || item.georaeStat=='A') ?Common.Format.Amt(item.stdAmt + item.serAmount):Common.Format.Amt(Math.abs(item.stdAmt + item.srAmount) * -1);
+                    return (item.georaeStat=='N' || item.georaeStat=='A') ?Common.Format.Amt(item.stdAmt + item.serAmount):Common.Format.Amt(Math.abs(item.stdAmt + item.serAmount) * -1);
                 }
                 , class : 'ri colorIf'
             }, {
@@ -1718,6 +1779,130 @@
 
 
         /**/
+    }
+
+    var template = "";
+
+    function fnOverseasApproval(){
+        var chkSels = $("input[name=chkCard]:checkbox:checked").map(function(idx) {
+            return $(this).data('value');
+        }).get();
+
+        if(chkSels.length > 1){
+            alert("하나의 내역만 선택해주세요.");
+            return;
+        } else if(chkSels.length == 1){
+
+            var html = "<table class='customTable'>";
+            html += "<thead>";
+            html += "<tr>";
+            html += "<th>사용처</th>";
+            html += "<th>카드명</th>";
+            html += "<th>금액</th>";
+            html += "<th>공급가액</th>";
+            html += "<th>부가세</th>";
+            html += "<th></th>";
+            html += "</tr>";
+            html += "</thead>";
+
+            html += "<tbody>";
+            html += "<tr>";
+            html += "<td>"+ chkSels[0].partnerName +"</td>";
+            html += "<td>"+ chkSels[0].cardName +"</td>";
+            if(chkSels[0].georaeStat == "N" || chkSels[0].georaeStat == "A"){
+                /*html += "<td>"+ Common.Format.Amt(chkSels[0].reqAmt) +"</td>";
+                html += "<td>"+ Common.Format.Amt(chkSels[0].stdAmt + chkSels[0].serAmount) +"</td>";
+                html += "<td>"+ Common.Format.Amt(chkSels[0].vatAmt) +"</td>";*/
+                html += "<td><input type='text' id='reqAmt' class='moneyInput' value='"+ Common.Format.Amt(chkSels[0].reqAmt) +"'></td>";
+                html += "<td><input type='text' id='serAmount' class='moneyInput' value='"+ Common.Format.Amt(chkSels[0].stdAmt + chkSels[0].serAmount) +"'></td>";
+                html += "<td><input type='text' id='vatAmt' class='moneyInput' value='"+ Common.Format.Amt(chkSels[0].vatAmt) +"'></td>";
+
+            } else {
+                /*html += "<td>"+ Common.Format.Amt(Math.abs(chkSels[0].reqAmt) * -1) +"</td>";
+                html += "<td>"+ Common.Format.Amt(Math.abs(chkSels[0].stdAmt + chkSels[0].srAmount) * -1) +"</td>";
+                html += "<td>"+ Common.Format.Amt(Math.abs(chkSels[0].vatAmt) * -1) +"</td>";*/
+                html += "<td><input type='text' id='reqAmt' class='moneyInput' value='"+ Common.Format.Amt(Math.abs(chkSels[0].reqAmt) * -1) +"'></td>";
+                html += "<td><input type='text' id='serAmount' class='moneyInput' value='"+ Common.Format.Amt(Math.abs(chkSels[0].stdAmt + chkSels[0].serAmount) * -1) +"'></td>";
+                html += "<td><input type='text' id='vatAmt' class='moneyInput' value='"+ Common.Format.Amt(Math.abs(chkSels[0].vatAmt) * -1) +"'></td>";
+            }
+            html += "<td><button type='button' class='sendBtn k-button' onclick='setCardMoney(\"" + chkSels[0].syncId + "\")'>저장</button><input type='hidden' id='georaeStat' value='"+ chkSels[0].georaeStat +"'></td>";
+            html += "</tr>";
+            html += "</tbody>";
+
+
+
+            html += "</table>";
+            template = $('<div style="height: 100px;">'+ html +'</div>');
+
+            template.kendoWindow({
+                title: "해외결재",
+                visible: false,
+                modal: true,
+                width : 1200,
+                position : {
+                    top : 300,
+                    left : 400
+                },
+                close: function () {
+                    template.remove();
+                }
+            });
+
+            template.data("kendoWindow").open();
+
+
+            $(".moneyInput").bind({
+                keyup : function(event){
+
+                    $(this).val( numberWithCommas( $(this).val().replace(/[^0-9]/g,""), $(this).closest("tr").find("#georaeStat").val() ) );
+                },
+                change : function(event){
+                    $(this).val( numberWithCommas( $(this).val().replace(/[^0-9]/g,""), $(this).closest("tr").find("#georaeStat").val() ) );
+                }
+            });
+
+        }else{
+            alert("선택된 내역이 없습니다.");
+            return;
+        }
+
+    }
+
+    function setCardMoney(key){
+        var params = {
+            reqAmt : $("#reqAmt").val().replace(/,/g, "").replace("-", ""),
+            serAmount : $("#serAmount").val().replace(/,/g, "").replace("-", ""),
+            vatAmt : $("#vatAmt").val().replace(/,/g, "").replace("-", ""),
+            georaeStat : $("#georaeStat").val(),
+            syncId : key
+        }
+        console.log(params);
+
+        if(confirm("저장하시겠습니까?")){
+            $.ajax({
+                type : 'post',
+                url : "/expend/setCardMoney.do",
+                dataType : 'json',
+                async : false,
+                data : params,
+                success : function(data) {
+                    if(data.result.status != null){
+                        if(data.result.status == "200"){
+                            alert(data.result.message);
+                            template.data("kendoWindow").close();
+                            template = "";
+                            fnCardReportSearch();
+                        }else{
+                            alert(data.result.message);
+                        }
+                    }
+                },
+                error : function(data) {
+                }
+            });
+        }
+
+
     }
 </script>
 </body>

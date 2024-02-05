@@ -72,4 +72,23 @@ public class ExpendServiceImpl implements ExpendService {
     public List<Map<String, Object>> getResTradeList(Map<String, Object> params) {
         return expendDAO.selectList("Expend.getResTradeList", params);
     }
+
+    @Override
+    public Map<String, Object> setCardMoney(Map<String, Object> params) {
+        Map<String, Object> result = new HashMap<>();
+        String status = "";
+        String message = "";
+
+        int updateCheck = (int) expendDAO.update("Expend.setCardMoney", params);
+        if(updateCheck > 0){
+            message = "처리되었습니다.";
+            status = "200";
+        }else{
+            message = "저장 중 오류 발생";
+            status = "500";
+        }
+        result.put("status", status);
+        result.put("message", message);
+        return result;
+    }
 }
