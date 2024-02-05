@@ -1881,7 +1881,7 @@
         if(confirm("저장하시겠습니까?")){
             $.ajax({
                 type : 'post',
-                url : "/expend/setCardMoney.do",
+                url : "<c:url value='/expend/setCardMoney.do'/>",
                 dataType : 'json',
                 async : false,
                 data : params,

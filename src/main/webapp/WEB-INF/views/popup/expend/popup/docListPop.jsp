@@ -103,7 +103,7 @@ $(function(){
                 var dataList = new Array();
                 $.ajax({
                     type : 'post',
-                    url : "/expend/getResTradeList.do",
+                    url : "<c:url value='/expend/getResTradeList.do'/>",
                     dataType : 'json',
                     async : false,
                     data : { RES_DOC_SEQ : dataItem.RES_DOC_SEQ},
@@ -177,7 +177,7 @@ $(function(){
         if(confirm("해당 거래처로 연동 하시겠습니까?")){
             $.ajax({
                 type : 'post',
-                url : "/expend/setResCardUse.do",
+                url : "<c:url value='/expend/setResCardUse.do'/>",
                 dataType : 'json',
                 async : false,
                 data : params,
