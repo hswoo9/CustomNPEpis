@@ -41,10 +41,7 @@ public class BNpUserCardServiceImpl implements BNpUserCardService {
                                     String mercAddr = "";
                                     String mercTel = "";
                                     String branchType = "";
-                                    if(list.get(i).get("iss_dt").toString().equals(stradeList.get(j).get("APPR_DATE").toString())
-                                        && list.get(i).get("iss_dt").toString().equals(stradeList.get(j).get("APPR_SEQ").toString())
-                                        && list.get(i).get("partnerNo").toString().equals(stradeList.get(j).get("CHAIN_ID").toString())
-                                    ) {
+                                    if(list.get(i).get("authNum").toString().equals(stradeList.get(j).get("APPR_NO").toString())) {
                                         if(stradeList.get(j).get("CHAIN_ADDR1") != null && !String.valueOf(stradeList.get(j).get("CHAIN_ADDR1")).equals("")) {
                                             mercAddr += String.valueOf(stradeList.get(j).get("CHAIN_ADDR1"));
                                         }
@@ -59,11 +56,14 @@ public class BNpUserCardServiceImpl implements BNpUserCardService {
                                         }else{
                                             mercTel = "";
                                         }
+
+                                        list.get(i).put("mercAddr", mercAddr);
+                                        list.get(i).put("mercTel", mercTel);
+                                        list.get(i).put("branchType", branchType);
+
                                     }
 
-                                    list.get(i).put("mercAddr", mercAddr);
-                                    list.get(i).put("mercTel", mercTel);
-                                    list.get(i).put("branchType", branchType);
+
                                 }
                             }
 

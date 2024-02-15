@@ -327,7 +327,7 @@
                 paraemters.authNumLength = ($("#authNumLength").val() || ''); /* 승인/취소 */
 
                 //브랜치 조회 여부 Y 조회 N 미조회
-                paraemters.branch = "N";
+                paraemters.branch = "Y";
 
                 paraemters.orderBy = 'ASC';
 
@@ -522,8 +522,7 @@
         }
         /* DATEPICKER */
         //Common.Date.SetDatepicker("#txtFromDate, #txtToDate", "yy-mm-dd");
-        //$('#txtFromDate').val(Common.Date.GetBeforeMonth());
-        $('#txtFromDate').val(Common.Date.GetToday());
+        $('#txtFromDate').val(Common.Date.GetBeforeMonth());
         $('#txtToDate').val(Common.Date.GetToday());
 
         return;
