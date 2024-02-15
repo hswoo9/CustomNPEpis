@@ -325,6 +325,10 @@
                 paraemters.searchAuthNum = ($("#txtCardAuthNum").val() || ''); /* 승인번호 */
                 paraemters.searchGeoraeStat = ($("#georaeStatus").val() || ''); /* 승인/취소 */
                 paraemters.authNumLength = ($("#authNumLength").val() || ''); /* 승인/취소 */
+
+                //브랜치 조회 여부 Y 조회 N 미조회
+                paraemters.branch = "N";
+
                 paraemters.orderBy = 'ASC';
 
                 return Common.Param._GetSearchFormat(paraemters);
@@ -518,7 +522,8 @@
         }
         /* DATEPICKER */
         //Common.Date.SetDatepicker("#txtFromDate, #txtToDate", "yy-mm-dd");
-        $('#txtFromDate').val(Common.Date.GetBeforeMonth());
+        //$('#txtFromDate').val(Common.Date.GetBeforeMonth());
+        $('#txtFromDate').val(Common.Date.GetToday());
         $('#txtToDate').val(Common.Date.GetToday());
 
         return;
@@ -1208,6 +1213,13 @@
                         } else {
                             return "-";
                         }
+                    }
+                }, {
+                    field : "",
+                    title : "적요",
+                    width : "300px",
+                    template : function(item){
+                        return (item.res_note || "");
                     }
                 }, {
                     field : "",

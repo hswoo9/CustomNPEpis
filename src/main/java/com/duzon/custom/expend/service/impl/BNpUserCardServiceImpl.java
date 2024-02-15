@@ -31,35 +31,48 @@ public class BNpUserCardServiceImpl implements BNpUserCardService {
         ResultVO result = service.GetCardList2(params);
         if(result.getAaData() != null){
             List<Map<String, Object>> list = (List<Map<String, Object>>) result.getAaData();
-            if(list.size() > 0){
-                for(int i = 0 ; i < list.size() ; i++){
-                    //Map<String, Object> stradeMap = new HashMap<>();
-                    Map<String, Object> stradeMap = resAlphaG20DAO.selectTradeAddrInfo2(list.get(i));
-                    String mercAddr = "";
-                    String mercTel = "";
-                    String branchType = "";
-                    if (stradeMap != null) {
-                        if (stradeMap.get("CHAIN_ADDR1") != null && !String.valueOf(stradeMap.get("CHAIN_ADDR1")).equals("")) {
-                            mercAddr += String.valueOf(stradeMap.get("CHAIN_ADDR1"));
-                        }
+            if(params.containsKey("branch")) {
+                if (params.get("branch").toString().equals("Y")) {
+                    List<Map<String, Object>> stradeList = resAlphaG20DAO.selectTradeAddrInfo2(params);
+                    if (list.size() > 0) {
+                        if (stradeList.size() > 0) {
+                            for(int i = 0 ; i < list.size() ; i++) {
+                                for(int j = 0 ; j < stradeList.size() ; j++) {
+                                    String mercAddr = "";
+                                    String mercTel = "";
+                                    String branchType = "";
+                                    if(list.get(i).get("iss_dt").toString().equals(stradeList.get(j).get("APPR_DATE").toString())
+                                        && list.get(i).get("iss_dt").toString().equals(stradeList.get(j).get("APPR_SEQ").toString())
+                                        && list.get(i).get("partnerNo").toString().equals(stradeList.get(j).get("CHAIN_ID").toString())
+                                    ) {
+                                        if(stradeList.get(j).get("CHAIN_ADDR1") != null && !String.valueOf(stradeList.get(j).get("CHAIN_ADDR1")).equals("")) {
+                                            mercAddr += String.valueOf(stradeList.get(j).get("CHAIN_ADDR1"));
+                                        }
+                                        if(stradeList.get(j).get("CHAIN_ADDR2") != null && !String.valueOf(stradeList.get(j).get("CHAIN_ADDR2")).equals("")) {
+                                            mercAddr += " " + String.valueOf(stradeList.get(j).get("CHAIN_ADDR2"));
+                                        }
+                                        if(stradeList.get(j).get("BRANCHTYPE") != null && !String.valueOf(stradeList.get(j).get("BRANCHTYPE")).equals("")) {
+                                            branchType = String.valueOf(stradeList.get(j).get("BRANCHTYPE"));
+                                        }
+                                        if(stradeList.get(j).get("CHAIN_TEL") != null && !String.valueOf(stradeList.get(j).get("CHAIN_TEL")).equals("")) {
+                                            mercTel = String.valueOf(stradeList.get(j).get("CHAIN_TEL"));
+                                        }else{
+                                            mercTel = "";
+                                        }
+                                    }
 
-                        if (stradeMap.get("CHAIN_ADDR2") != null && !String.valueOf(stradeMap.get("CHAIN_ADDR2")).equals("")) {
-                            mercAddr += " " + String.valueOf(stradeMap.get("CHAIN_ADDR2"));
-                        }
+                                    list.get(i).put("mercAddr", mercAddr);
+                                    list.get(i).put("mercTel", mercTel);
+                                    list.get(i).put("branchType", branchType);
+                                }
+                            }
 
-                        if (stradeMap.get("BRANCHTYPE") != null && !String.valueOf(stradeMap.get("BRANCHTYPE")).equals("")) {
-                            branchType = String.valueOf(stradeMap.get("BRANCHTYPE"));
                         }
-
-                        mercTel = stradeMap.get("CHAIN_TEL") != null ?  String.valueOf(stradeMap.get("CHAIN_TEL")) : "";
                     }
-                    list.get(i).put("mercAddr", mercAddr);
-                    list.get(i).put("mercTel", mercTel);
-                    list.get(i).put("branchType", branchType);
-
                 }
-                result.setAaData(list);
             }
+
+            result.setAaData(list);
         }
 
         return result;

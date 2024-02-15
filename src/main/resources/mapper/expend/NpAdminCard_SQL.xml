@@ -86,7 +86,7 @@
 			, IFNULL(receive.use_code, '')		AS receiveYN
 			, IFNULL(receive.use_code, '')		AS receiveYn
 			, IFNULL(receive.use_code, '')		AS receive_yn
-			
+			, IFNULL(send.res_note, '') AS res_note
 		FROM    NEOS.t_ex_card_aq_tmp card
 		LEFT	JOIN NEOS.t_ex_card c
 		ON	card.card_num = replace(c.card_num,'-','')
@@ -100,11 +100,14 @@
 				, IFNULL(ar.c_riaftertitle, ta.doc_title) AS doc_title
 				, doc_status
 				, IFNULL(ta.form_id, '') form_seq
+				, IFNULL(rh.res_note, '') res_note
 			FROM 	NEOS.t_ex_card_aq_tmp	c
 			INNER JOIN	NEOS.t_exnp_restrade t
 			ON	c.sync_id = t.interface_seq
 			INNER JOIN	NEOS.t_exnp_resdoc	d
 			ON	d.res_doc_seq = t.res_doc_seq
+			INNER JOIN NEOS.t_exnp_reshead rh
+			ON t.res_seq = rh.res_seq
 			LEFT JOIN NEOS.a_recordinfo ar
 			ON	d.doc_seq = ar.c_dikeycode
 			LEFT JOIN NEOS.teag_appdoc ta

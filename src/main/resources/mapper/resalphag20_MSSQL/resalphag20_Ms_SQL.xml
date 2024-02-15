@@ -110,8 +110,12 @@
 
 	<select id="resalphag20_Ms.selectTradeAddrInfo2" parameterType="map" resultType="map">
 		/* resalphag20_Ms.selectTradeAddrInfo2 */
-		select top 1 * from CCM_APPR
-			WHERE CHAIN_ID = #{partnerNo} AND APPR_NO = #{authNum} AND CHAIN_ADDR1 is not null order by APPR_DATE desc
+		select * from CCM_APPR
+			WHERE APPR_DATE BETWEEN #{cardAuthDateFrom} AND #{cardAuthDateTo}
+		<if test="authNumLength != null and authNumLength != ''">
+			AND LEN(APPR_NO) = #{authNumLength}
+		</if>
+		  AND CHAIN_ADDR1 is not null order by APPR_DATE desc
 	</select>
 	
 	<select id="resalphag20_Ms.selectCardSeunginTrList" parameterType="map" resultType="map">
