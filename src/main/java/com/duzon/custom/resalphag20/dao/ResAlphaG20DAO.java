@@ -237,6 +237,10 @@ public class ResAlphaG20DAO extends AbstractDAO{
 	public Map<String, Object> selectTradeAddrInfo(Map<String, Object> param) {
 		return (Map<String, Object>) selectOneMs2("resalphag20_Ms.selectTradeAddrInfo", param);
 	}
+
+	public Map<String, Object> selectTradeAddrInfo2(Map<String, Object> param) {
+		return (Map<String, Object>) selectOneMs2("resalphag20_Ms.selectTradeAddrInfo2", param);
+	}
 	
 	public List<Map<String, Object>> getUnRegisteredSaupList(Map<String, Object> paramMap) {
 		return selectListMs2("resalphag20_Ms.selectCardSeunginTrList", paramMap);

@@ -37,6 +37,8 @@
 		/* 법인카드 승인내역 전체 현황 조회 */
 		SELECT
 			card.sync_id				AS syncId
+			 , card.iss_dt
+			 , card.iss_sq
 			, CASE card.georae_stat 
 				WHEN '1' THEN 'N' 
 				WHEN '0' THEN 'Y'
@@ -133,6 +135,10 @@
 		)	notUse
 		ON	card.sync_id = notUse.sync_id			
 		WHERE   card.auth_date BETWEEN #{cardAuthDateFrom} AND #{cardAuthDateTo}
+		<if test="authNumLength != null and authNumLength != ''">
+			AND LENGTH(card.auth_num) = #{authNumLength}
+		</if>
+
 		GROUP BY card.card_num, card.auth_date, card.auth_num, card.auth_time, card.georae_stat, card.georae_coll
 		ORDER BY auth_date DESC, auth_time DESC 
 	</select>

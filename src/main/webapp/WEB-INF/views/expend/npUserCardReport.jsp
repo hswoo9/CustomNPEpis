@@ -168,8 +168,16 @@
                     </select>
                 </dd>
                 <dt>${CL.ex_resPerson}</dt>
-                <dd class="mr5">
+                <dd class="mr5" style="width: 250px;">
                     <input id="txtEmpName" type="text" value="" />
+                </dd>
+                <dt>국내/국외</dt>
+                <dd class="mr5" style="padding-left: 40px;">
+                    <select style="width: 70px;" id="authNumLength" class="selectmenu">
+                        <option value="">전체</option>
+                        <option value="8">국내</option>
+                        <option value="6">국외</option>
+                    </select>
                 </dd>
             </dl>
         </div>
@@ -179,7 +187,7 @@
             </div>
             <!-- 		<input type="checkbox" name="cancelDoneChk" id="cancelDoneChk"/>&nbsp;<label for="cancelDoneChk" class="mr10">취소완료 건 조회</label> -->
             <button id="btnCardDocStatus" class="k-button">결의상태수정</button>
-            <button id="btnOverseasApproval" class="k-button">해외결재 선택 </button>
+            <button id="btnOverseasApproval" class="k-button">금액수정</button>
             <button id="btnCardTrancefer" class="k-button">${CL.ex_cardListTrans}  <!--카드내역이관--></button>
             <button id="btnCardHistroy" class="k-button">${CL.ex_transManage}</button>
             <button id="btnCardUseN" class="k-button">${CL.ex_noUser}  <!--미사용--></button>
@@ -316,6 +324,7 @@
                 paraemters.searchPartnerName = ($("#txtMercName").val() || ''); /* 사용자 */
                 paraemters.searchAuthNum = ($("#txtCardAuthNum").val() || ''); /* 승인번호 */
                 paraemters.searchGeoraeStat = ($("#georaeStatus").val() || ''); /* 승인/취소 */
+                paraemters.authNumLength = ($("#authNumLength").val() || ''); /* 승인/취소 */
                 paraemters.orderBy = 'ASC';
 
                 return Common.Param._GetSearchFormat(paraemters);
@@ -436,6 +445,14 @@
 
                 return value;
             },
+            Time : function(value) {
+                value = (value || '');
+                value = (value.length > 12 ? value.substring(0, 12) : value);
+                value = value.toString().replace(/-/g, '').split(' ').join('');
+                value = value.replace(/([0-9]{4})([0-9]{2})([0-9]{2})([0-9]{2})([0-9]{2})/, '$4:$5');
+
+                return value;
+            },
             RegNo : function(value) {
                 value = (value || '');
                 value = value.toString().replace(/-/g, '').split(' ').join('');
@@ -523,7 +540,7 @@
             return;
         });
 
-        /* 해외결재수정 */
+        /* 금액수정 */
         $('#btnOverseasApproval').click(function() {
             fnOverseasApproval();
             return;
@@ -616,7 +633,8 @@
                 gCurrentPage = 1;
 
                 /* 테이블 그리기 */
-                fnRenderTable2(gCardReportData, ($("#selViewLength").val() || 10));
+                //fnRenderTable2(gCardReportData, ($("#selViewLength").val() || 10));
+                fnRenderTable3(gCardReportData);
 
                 Common.Util.CheckboxStat();
             },
@@ -627,8 +645,13 @@
     }
 
     function fnCardDocStatus(){
-        var chkSels = $("input[name=chkCard]:checkbox:checked").map(function(idx) {
+        /*var chkSels = $("input[name=chkCard]:checkbox:checked").map(function(idx) {
             return $(this).data('value');
+        }).get();*/
+
+        var grid = $("#divGridArea").data("kendoGrid");
+        var chkSels = $("input[name=chkCard]:checkbox:checked").map(function(idx) {
+            return grid.dataItem( $(this).closest("tr"));
         }).get();
 
         if (chkSels.length == 1) {
@@ -674,8 +697,13 @@
     /* ## trans card ## */
     /* ====================================================================================================================================================== */
     function fnCardTrans() {
-        var chkSels = $("input[name=chkCard]:checkbox:checked").map(function(idx) {
+        /*var chkSels = $("input[name=chkCard]:checkbox:checked").map(function(idx) {
             return $(this).data('value');
+        }).get();*/
+
+        var grid = $("#divGridArea").data("kendoGrid");
+        var chkSels = $("input[name=chkCard]:checkbox:checked").map(function(idx) {
+            return grid.dataItem( $(this).closest("tr"));
         }).get();
 
         if (chkSels.length > 0) {
@@ -723,8 +751,13 @@
                 setTimeout(function(){ alert('자신에게 이관할 수 없습니다.'); }, 1000);
                 return;
             } else {
+                /*var chkSels = $("input[name=chkCard]:checkbox:checked").map(function(idx) {
+            return $(this).data('value');
+        }).get();*/
+
+                var grid = $("#divGridArea").data("kendoGrid");
                 var chkSels = $("input[name=chkCard]:checkbox:checked").map(function(idx) {
-                    return $(this).data('value');
+                    return grid.dataItem( $(this).closest("tr"));
                 }).get();
 
                 if (chkSels.length > 0) {
@@ -771,8 +804,13 @@
     /* ## use yn card ## */
     /* ====================================================================================================================================================== */
     function fnCardUseYN(useYN) {
-        var chkSels = $("input[name=chkCard]:checkbox:checked").map(function(idx) {
+        /*var chkSels = $("input[name=chkCard]:checkbox:checked").map(function(idx) {
             return $(this).data('value');
+        }).get();*/
+
+        var grid = $("#divGridArea").data("kendoGrid");
+        var chkSels = $("input[name=chkCard]:checkbox:checked").map(function(idx) {
+            return grid.dataItem( $(this).closest("tr"));
         }).get();
 
         if (chkSels.length > 0) {
@@ -923,6 +961,298 @@
         excelDownload.target = "";
     }
 
+    function fnRenderTable3(aaData){
+
+        $("#divGridArea").kendoGrid({
+            dataSource : aaData,
+            height : 600,
+            sortable: true,
+            scrollable: true,
+            noRecords : {
+                template: "<div style='margin: auto;'>데이터가 존재하지 않습니다.</div>"
+            },
+            pageable: {
+                refresh: true,
+                pageSize : 10,
+                pageSizes: [10, 20, 50, 100],
+                buttonCount: 5,
+                messages: {
+                    display: "{0} - {1} of {2}",
+                    itemsPerPage: "",
+                    empty: "데이터가 없습니다.",
+                }
+            },
+            columns: [
+                {
+                    field : "",
+                    title : "",
+                    width : "50px",
+                    headerTemplate : "<input type='checkbox' id='all_chk' name='all_chk'>",
+                    template : function(item){
+                        var isDisabled = (item.receiveYn || item.transferYn || 'N') == 'Y' ? 'disabled' : '';
+                        if( (item.sendYn || 'N' ) == 'Y'){
+                            isDisabled = 'disabled';
+                        }
+                        return '<input type="checkbox" class="chk_row" name="chkCard" onclick="Common.Util.CheckboxStat();" ' + isDisabled + '/>';
+                    }
+                }, {
+                    field : "",
+                    title : "카드사",
+                    width : "150px",
+                    template : function(item){
+                        return "NH카드(통합부서)";
+                    }
+                }, {
+                    field : "",
+                    title : "카드번호",
+                    width : "150px",
+                    template : function(item){
+                        return Common.Format.CardNum((item.cardNum || ''));
+                    }
+                }, {
+                    field : "",
+                    title : "부서명",
+                    width : "80px",
+                    template : function(e){
+                        return "";
+                    }
+                }, {
+                    field : "",
+                    title : "사용자",
+                    width : "80px",
+                    template : function(e){
+                        return "";
+                    }
+                }, {
+                    field : "",
+                    title : "승인일자",
+                    width : "100px",
+                    template : function(item){
+                        return Common.Format.Date((item.authDate || ''));
+                    }
+                }, {
+                    field : "",
+                    title : "승인시간",
+                    width : "80px",
+                    template : function(item){
+                        return Common.Format.Time((item.authDate || '') + (item.authTime || ''));
+                    }
+                }, {
+                    field : "",
+                    title : "승인번호",
+                    width : "80px",
+                    template : function(item){
+                        return '<a class="text_blue cardPop" style="text-decoration:underline;cursor:pointer;" title="법인카드 사용내역 상세 팝업보기">' + (item.authNum || '') + '</a>';
+                    }
+                }, {
+                    field : "",
+                    title : "승인금액",
+                    width : "100px",
+                    template : function(item){
+                        return (item.georaeStat=='N' || item.georaeStat=='A') ?Common.Format.Amt(item.reqAmt):Common.Format.Amt(Math.abs(item.reqAmt) * -1);
+                    }
+                }, {
+                    field : "",
+                    title : "부가가치세",
+                    width : "100px",
+                    template : function(item){
+                        return (item.georaeStat=='N' || item.georaeStat=='A') ?Common.Format.Amt(item.vatAmt):Common.Format.Amt(Math.abs(item.vatAmt) * -1);
+                    }
+                }, {
+                    field : "",
+                    title : "봉사료",
+                    width : "100px",
+                    template : function(item){
+                        return "0";
+                    }
+                }, {
+                    field : "",
+                    title : "취소여부",
+                    width : "80px",
+                    template : function(item){
+                        if( ( item.receiveYn || 'N') === 'Y'){
+                            return '<img src="../../../Images/ico/received_arr.png" alt="" /> ' + (Common.Format.Date(item.georaeStatName)=='승인'?'${CL.ex_approval}':'${CL.ex_cancel}');
+                        } else if( ( item.transferYn || 'N') === 'Y'){
+                            return '<img src="../../../Images/ico/send_arr.png" alt="" /> ' + (Common.Format.Date(item.georaeStatName)=='승인'?'${CL.ex_approval}':'${CL.ex_cancel}');
+                        }
+                        return (Common.Format.Date(item.georaeStatName)=='승인'?'${CL.ex_approval}':'${CL.ex_cancel}');
+                    }
+                }, {
+                    field : "",
+                    title : "가맹점",
+                    width : "300px",
+                    template : function(item){
+                        return item.partnerName;
+                    }
+                }, {
+                    field : "",
+                    title : "가맹점사업자번호",
+                    width : "150px",
+                    template : function(item){
+                        return Common.Format.RegNo(item.partnerNo);
+                    }
+                }, {
+                    field : "",
+                    title : "가맹점주소",
+                    width : "200px",
+                    template : function(item){
+                        return (item.mercAddr || "-");
+                    }
+                }, {
+                    field : "",
+                    title : "가맹점번호",
+                    width : "100px",
+                    template : function(e){
+                        return "";
+                    }
+                }, {
+                    field : "",
+                    title : "가맹점 전화번호",
+                    width : "150px",
+                    template : function(item){
+                        return (item.mercTel || "-");
+                    }
+                }, {
+                    field : "",
+                    title : "가맹점 대표자명",
+                    width : "150px",
+                    template : function(e){
+                        return "";
+                    }
+                }, {
+                    field : "",
+                    title : "카드구분",
+                    width : "100px",
+                    template : function(item){
+                        return "";
+                    }
+                }, {
+                    field : "",
+                    title : "체크카드 결제계좌",
+                    width : "150px",
+                    template : function(e){
+                        return "";
+                    }
+                }, {
+                    field : "",
+                    title : "국내외구분",
+                    width : "80px",
+                    template : function(item){
+                        return item.authNum.toString().length == 6 ? "국외" : "국내";
+                    }
+                }, {
+                    field : "",
+                    title : "카드상태",
+                    width : "80px",
+                    template : function(e){
+                        return "";
+                    }
+                }, {
+                    field : "",
+                    title : "가맹점업종",
+                    width : "150px",
+                    template : function(item){
+                        return (item.branchType || "-");
+                    }
+                }, {
+                    field : "",
+                    title : "카드별칭",
+                    width : "300px",
+                    template : function(item){
+                        return (item.cardName || '') ;
+                    }
+                }, {
+                    field : "",
+                    title : "카드별칭2",
+                    width : "150px",
+                    template : function(e){
+                        return "";
+                    }
+                }, {
+                    field : "",
+                    title : "결의상태",
+                    width : "150px",
+                    template : function(item){
+                        if (item.sendYn === 'Y') {
+                            item.formSeq = item.formSeq || 0;
+                            return '<a class="text_blue eaPop" style="text-decoration:underline;cursor:pointer;" onClick="javascript:fnAppdocPop(' + item.docSeq + ', ' + item.formSeq + ' )" title="전자결재 정보 상세 팝업보기">' + fnGetDocStatusLabel(item.docStatus) + '</a>';
+                        } if((item.useYn || 'Y') == 'N'){
+                            return '${CL.ex_notUse}';
+                        }
+                        else {
+                            return '${CL.ex_noRes}';
+                        }
+                    }
+                }, {
+                    field : "",
+                    title : "결의자",
+                    width : "150px",
+                    template : function(item){
+                        if (item.sendYn === 'Y') {
+                            item.formSeq = item.formSeq || 0;
+                            return item.sendEmpName;
+                        } if((item.useYn || 'Y') == 'N'){
+                            return item.notUseEmpName;
+                        }
+                        else {
+                            return "-";
+                        }
+                    }
+                }, {
+                    field : "",
+                    title : "문서번호",
+                    width : "150px",
+                    template : function(item){
+                        if (item.sendYn === 'Y') {
+                            return item.docNo;
+                        } else {
+                            return "-";
+                        }
+                    }
+                }, {
+                    field : "",
+                    title : "사업명",
+                    width : "200px",
+                    template : function(e){
+                        return "";
+                    }
+                }, {
+                    field : "",
+                    title : "관",
+                    width : "150px",
+                    template : function(e){
+                        return "";
+                    }
+                }, {
+                    field : "",
+                    title : "항",
+                    width : "150px",
+                    template : function(e){
+                        return "";
+                    }
+                }, {
+                    field : "",
+                    title : "사용자",
+                    width : "150px",
+                    template : function(item){
+                        if (item.sendYn === 'Y') {
+                            return item.docEmpName;
+                        } else {
+                            return "-";
+                        }
+                    }
+                }, {
+                    field : "",
+                    title : "내역",
+                    width : "200px",
+                    template : function(e){
+                        return "";
+                    }
+                }
+            ]
+        }).data("kendoGrid");
+    }
+
     /* ## table render2 ## */
     /* ====================================================================================================================================================== */
     function fnRenderTable2(aaData) {
@@ -1018,6 +1348,12 @@
                 colgroup : '15',
                 class : 'orderBy',
                 value : 'docStatus'
+            } , {
+                no : '12',
+                renderValue : '문서번호',
+                colgroup : '15',
+                class : 'orderBy',
+                value : 'docNo'
             } ],
             "aoDataRender" : [ { // [*] 실제 데이터 표기 방법에 대하여 지정합니다.
                 no : '0',
@@ -1106,6 +1442,12 @@
                     }
                 },
                 class : 'cen colorIf2'
+            }, {
+                no : '12',
+                class : 'cen',
+                render : function(idx, item){
+                    return item.docNo == "" ? "-" : item.docNo;
+                }
             } ],
             'fnGetDetailInfo' : function() {
                 console.log('get detail info');
@@ -1242,7 +1584,8 @@
             return 0;
         });
 
-        fnRenderTable2(aaData);
+        //fnRenderTable2(aaData);
+        fnRenderTable3(aaData);
 
         $('.com_ta2 table th').css('background', '#f9f9f9');
         if(_orderBy == -1){
@@ -1760,8 +2103,13 @@
 
     function resCardUse(tradeSeq){
 
-        var chkSels = $("input[name=chkCard]:checkbox:checked").map(function(idx) {
+        /*var chkSels = $("input[name=chkCard]:checkbox:checked").map(function(idx) {
             return $(this).data('value');
+        }).get();*/
+
+        var grid = $("#divGridArea").data("kendoGrid");
+        var chkSels = $("input[name=chkCard]:checkbox:checked").map(function(idx) {
+            return grid.dataItem( $(this).closest("tr"));
         }).get();
 
         var syncIdArr = [];
@@ -1784,8 +2132,13 @@
     var template = "";
 
     function fnOverseasApproval(){
-        var chkSels = $("input[name=chkCard]:checkbox:checked").map(function(idx) {
+        /*var chkSels = $("input[name=chkCard]:checkbox:checked").map(function(idx) {
             return $(this).data('value');
+        }).get();*/
+
+        var grid = $("#divGridArea").data("kendoGrid");
+        var chkSels = $("input[name=chkCard]:checkbox:checked").map(function(idx) {
+            return grid.dataItem( $(this).closest("tr"));
         }).get();
 
         if(chkSels.length > 1){
@@ -1835,7 +2188,7 @@
             template = $('<div style="height: 100px;">'+ html +'</div>');
 
             template.kendoWindow({
-                title: "해외결재",
+                title: "금액수정",
                 visible: false,
                 modal: true,
                 width : 1200,
