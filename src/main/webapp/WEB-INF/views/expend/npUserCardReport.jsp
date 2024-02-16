@@ -1046,7 +1046,7 @@
                     title : "승인번호",
                     width : "80px",
                     template : function(item){
-                        return '<a class="text_blue cardPop" style="text-decoration:underline;cursor:pointer;" title="법인카드 사용내역 상세 팝업보기">' + (item.authNum || '') + '</a>';
+                        return '<a class="text_blue cardPop" style="text-decoration:underline;cursor:pointer;" title="법인카드 사용내역 상세 팝업보기" syncId="'+ item.syncId +'">' + (item.authNum || '') + '</a>';
                     }
                 }, {
                     field : "",
@@ -1262,6 +1262,11 @@
                 }
             ]
         }).data("kendoGrid");
+
+        $('.cardPop').click(function(){
+            var popup = window.open("/exp/expend/np/user/UserCardDetailPop.do?syncId=" + $(this).attr("syncId") , "" , "width=432, height=489 , scrollbars=yes");
+        });
+
     }
 
     /* ## table render2 ## */
@@ -1950,14 +1955,14 @@
             intTop = intTop - 30;
         }
 
-        var eaType = "${loginVo.eaType}";
+        var eaType = "${loginVO.eaType}";
         var popName = "";
 
-        var id = '${loginVo.id}';
+        var id = '${loginVO.id}';
         var  chkFlag = true;
 
         $.ajax({
-            url : "/approval/approveCheck.do",
+            url : "<c:url value='/approval/approveCheck.do'/>",
             type : "POST",
             async : false,
             data : {
