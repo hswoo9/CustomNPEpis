@@ -60,6 +60,8 @@ public class BNpUserCardServiceImpl implements BNpUserCardService {
                                         list.get(i).put("mercAddr", mercAddr);
                                         list.get(i).put("mercTel", mercTel);
                                         list.get(i).put("branchType", branchType);
+                                        list.get(i).put("chainCd", String.valueOf(stradeList.get(j).get("CHAIN_CD")));
+                                        list.get(i).put("chainCeo", String.valueOf(stradeList.get(j).get("CHAIN_CEO")));
 
                                     }
 

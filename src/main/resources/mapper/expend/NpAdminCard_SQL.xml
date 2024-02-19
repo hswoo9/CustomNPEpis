@@ -87,6 +87,15 @@
 			, IFNULL(receive.use_code, '')		AS receiveYn
 			, IFNULL(receive.use_code, '')		AS receive_yn
 			, IFNULL(send.res_note, '') AS res_note
+			, IFNULL(send.res_note, '-') AS res_note
+			, IFNULL(send.mgt_name, '-') AS mgt_name
+			, IFNULL(send.erp_budget_name, '-') AS erp_budget_name
+			, IFNULL(send.erp_bgt1_name, '-') AS erp_bgt1_name
+			, IFNULL(send.erp_bgt2_name, '-') AS erp_bgt2_name
+			, IFNULL(send.erp_bgt3_name, '-') AS erp_bgt3_name
+			, IFNULL(send.approve_stat_code_desc, '-') AS approve_stat_code_desc
+			, IFNULL(send.draft_dept_name, '-') AS draft_dept_name
+			, IFNULL(send.draft_emp_name, '-') AS draft_emp_name
 		FROM    NEOS.t_ex_card_aq_tmp card
 		LEFT	JOIN NEOS.t_ex_card c
 		ON	card.card_num = replace(c.card_num,'-','')
@@ -101,6 +110,14 @@
 				, doc_status
 				, IFNULL(ta.form_id, '') form_seq
 				, IFNULL(rh.res_note, '') res_note
+				, IFNULL(rh.mgt_name, '-') mgt_name
+				, IFNULL(rb.erp_budget_name, '-') erp_budget_name
+				, IFNULL(rb.erp_bgt1_name, '-') erp_bgt1_name
+				, IFNULL(rb.erp_bgt2_name, '-') erp_bgt2_name
+				, IFNULL(rb.erp_bgt3_name, '-') erp_bgt3_name
+				, IFNULL(DI.APPROVE_STAT_CODE_DESC, '-') approve_stat_code_desc
+				, IFNULL(DI.DRAFT_DEPT_NAME, '-') draft_dept_name
+				, IFNULL(DI.DRAFT_EMP_NAME, '-') draft_emp_name
 			FROM 	NEOS.t_ex_card_aq_tmp	c
 			INNER JOIN	NEOS.t_exnp_restrade t
 			ON	c.sync_id = t.interface_seq
@@ -108,16 +125,22 @@
 			ON	d.res_doc_seq = t.res_doc_seq
 			INNER JOIN NEOS.t_exnp_reshead rh
 			ON t.res_seq = rh.res_seq
+			INNER JOIN NEOS.t_exnp_resbudget rb
+			ON t.budget_seq = rb.budget_seq
 			LEFT JOIN NEOS.a_recordinfo ar
 			ON	d.doc_seq = ar.c_dikeycode
 			LEFT JOIN NEOS.teag_appdoc ta
-			ON	d.doc_seq = ta.doc_id	
+			ON	d.doc_seq = ta.doc_id
+
+			LEFT JOIN DJ_EPIS.A_DOC_INFO DI
+			ON d.doc_seq = DI.DOC_ID
+
 			WHERE	d.doc_seq IS NOT NULL
 			 AND	IFNULL(t.interface_type, '') = 'card'
 			 AND	IFNULL(d.doc_status, '008') IN ( '001', '002', '003', '004', '008', '009','20', '30', '90' )
 			 AND	IFNULL(del_yn, 'N')	= 'N'
 		)	send
-		ON	card.sync_id = send.sync_id		
+		ON	card.sync_id = send.sync_id
 		LEFT JOIN	(
 			SELECT	
 				'Y'	AS use_code

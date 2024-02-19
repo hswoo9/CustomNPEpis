@@ -470,6 +470,23 @@
                 value = value.replace(/([0-9]{4})([0-9]{4})([0-9]{3,4})([0-9]{4})/, '$1-****-****-$4');
 
                 return value;
+            },
+            CardNum2 : function(value) {
+                value = (value || '');
+                value = value.toString().replace(/-/g, '').split(' ').join('');
+                value = value.replace(/([0-9]{4})([0-9]{4})([0-9]{3,4})([0-9]{4})/, '$1-$2-$3-$4');
+
+                return value;
+            },
+            Tel : function(value) {
+                value = (value || '');
+                value = value.toString().replace(/-/g, '').split(' ').join('');
+                if(value.indexOf("02") == 0){
+                    value = value.replace(/(\d{2})(\d{4})(\d{4})/, '$1-$2-$3');
+                }else{
+                    value = value.replace(/^(\d{2,3})(\d{3,4})(\d{4})$/, `$1-$2-$3`);
+                }
+                return value;
             }
         },
         Util : {
@@ -873,7 +890,7 @@
             return false;
         }
 
-        $.each(gCardExcelData, function(idx, item) {
+        /*$.each(gCardExcelData, function(idx, item) {
             if (item.georaeStat === '0' || item.georaeStat === 'Y' || item.georaeStat === 'B') {
                 gCardExcelData[idx].georaeStatName = '${CL.ex_cancel}';
             } else {
@@ -930,6 +947,54 @@
             }
 
 
+        });*/
+
+
+        $.each(gCardExcelData, function(idx, item) {
+            gCardExcelData[idx].cardCompanyExcel = 'NH카드(통합부서)';
+            gCardExcelData[idx].cardNumExcel = Common.Format.CardNum2((item.cardNum || ''));
+            gCardExcelData[idx].draftDeptNameExcel = (item.draft_dept_name || "-");
+            gCardExcelData[idx].draftEmpNameExcel = (item.draft_emp_name || "-");
+            gCardExcelData[idx].authDateExcel = Common.Format.Date((item.authDate || ''));
+            gCardExcelData[idx].authTimeExcel = Common.Format.Time((item.authDate || '') + (item.authTime || ''));
+            gCardExcelData[idx].authNumExcel = (item.authNum || "-");
+
+            if ([ 'Y', '0' , 'B' ].indexOf(item.georaeStat) > -1) {
+                gCardExcelData[idx].reqAmtExcel = Math.abs(item.reqAmt)*-1;
+                gCardExcelData[idx].vatAmtExcel = Math.abs(item.vatAmt) * -1;
+            } else {
+                gCardExcelData[idx].reqAmtExcel = item.reqAmt;
+                gCardExcelData[idx].vatAmtExcel = item.vatAmt;
+            }
+
+            gCardExcelData[idx].serviceChargeExcel = '0';
+            if (item.georaeStat === '0' || item.georaeStat === 'Y' || item.georaeStat === 'B') {
+                gCardExcelData[idx].georaeStatNameExcel = '${CL.ex_cancel}';
+            } else {
+                gCardExcelData[idx].georaeStatNameExcel = '${CL.ex_approved}';
+            }
+
+            gCardExcelData[idx].partnerNameExcel = (item.partnerName || "-");
+            gCardExcelData[idx].partnerNoExcel = Common.Format.RegNo(item.partnerNo);
+            gCardExcelData[idx].mercAddrExcel = (item.mercAddr || "-");
+            gCardExcelData[idx].chainCdExcel = (item.chainCd || "-");
+            gCardExcelData[idx].mercTelExcel = Common.Format.Tel(item.mercTel);
+            gCardExcelData[idx].chainCeoExcel = (item.chainCeo || "-");
+            gCardExcelData[idx].cardKindExcel = '신용';
+            gCardExcelData[idx].cardBankNumberExcel = '-';
+
+            gCardExcelData[idx].inOrOutExcel = item.authNum.toString().length == 6 ? "국외" : "국내";
+            gCardExcelData[idx].cardStatusExcel = '정상';
+            gCardExcelData[idx].branchTypeExcel = (item.branchType || "-");
+            gCardExcelData[idx].cardNameExcel = (item.cardName || "-");
+            gCardExcelData[idx].cardName2Excel = (item.cardName2 || "-");
+
+            gCardExcelData[idx].mgtNameExcel = (item.mgt_name || "-");
+            gCardExcelData[idx].erpBgt1NameExcel = (item.erp_bgt1_name || "-");
+            gCardExcelData[idx].erpBgt2NameExcel = (item.erp_bgt2_name || "-");
+            gCardExcelData[idx].docEmpNameExcel = (item.docEmpName || "-");
+            gCardExcelData[idx].etcExcel = '-';
+
         });
 
         var excelHeader = {
@@ -953,14 +1018,47 @@
             sendEmpName : '<%=BizboxAMessage.getMessage("TX000018600","기안자")%>'
         };
 
+        var excelHeader2 = {
+            cardCompanyExcel : '카드사',
+            cardNumExcel : '카드번호',
+            draftDeptNameExcel : '부서명',
+            draftEmpNameExcel : '사용자',
+            authDateExcel : '승인일자',
+            authTimeExcel : '승인시간',
+            authNumExcel : '승인번호',
+            reqAmtExcel : '승인금액',
+            vatAmtExcel : '부가가치세',
+            serviceChargeExcel : '봉사료',
+            georaeStatNameExcel : '취소여부',
+            partnerNameExcel : '가맹점',
+            partnerNoExcel : '가맹점사업자번호',
+            mercAddrExcel : '가맹점주소',
+            chainCdExcel : '가맹점번호',
+            mercTelExcel : '가맹점 전화번호',
+            chainCeoExcel : '가맹점 대표자명',
+            cardKindExcel : '카드구분',
+            cardBankNumberExcel : '체크카드 결제계좌',
+            inOrOutExcel : '국내외구분',
+            cardStatusExcel : '카드상태',
+            branchTypeExcel : '가맹점업종',
+            cardNameExcel : '카드별칭',
+            cardName2Excel : '카드별칭2',
+            mgtNameExcel : '사업명',
+            erpBgt1NameExcel : '관',
+            erpBgt2NameExcel : '항',
+            docEmpNameExcel : '사용자',
+            etcExcel : '내역'
+        }
+
 // 		for(var i = 0 ; i < gCardExcelData.length; i++){
 // 			gCardExcelData[i].docStatus = fnGetDocStatusLabel(gCardExcelData[i].docStatus) ;
 // 		}
 
-        $("#excelHeader").val(JSON.stringify(excelHeader));
+        $("#excelHeader").val(JSON.stringify(excelHeader2));
         $("#tableData").val(JSON.stringify(gCardExcelData));
         excelDownload.method = "post";
-        excelDownload.action = "<c:url value='/expend/np/user/NpUserCardReportExcel.do' />";
+        excelDownload.action = "/exp/expend/np/user/NpUserCardReportExcel.do";
+        //excelDownload.action = "http://10.10.10.82/exp/expend/np/user/NpUserCardReportExcel.do";
         excelDownload.submit();
         excelDownload.target = "";
     }
@@ -1014,18 +1112,26 @@
                         return Common.Format.CardNum((item.cardNum || ''));
                     }
                 }, {
-                    field : "",
+                    field : "draft_dept_name",
                     title : "부서명",
                     width : "80px",
-                    template : function(e){
-                        return "";
+                    template : function(item){
+                        if(item.draft_dept_name != null && item.draft_dept_name != "-"){
+                            return item.draft_dept_name;
+                        }else{
+                            return "-";
+                        }
                     }
                 }, {
-                    field : "",
+                    field : "draft_emp_name",
                     title : "사용자",
                     width : "80px",
-                    template : function(e){
-                        return "";
+                    template : function(item){
+                        if(item.draft_emp_name != null && item.draft_emp_name != "-"){
+                            return item.draft_emp_name;
+                        }else{
+                            return "-";
+                        }
                     }
                 }, {
                     field : "",
@@ -1106,22 +1212,22 @@
                     field : "",
                     title : "가맹점번호",
                     width : "100px",
-                    template : function(e){
-                        return "";
+                    template : function(item){
+                        return (item.CHAIN_CD || "-")
                     }
                 }, {
                     field : "",
                     title : "가맹점 전화번호",
                     width : "150px",
                     template : function(item){
-                        return (item.mercTel || "-");
+                        return Common.Format.Tel(item.mercTel);
                     }
                 }, {
                     field : "",
                     title : "가맹점 대표자명",
                     width : "150px",
-                    template : function(e){
-                        return "";
+                    template : function(item){
+                        return (item.CHAIN_CEO || "-")
                     }
                 }, {
                     field : "",
@@ -1179,12 +1285,25 @@
                     template : function(item){
                         if (item.sendYn === 'Y') {
                             item.formSeq = item.formSeq || 0;
-                            return '<a class="text_blue eaPop" style="text-decoration:underline;cursor:pointer;" onClick="javascript:fnAppdocPop(' + item.docSeq + ', ' + item.formSeq + ' )" title="전자결재 정보 상세 팝업보기">' + fnGetDocStatusLabel(item.docStatus) + '</a>';
+                            if(item.approve_stat_code_desc != null && item.approve_stat_code_desc != "-"){
+                                return '<a class="text_blue eaPop" style="text-decoration:underline;cursor:pointer;" onClick="javascript:fnAppdocPop(' + item.docSeq + ', ' + item.formSeq + ' )" title="전자결재 정보 상세 팝업보기">' + item.approve_stat_code_desc + '</a>';
+                            }else{
+                                return '<a class="text_blue eaPop" style="text-decoration:underline;cursor:pointer;" onClick="javascript:fnAppdocPop(' + item.docSeq + ', ' + item.formSeq + ' )" title="전자결재 정보 상세 팝업보기">' + fnGetDocStatusLabel(item.docStatus) + '</a>';
+                            }
+
                         } if((item.useYn || 'Y') == 'N'){
-                            return '${CL.ex_notUse}';
+                            if(item.approve_stat_code_desc != null && item.approve_stat_code_desc != "-"){
+                                return item.approve_stat_code_desc;
+                            }else{
+                                return '${CL.ex_notUse}';
+                            }
                         }
                         else {
-                            return '${CL.ex_noRes}';
+                            if(item.approve_stat_code_desc != null && item.approve_stat_code_desc != "-"){
+                                return item.approve_stat_code_desc;
+                            }else{
+                                return '${CL.ex_noRes}';
+                            }
                         }
                     }
                 }, {
@@ -1221,26 +1340,17 @@
                         return (item.res_note || "");
                     }
                 }, {
-                    field : "",
+                    field : "mgt_name",
                     title : "사업명",
-                    width : "200px",
-                    template : function(e){
-                        return "";
-                    }
+                    width : "200px"
                 }, {
-                    field : "",
+                    field : "erp_bgt1_name",
                     title : "관",
-                    width : "150px",
-                    template : function(e){
-                        return "";
-                    }
+                    width : "150px"
                 }, {
-                    field : "",
+                    field : "erp_bgt2_name",
                     title : "항",
-                    width : "150px",
-                    template : function(e){
-                        return "";
-                    }
+                    width : "150px"
                 }, {
                     field : "",
                     title : "사용자",
