@@ -1027,8 +1027,6 @@
             authTimeExcel : '승인시간',
             authNumExcel : '승인번호',
             reqAmtExcel : '승인금액',
-            vatAmtExcel : '부가가치세',
-            serviceChargeExcel : '봉사료',
             georaeStatNameExcel : '취소여부',
             partnerNameExcel : '가맹점',
             partnerNoExcel : '가맹점사업자번호',
@@ -1037,17 +1035,14 @@
             mercTelExcel : '가맹점 전화번호',
             chainCeoExcel : '가맹점 대표자명',
             cardKindExcel : '카드구분',
-            cardBankNumberExcel : '체크카드 결제계좌',
             inOrOutExcel : '국내외구분',
             cardStatusExcel : '카드상태',
             branchTypeExcel : '가맹점업종',
             cardNameExcel : '카드별칭',
-            cardName2Excel : '카드별칭2',
             mgtNameExcel : '사업명',
             erpBgt1NameExcel : '관',
             erpBgt2NameExcel : '항',
-            docEmpNameExcel : '사용자',
-            etcExcel : '내역'
+            docEmpNameExcel : '상신자'
         }
 
 // 		for(var i = 0 ; i < gCardExcelData.length; i++){
@@ -1109,7 +1104,7 @@
                     title : "카드번호",
                     width : "150px",
                     template : function(item){
-                        return Common.Format.CardNum((item.cardNum || ''));
+                        return Common.Format.CardNum2((item.cardNum || ''));
                     }
                 }, {
                     field : "draft_dept_name",
@@ -1160,20 +1155,6 @@
                     width : "100px",
                     template : function(item){
                         return (item.georaeStat=='N' || item.georaeStat=='A') ?Common.Format.Amt(item.reqAmt):Common.Format.Amt(Math.abs(item.reqAmt) * -1);
-                    }
-                }, {
-                    field : "",
-                    title : "부가가치세",
-                    width : "100px",
-                    template : function(item){
-                        return (item.georaeStat=='N' || item.georaeStat=='A') ?Common.Format.Amt(item.vatAmt):Common.Format.Amt(Math.abs(item.vatAmt) * -1);
-                    }
-                }, {
-                    field : "",
-                    title : "봉사료",
-                    width : "100px",
-                    template : function(item){
-                        return "0";
                     }
                 }, {
                     field : "",
@@ -1238,13 +1219,6 @@
                     }
                 }, {
                     field : "",
-                    title : "체크카드 결제계좌",
-                    width : "150px",
-                    template : function(e){
-                        return "";
-                    }
-                }, {
-                    field : "",
                     title : "국내외구분",
                     width : "80px",
                     template : function(item){
@@ -1270,13 +1244,6 @@
                     width : "300px",
                     template : function(item){
                         return (item.cardName || '') ;
-                    }
-                }, {
-                    field : "",
-                    title : "카드별칭2",
-                    width : "150px",
-                    template : function(e){
-                        return "";
                     }
                 }, {
                     field : "",
@@ -1327,8 +1294,13 @@
                     width : "150px",
                     template : function(item){
                         if (item.sendYn === 'Y') {
-                            return item.docNo;
-                        } else {
+                            item.formSeq = item.formSeq || 0;
+                            if(item.approve_stat_code_desc != null && item.approve_stat_code_desc != "-"){
+                                return '<a class="text_blue eaPop" style="text-decoration:underline;cursor:pointer;" onClick="javascript:fnAppdocPop(' + item.docSeq + ', ' + item.formSeq + ' )" title="전자결재 정보 상세 팝업보기">' + item.docNo + '</a>';
+                            }else{
+                                return '<a class="text_blue eaPop" style="text-decoration:underline;cursor:pointer;" onClick="javascript:fnAppdocPop(' + item.docSeq + ', ' + item.formSeq + ' )" title="전자결재 정보 상세 팝업보기">' + item.docNo + '</a>';
+                            }
+                        }else{
                             return "-";
                         }
                     }
@@ -1353,7 +1325,7 @@
                     width : "150px"
                 }, {
                     field : "",
-                    title : "사용자",
+                    title : "상신자",
                     width : "150px",
                     template : function(item){
                         if (item.sendYn === 'Y') {
@@ -1361,13 +1333,6 @@
                         } else {
                             return "-";
                         }
-                    }
-                }, {
-                    field : "",
-                    title : "내역",
-                    width : "200px",
-                    template : function(e){
-                        return "";
                     }
                 }
             ]
