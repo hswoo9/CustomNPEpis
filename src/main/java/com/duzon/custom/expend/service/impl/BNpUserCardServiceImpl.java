@@ -41,6 +41,8 @@ public class BNpUserCardServiceImpl implements BNpUserCardService {
                                     String mercAddr = "";
                                     String mercTel = "";
                                     String branchType = "";
+                                    String cancelYn = "N";
+                                    String cardDept = "";
                                     if(list.get(i).get("authNum").toString().equals(stradeList.get(j).get("APPR_NO").toString())) {
                                         if(stradeList.get(j).get("CHAIN_ADDR1") != null && !String.valueOf(stradeList.get(j).get("CHAIN_ADDR1")).equals("")) {
                                             mercAddr += String.valueOf(stradeList.get(j).get("CHAIN_ADDR1"));
@@ -57,9 +59,18 @@ public class BNpUserCardServiceImpl implements BNpUserCardService {
                                             mercTel = "";
                                         }
 
+                                        if(stradeList.get(j).get("CANCEL_YN") != null && !String.valueOf(stradeList.get(j).get("CANCEL_YN")).equals("")) {
+                                            cancelYn = String.valueOf(stradeList.get(j).get("CANCEL_YN"));
+                                        }
+                                        if(stradeList.get(j).get("CARD_DEPT") != null && !String.valueOf(stradeList.get(j).get("CARD_DEPT")).equals("")) {
+                                            cardDept = String.valueOf(stradeList.get(j).get("CARD_DEPT"));
+                                        }
+
                                         list.get(i).put("mercAddr", mercAddr);
                                         list.get(i).put("mercTel", mercTel);
                                         list.get(i).put("branchType", branchType);
+                                        list.get(i).put("cancelYn", cancelYn);
+                                        list.get(i).put("cardDept", cardDept);
                                         list.get(i).put("chainCd", String.valueOf(stradeList.get(j).get("CHAIN_CD")));
                                         list.get(i).put("chainCeo", String.valueOf(stradeList.get(j).get("CHAIN_CEO")));
 

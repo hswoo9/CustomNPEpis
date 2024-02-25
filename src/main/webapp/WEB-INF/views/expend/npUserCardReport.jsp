@@ -1194,7 +1194,7 @@
                     title : "가맹점번호",
                     width : "100px",
                     template : function(item){
-                        return (item.CHAIN_CD || "-")
+                        return (item.chainCd || "-")
                     }
                 }, {
                     field : "",
@@ -1208,7 +1208,7 @@
                     title : "가맹점 대표자명",
                     width : "150px",
                     template : function(item){
-                        return (item.CHAIN_CEO || "-")
+                        return (item.chainCeo || "-")
                     }
                 }, {
                     field : "",
