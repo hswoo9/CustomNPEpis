@@ -1022,7 +1022,7 @@
             cardCompanyExcel : '카드사',
             cardNumExcel : '카드번호',
             draftDeptNameExcel : '부서명',
-            draftEmpNameExcel : '사용자',
+            //draftEmpNameExcel : '사용자',
             authDateExcel : '승인일자',
             authTimeExcel : '승인시간',
             authNumExcel : '승인번호',
@@ -1041,8 +1041,8 @@
             cardNameExcel : '카드별칭',
             mgtNameExcel : '사업명',
             erpBgt1NameExcel : '관',
-            erpBgt2NameExcel : '항',
-            docEmpNameExcel : '상신자'
+            erpBgt2NameExcel : '항'
+            //docEmpNameExcel : '상신자'
         }
 
 // 		for(var i = 0 ; i < gCardExcelData.length; i++){
@@ -1070,8 +1070,8 @@
             },
             pageable: {
                 refresh: true,
-                pageSize : 10,
-                pageSizes: [10, 20, 50, 100],
+                pageSize : 50,
+                pageSizes: [50, 100, 9999999, "All"],
                 buttonCount: 5,
                 messages: {
                     display: "{0} - {1} of {2}",
@@ -1117,7 +1117,7 @@
                             return "-";
                         }
                     }
-                }, {
+                }/*, {
                     field : "draft_emp_name",
                     title : "사용자",
                     width : "80px",
@@ -1128,7 +1128,7 @@
                             return "-";
                         }
                     }
-                }, {
+                }*/, {
                     field : "",
                     title : "승인일자",
                     width : "100px",
@@ -1323,7 +1323,7 @@
                     field : "erp_bgt2_name",
                     title : "항",
                     width : "150px"
-                }, {
+                }/*, {
                     field : "",
                     title : "상신자",
                     width : "150px",
@@ -1334,7 +1334,7 @@
                             return "-";
                         }
                     }
-                }
+                }*/
             ]
         }).data("kendoGrid");
 
