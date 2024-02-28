@@ -2,6 +2,7 @@ package com.duzon.custom.expend.service.impl;
 
 import com.duzon.custom.expend.dao.ExpendDAO;
 import com.duzon.custom.expend.dao.FNpUserCardServiceADAO;
+import com.duzon.custom.expend.etc.CommonConvert;
 import com.duzon.custom.expend.service.ExpendService;
 import com.google.gson.Gson;
 import org.springframework.stereotype.Service;
@@ -9,6 +10,7 @@ import com.google.gson.reflect.TypeToken;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -74,18 +76,29 @@ public class ExpendServiceImpl implements ExpendService {
     }
 
     @Override
-    public Map<String, Object> setCardMoney(Map<String, Object> params) {
+    public Map<String, Object> setCardMoney(Map<String, Object> params) throws Exception{
         Map<String, Object> result = new HashMap<>();
         String status = "";
         String message = "";
 
-        int updateCheck = (int) expendDAO.update("Expend.setCardMoney", params);
-        if(updateCheck > 0){
-            message = "처리되었습니다.";
-            status = "200";
-        }else{
-            message = "저장 중 오류 발생";
-            status = "500";
+        if(params.containsKey("cardTransData")){
+            try{
+                List<Map<String, Object>> paramsList = new ArrayList<>();
+                paramsList = CommonConvert.CommonGetJSONToListMap(CommonConvert.CommonGetStr(params.get("cardTransData")));
+                if(paramsList.size() > 0){
+                    for(int i = 0 ; i < paramsList.size() ; i++){
+                        params.putAll(paramsList.get(i));
+                        expendDAO.insert("Expend.setCardModifyLog", params);
+                        expendDAO.update("Expend.setCardMoney", params);
+                    }
+                }
+                message = "처리되었습니다.";
+                status = "200";
+            }catch (Exception e){
+                message = "저장 중 오류 발생";
+                status = "500";
+            }
+
         }
         result.put("status", status);
         result.put("message", message);

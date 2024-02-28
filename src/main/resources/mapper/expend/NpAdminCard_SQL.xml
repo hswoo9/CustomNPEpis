@@ -96,6 +96,7 @@
 			, IFNULL(send.approve_stat_code_desc, '-') AS approve_stat_code_desc
 			, IFNULL(send.draft_dept_name, '-') AS draft_dept_name
 			, IFNULL(send.draft_emp_name, '-') AS draft_emp_name
+			, (SELECT COUNT(*) FROM DJ_EPIS.V_CARD_MODIFY_LOG WHERE sync_id = card.sync_id) AS modify_count
 		FROM    NEOS.t_ex_card_aq_tmp card
 		LEFT	JOIN NEOS.t_ex_card c
 		ON	card.card_num = replace(c.card_num,'-','')

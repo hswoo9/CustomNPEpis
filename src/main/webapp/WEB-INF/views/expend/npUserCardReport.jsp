@@ -86,6 +86,10 @@
         outline: 0;
         color: #4a4a4a !important;
     }
+
+    .modify {
+        background-color: #b3b3b382;
+    }
 </style>
 <body>
 <form id="excelDownload" name="excel" method="post">
@@ -298,7 +302,8 @@
                 compSeq : "${ViewBag.empInfo.compSeq}",
                 userSe : "${ViewBag.empInfo.userSe}",
                 deptSeq : "${ViewBag.empInfo.deptSeq}",
-                bizSeq : "${ViewBag.empInfo.bizSeq}"
+                bizSeq : "${ViewBag.empInfo.bizSeq}",
+                empName : "${ViewBag.empInfo.empName}",
             }
         },
         Param : {
@@ -327,7 +332,7 @@
                 paraemters.authNumLength = ($("#authNumLength").val() || ''); /* 승인/취소 */
 
                 //브랜치 조회 여부 Y 조회 N 미조회
-                paraemters.branch = "Y";
+                paraemters.branch = "N";
 
                 paraemters.orderBy = 'ASC';
 
@@ -1323,6 +1328,21 @@
                     field : "erp_bgt2_name",
                     title : "항",
                     width : "150px"
+                }, {
+                    field : "",
+                    title : "수정내역",
+                    width : "150px",
+                    template : function(item){
+                        if(item.modify_count != null){
+                            if(item.modify_count > 0){
+                                return '<a class="text_blue" style="text-decoration:underline;cursor:pointer;" onClick="javascript:fnModifyLog(' + item.syncId + ')" title="수정내역 상세보기">상세보기</a>';
+                            }else{
+                                return "";
+                            }
+                        }else{
+                            return "";
+                        }
+                    }
                 }/*, {
                     field : "",
                     title : "상신자",
@@ -1335,13 +1355,36 @@
                         }
                     }
                 }*/
-            ]
+            ],
+            dataBound: function(e) {
+                var columns = e.sender.columns;
+                var columnIndex = this.wrapper.find(".k-grid-header [data-field=" + "UnitsInStock" + "]").index();
+                var rows = e.sender.tbody.children();
+                for (var j = 0; j < rows.length; j++) {
+                    // Get the current row.
+                    var row = $(rows[j]);
+                    // Get the dataItem of the current row.
+                    var dataItem = e.sender.dataItem(row);
+
+                    var units = dataItem.get("modify_count");
+
+                    var cell = row.children().eq(columnIndex);
+                    if(units > 0){
+                        row.addClass("modify");
+                    }
+
+                }
+            }
         }).data("kendoGrid");
 
         $('.cardPop').click(function(){
             var popup = window.open("/exp/expend/np/user/UserCardDetailPop.do?syncId=" + $(this).attr("syncId") , "" , "width=432, height=489 , scrollbars=yes");
         });
 
+    }
+
+    function fnModifyLog(syncId){
+``
     }
 
     /* ## table render2 ## */
@@ -2313,13 +2356,21 @@
     }
 
     function setCardMoney(key){
+        var grid = $("#divGridArea").data("kendoGrid");
+        var chkSels = $("input[name=chkCard]:checkbox:checked").map(function(idx) {
+            return grid.dataItem( $(this).closest("tr"));
+        }).get();
+
         var params = {
-            reqAmt : $("#reqAmt").val().replace(/,/g, "").replace("-", ""),
-            serAmount : $("#serAmount").val().replace(/,/g, "").replace("-", ""),
-            vatAmt : $("#vatAmt").val().replace(/,/g, "").replace("-", ""),
-            georaeStat : $("#georaeStat").val(),
-            syncId : key
+            modifyReqAmt : $("#reqAmt").val().replace(/,/g, "").replace("-", ""),
+            modifySerAmount : $("#serAmount").val().replace(/,/g, "").replace("-", ""),
+            modifyVatAmt : $("#vatAmt").val().replace(/,/g, "").replace("-", ""),
+            modifyGeoraeStat : $("#georaeStat").val(),
+            cardTransData : JSON.stringify(chkSels),
+            regSeq : Common.GetEmpInfo().empSeq,
+            regName : Common.GetEmpInfo().empName
         }
+
         console.log(params);
 
         if(confirm("저장하시겠습니까?")){

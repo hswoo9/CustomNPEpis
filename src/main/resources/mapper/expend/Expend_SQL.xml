@@ -112,7 +112,48 @@
 
     <update id="setCardMoney" parameterType="map">
         UPDATE NEOS.T_EX_CARD_AQ_TMP
-        SET REQUEST_AMOUNT = #{reqAmt}, AMT_MD_AMOUNT = #{serAmount}, VAT_MD_AMOUNT = #{vatAmt}
+        SET REQUEST_AMOUNT = #{modifyReqAmt}, AMT_MD_AMOUNT = #{modifySerAmount}, VAT_MD_AMOUNT = #{modifyVatAmt}
         WHERE SYNC_ID = #{syncId}
     </update>
+
+    <insert id="setCardModifyLog" parameterType="map">
+        INSERT INTO DJ_EPIS.V_CARD_MODIFY_LOG
+        (
+            sync_id,
+            auth_num,
+            card_num,
+            card_name,
+
+            prev_georae_stat,
+            prev_req_amt,
+            prev_ser_amount,
+            prev_vat_amt,
+
+            modify_georae_stat,
+            modify_req_amt,
+            modify_ser_amount,
+            modify_vat_amt,
+            reg_date,
+            reg_seq,
+            reg_name
+        )
+        VALUES
+        (
+            #{syncId},
+            #{authNum},
+            #{cardNum},
+            #{cardName},
+            #{georaeStat},
+            #{reqAmt},
+            #{serAmount},
+            #{vatAmt},
+            #{modifyGeoraeStat},
+            #{modifyReqAmt},
+            #{modifySerAmount},
+            #{modifyVatAmt},
+            NOW(),
+            #{regSeq},
+            #{regName}
+        )
+    </insert>
 </mapper>

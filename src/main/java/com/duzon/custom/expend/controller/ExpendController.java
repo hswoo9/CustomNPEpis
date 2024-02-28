@@ -141,7 +141,7 @@ public class ExpendController {
     }
 
     @RequestMapping(value = "/expend/setCardMoney.do")
-    public String setCardMoney(@RequestParam Map<String, Object> params, Model model) {
+    public String setCardMoney(@RequestParam Map<String, Object> params, Model model)  throws Exception{
         logger.debug("setResCardUse");
         model.addAttribute("result", expendService.setCardMoney(params));
         return "jsonView";

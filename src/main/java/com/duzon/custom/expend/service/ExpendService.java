@@ -13,7 +13,7 @@ public interface ExpendService {
 
     List<Map<String, Object>> getResTradeList(Map<String, Object> params);
 
-    Map<String, Object> setCardMoney(Map<String, Object> params);
+    Map<String, Object> setCardMoney(Map<String, Object> params) throws Exception;
 
 
 }
