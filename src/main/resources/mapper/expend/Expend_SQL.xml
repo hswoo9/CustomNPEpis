@@ -156,4 +156,146 @@
             #{regName}
         )
     </insert>
+
+    <select id="getModifyLogList" parameterType="map" resultType="map">
+        SELECT
+            *
+            , DATE_FORMAT(REG_DATE, '%Y-%m-%d %H:%i') AS regDateTime
+            , DATE_FORMAT(REG_DATE, '%Y-%m-%d') AS regDate
+        FROM
+            DJ_EPIS.V_CARD_MODIFY_LOG
+        WHERE SYNC_ID = #{syncId}
+        ORDER BY REG_DATE DESC
+    </select>
+
+    <select id="getOriginalData" parameterType="map" resultType="map">
+        SELECT
+        card.sync_id				AS syncId
+        , card.iss_dt
+        , card.iss_sq
+        , CASE card.georae_stat
+        WHEN '1' THEN 'N'
+        WHEN '0' THEN 'Y'
+        ELSE card.georae_stat
+        END AS georaeStat /* 구분 ( 승인 / 취소 ) */
+        , ( CASE
+        WHEN IFNULL(georae_stat, '') = 'Y' OR IFNULL(georae_stat, '') = '0'
+        THEN '취소'
+        ELSE '승인'
+        END )	AS georaeStatName
+        , card.georae_coll	AS georaeColl
+        , card.auth_date	AS authDate /* 승인일시 */
+        , card.auth_time	AS authTime
+        , card.auth_num		AS authNum /* 승인번호 */
+        , card.merc_name	AS partnerName /* 사용처 */
+        , card.merc_saup_no	AS partnerNo /* 사업자번호 */
+        , c.card_name		AS cardName /* 카드명 */
+        , card.card_num		AS cardNum /* 카드번호 */
+        , card.request_amount	AS reqAmt /* 금액 */
+        , card.amt_md_amount	AS stdAmt /* 공급가액 */
+        , card.vat_md_amount	AS vatAmt /* 부가세 */
+        , card.ser_amount	AS serAmount /* 서비스 금액 */
+        , '' 			AS cardPublicYn /* 공개범위 여부 */
+        , card.sync_id 		AS syncId /* 카드 내역 고유 아이디 */
+        , c.card_code		AS cardCode /* 카드 코드 */
+        , IFNULL(send.form_seq, '')			AS formSeq
+
+        , IFNULL(send.doc_seq, '')		AS docSeq
+        , IFNULL(send.doc_emp_name, '') 	AS docEmpName
+        , IFNULL(send.doc_emp_name, '') 	AS sendEmpName
+        , IFNULL(send.doc_no, '') 		AS docNo
+        , IFNULL(send.doc_title, '')		AS docTitle
+        , IFNULL(send.doc_status, '')		AS docStatus
+        , IFNULL(send.use_code, '')		AS sendYN
+        , IFNULL(send.use_code, '')		AS sendYn
+        , IFNULL(send.use_code, '')		AS send_yn
+        , IFNULL(send.use_code, '')		AS approYN
+        , IFNULL(send.use_code, '')		AS approYn
+        , IFNULL(send.use_code, '')		AS appro_yn
+        , IFNULL(notUse.not_use_emp_name, '')	AS notUseEmpName
+        , IFNULL(notUse.use_code, 'Y')		AS useYN
+        , IFNULL(notUse.use_code, 'Y')		AS useYn
+        , IFNULL(notUse.use_code, 'Y')		AS use_yn
+        , IFNULL(receive.transfer_name, '')	AS transferName
+        , IFNULL(receive.use_code, '')		AS receiveYN
+        , IFNULL(receive.use_code, '')		AS receiveYn
+        , IFNULL(receive.use_code, '')		AS receive_yn
+        , IFNULL(send.res_note, '') AS res_note
+        , IFNULL(send.res_note, '-') AS res_note
+        , IFNULL(send.mgt_name, '-') AS mgt_name
+        , IFNULL(send.erp_budget_name, '-') AS erp_budget_name
+        , IFNULL(send.erp_bgt1_name, '-') AS erp_bgt1_name
+        , IFNULL(send.erp_bgt2_name, '-') AS erp_bgt2_name
+        , IFNULL(send.erp_bgt3_name, '-') AS erp_bgt3_name
+        , IFNULL(send.approve_stat_code_desc, '-') AS approve_stat_code_desc
+        , IFNULL(send.draft_dept_name, '-') AS draft_dept_name
+        , IFNULL(send.draft_emp_name, '-') AS draft_emp_name
+        , (SELECT COUNT(*) FROM DJ_EPIS.V_CARD_MODIFY_LOG WHERE sync_id = card.sync_id) AS modify_count
+        FROM    NEOS.t_ex_card_aq_tmp card
+        LEFT	JOIN NEOS.t_ex_card c
+        ON	card.card_num = replace(c.card_num,'-','')
+        LEFT	JOIN (
+        SELECT	DISTINCT
+        'Y'	AS use_code
+        , sync_id
+        , IFNULL(d.doc_seq, '')	AS doc_seq
+        , IFNULL((SELECT emp_name FROM NEOS.t_co_emp_multi WHERE lang_code = 'kr' AND emp_seq = d.emp_seq), '') AS doc_emp_name
+        , d.doc_no
+        , IFNULL(ar.c_riaftertitle, ta.doc_title) AS doc_title
+        , doc_status
+        , IFNULL(ta.form_id, '') form_seq
+        , IFNULL(rh.res_note, '') res_note
+        , IFNULL(rh.mgt_name, '-') mgt_name
+        , IFNULL(rb.erp_budget_name, '-') erp_budget_name
+        , IFNULL(rb.erp_bgt1_name, '-') erp_bgt1_name
+        , IFNULL(rb.erp_bgt2_name, '-') erp_bgt2_name
+        , IFNULL(rb.erp_bgt3_name, '-') erp_bgt3_name
+        , IFNULL(DI.APPROVE_STAT_CODE_DESC, '-') approve_stat_code_desc
+        , IFNULL(DI.DRAFT_DEPT_NAME, '-') draft_dept_name
+        , IFNULL(DI.DRAFT_EMP_NAME, '-') draft_emp_name
+        FROM 	NEOS.t_ex_card_aq_tmp	c
+        INNER JOIN	NEOS.t_exnp_restrade t
+        ON	c.sync_id = t.interface_seq
+        INNER JOIN	NEOS.t_exnp_resdoc	d
+        ON	d.res_doc_seq = t.res_doc_seq
+        INNER JOIN NEOS.t_exnp_reshead rh
+        ON t.res_seq = rh.res_seq
+        INNER JOIN NEOS.t_exnp_resbudget rb
+        ON t.budget_seq = rb.budget_seq
+        LEFT JOIN NEOS.a_recordinfo ar
+        ON	d.doc_seq = ar.c_dikeycode
+        LEFT JOIN NEOS.teag_appdoc ta
+        ON	d.doc_seq = ta.doc_id
+
+        LEFT JOIN DJ_EPIS.A_DOC_INFO DI
+        ON d.doc_seq = DI.DOC_ID
+
+        WHERE	d.doc_seq IS NOT NULL
+        AND	IFNULL(t.interface_type, '') = 'card'
+        AND	IFNULL(d.doc_status, '008') IN ( '001', '002', '003', '004', '008', '009','20', '30', '90' )
+        AND	IFNULL(del_yn, 'N')	= 'N'
+        )	send
+        ON	card.sync_id = send.sync_id
+        LEFT JOIN	(
+        SELECT
+        'Y'	AS use_code
+        , sync_id	AS sync_id
+        , transfer_name	AS transfer_name
+        FROM	NEOS.t_ex_card_transfer  t
+        WHERE	IFNULL(use_yn, 'Y')  = 'Y'
+        AND 	IFNULL(receive_seq, '') != ''
+        )	receive
+        ON	card.sync_id = receive.sync_id
+        LEFT JOIN	(
+        SELECT
+        'N'		AS use_code
+        , sync_id	AS sync_id
+        , IFNULL((SELECT emp_name FROM NEOS.t_co_emp_multi WHERE lang_code = 'kr' AND emp_seq = aq.use_yn_emp_seq), '')	AS not_use_emp_name
+        FROM	NEOS.t_ex_card_transfer	aq
+        WHERE	IFNULL(use_yn, 'N')  = 'N'
+        )	notUse
+        ON	card.sync_id = notUse.sync_id
+        WHERE card.sync_id = #{syncId}
+        GROUP BY card.card_num, card.auth_date, card.auth_num, card.auth_time, card.georae_stat, card.georae_coll
+    </select>
 </mapper>

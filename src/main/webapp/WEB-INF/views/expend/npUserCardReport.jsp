@@ -1384,7 +1384,108 @@
     }
 
     function fnModifyLog(syncId){
-``
+
+        $.ajax({
+            type: 'post',
+            url: "<c:url value='/expend/getModifyLogList.do' />",
+            datatype: 'json',
+            async: false,
+            data: {syncId : syncId},
+            success: function (data) {
+                console.log(data);
+                var html = "";
+                if(data.data != null){
+                    if(data.data.originalData != null){
+                        var originalData = data.data.originalData;
+                        html = "<div class='eft_div fwb mt5'>변경 전</div>";
+                        html += "<table class='customTable' style='margin-top: 10px;'>";
+                        html += "<thead>";
+                        html += "<tr>";
+                        html += "<th>사용처</th>";
+                        html += "<th>카드명</th>";
+                        html += "<th>금액</th>";
+                        html += "<th>공급가액</th>";
+                        html += "<th>부가세</th>";
+                        html += "</tr>";
+                        html += "</thead>";
+
+                        html += "<tbody>";
+                        html += "<tr>";
+                        html += "<td>"+ originalData.partnerName +"</td>";
+                        html += "<td>"+ originalData.cardName +"</td>";
+
+                        if(originalData.georaeStat == "N" || originalData.georaeStat == "A"){
+                            html += "<td>"+ Common.Format.Amt(originalData.reqAmt) +"</td>";
+                            html += "<td>"+ Common.Format.Amt(originalData.stdAmt + originalData.serAmount) +"</td>";
+                            html += "<td>"+ Common.Format.Amt(originalData.vatAmt) +"</td>";
+                        } else {
+                            html += "<td>"+ Common.Format.Amt(Math.abs(originalData.reqAmt) * -1) +"</td>";
+                            html += "<td>"+ Common.Format.Amt(Math.abs(originalData.stdAmt + originalData.serAmount) * -1) +"</td>";
+                            html += "<td>"+ Common.Format.Amt(Math.abs(originalData.vatAmt) * -1) +"</td>";
+                        }
+                        html += "</tr>";
+                        html += "</tbody>";
+                        html += "</table>";
+                        html += "<div class='eft_div fwb mt5'>변경내역</div>";
+                        if(data.data.logList != null){
+                            html += "<table class='customTable' style='margin-top: 10px;'>";
+                            html += "<thead>";
+                            html += "<tr>";
+                            html += "<th>변경일</th>";
+                            html += "<th>변경자</th>";
+                            html += "<th>금액</th>";
+                            html += "<th>공급가액</th>";
+                            html += "<th>부가세</th>";
+                            html += "</tr>";
+                            html += "</thead>";
+
+                            html += "<tbody>";
+                            html += "<tr>";
+                            var logList = data.data.logList;
+                            for(var i = 0 ; i < logList.length ; i++){
+                                html += "<tr>";
+                                html += "<td>" + logList[i].regDate + "</td>";
+                                html += "<td>" + logList[i].reg_name + "</td>";
+                                if(logList[i].modify_georae_stat == "N" || logList[i].modify_georae_stat == "A"){
+                                    html += "<td>"+ Common.Format.Amt(logList[i].modify_req_amt) +"</td>";
+                                    html += "<td>"+ Common.Format.Amt(logList[i].modify_ser_amount) +"</td>";
+                                    html += "<td>"+ Common.Format.Amt(logList[i].modify_vat_amt) +"</td>";
+                                } else {
+                                    html += "<td>"+ Common.Format.Amt(Math.abs(logList[i].modify_req_amt) * -1) +"</td>";
+                                    html += "<td>"+ Common.Format.Amt(Math.abs(logList[i].modify_ser_amount) * -1) +"</td>";
+                                    html += "<td>"+ Common.Format.Amt(Math.abs(logList[i].modify_vat_amt) * -1) +"</td>";
+                                }
+                                html += "</tr>";
+                            }
+                            html += "</tbody>";
+                            html += "</table>";
+                        }
+
+
+
+                    }
+
+                    historyTemplate = $('<div style="padding: 20px;">'+ html +'</div>');
+
+                    historyTemplate.kendoWindow({
+                        title: "금액수정",
+                        visible: false,
+                        modal: true,
+                        width : 1200,
+                        height : 500,
+                        position : {
+                            top : 300,
+                            left : 400
+                        },
+                        close: function () {
+                            historyTemplate.remove();
+                        }
+                    });
+
+                    historyTemplate.data("kendoWindow").open();
+                }
+            }
+        });
     }
 
     /* ## table render2 ## */
@@ -2264,6 +2365,7 @@
     }
 
     var template = "";
+    var historyTemplate = "";
 
     function fnOverseasApproval(){
         /*var chkSels = $("input[name=chkCard]:checkbox:checked").map(function(idx) {

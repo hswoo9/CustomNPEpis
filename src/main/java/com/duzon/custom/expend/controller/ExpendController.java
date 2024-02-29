@@ -147,6 +147,13 @@ public class ExpendController {
         return "jsonView";
     }
 
+    @RequestMapping(value = "/expend/getModifyLogList.do")
+    public String getModifyLogList(@RequestParam Map<String, Object> params, Model model) {
+        logger.debug("setResCardUse");
+        model.addAttribute("data", expendService.getModifyLogList(params));
+        return "jsonView";
+    }
+
     private Map<String, Object> getPublicLoginVo(LoginVO loginVo) {
         Map<String, Object> returnObj = new HashMap<>();
         if (loginVo == null)

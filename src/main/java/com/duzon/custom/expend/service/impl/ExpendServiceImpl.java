@@ -76,6 +76,16 @@ public class ExpendServiceImpl implements ExpendService {
     }
 
     @Override
+    public Map<String, Object> getModifyLogList(Map<String, Object> params) {
+        Map<String, Object> resultMap = new HashMap<>();
+        Map<String, Object> originalData = (Map<String, Object>) expendDAO.selectOne("Expend.getOriginalData", params);
+        List<Map<String, Object>> logList = expendDAO.selectList("Expend.getModifyLogList", params);
+        resultMap.put("originalData", originalData);
+        resultMap.put("logList", logList);
+        return resultMap;
+    }
+
+    @Override
     public Map<String, Object> setCardMoney(Map<String, Object> params) throws Exception{
         Map<String, Object> result = new HashMap<>();
         String status = "";
