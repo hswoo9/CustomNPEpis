@@ -332,7 +332,7 @@
                 paraemters.authNumLength = ($("#authNumLength").val() || ''); /* 승인/취소 */
 
                 //브랜치 조회 여부 Y 조회 N 미조회
-                paraemters.branch = "N";
+                paraemters.branch = "Y";
 
                 paraemters.orderBy = 'ASC';
 
@@ -999,6 +999,49 @@
             gCardExcelData[idx].erpBgt2NameExcel = (item.erp_bgt2_name || "-");
             gCardExcelData[idx].docEmpNameExcel = (item.docEmpName || "-");
             gCardExcelData[idx].etcExcel = '-';
+            gCardExcelData[idx].resNote = (item.res_note || "");;
+
+            if (item.sendYn === 'Y') {
+                item.formSeq = item.formSeq || 0;
+                if(item.approve_stat_code_desc != null && item.approve_stat_code_desc != "-"){
+                    gCardExcelData[idx].approvalStatus = item.approve_stat_code_desc;
+                }else{
+                    gCardExcelData[idx].approvalStatus = fnGetDocStatusLabel(item.docStatus);
+                }
+
+            } if((item.useYn || 'Y') == 'N'){
+                if(item.approve_stat_code_desc != null && item.approve_stat_code_desc != "-"){
+                    gCardExcelData[idx].approvalStatus = item.approve_stat_code_desc;
+                }else{
+                    gCardExcelData[idx].approvalStatus = '${CL.ex_notUse}';
+                }
+            }
+            else {
+                if(item.approve_stat_code_desc != null && item.approve_stat_code_desc != "-"){
+                    gCardExcelData[idx].approvalStatus = item.approve_stat_code_desc;
+                }else{
+                    gCardExcelData[idx].approvalStatus = '${CL.ex_noRes}';
+                }
+            }
+
+            if (item.sendYn === 'Y') {
+                gCardExcelData[idx].approvalName = item.sendEmpName;
+            } if((item.useYn || 'Y') == 'N'){
+                gCardExcelData[idx].approvalName = item.notUseEmpName;
+            }
+            else {
+                gCardExcelData[idx].approvalName = "";
+            }
+
+            if (item.sendYn === 'Y') {
+                if(item.approve_stat_code_desc != null && item.approve_stat_code_desc != "-"){
+                    gCardExcelData[idx].approvalDocNo = item.docNo;
+                }else{
+                    gCardExcelData[idx].approvalDocNo = item.docNo;
+                }
+            }else{
+                gCardExcelData[idx].approvalDocNo = "";
+            }
 
         });
 
@@ -1044,6 +1087,11 @@
             cardStatusExcel : '카드상태',
             branchTypeExcel : '가맹점업종',
             cardNameExcel : '카드별칭',
+
+            approvalStatus : '결의상태',
+            approvalName : '결의자',
+            approvalDocNo : '문서번호',
+            resNote : '적요',
             mgtNameExcel : '사업명',
             erpBgt1NameExcel : '관',
             erpBgt2NameExcel : '항'
