@@ -165,10 +165,14 @@
                 <dt style="width: 70px;">${CL.ex_resCondition}</dt>
                 <dd style="width: 279px;" class="mr5">
                     <select style="width: 70px;" id="selDocStatus" class="selectmenu">
-                        <option value="">${CL.ex_all}  <!--전체--></option>
-                        <option value="Y">${CL.ex_res}  <!--${CL.ex_res}--></option>
-                        <option value="N">${CL.ex_noRes}  <!--${CL.ex_noRes}--></option>
-                        <option value="UN">${CL.ex_notUse}  <!--미사용--> </option>
+                        <option value="">전체</option>
+                        <option value="111">임시저장</option>
+                        <option value="10">상신</option>
+                        <option value="20">결재중</option>
+                        <option value="30">반려</option>
+                        <option value="40">회수</option>
+                        <option value="50">재상신</option>
+                        <option value="100">최종결재</option>
                     </select>
                 </dd>
                 <dt>${CL.ex_resPerson}</dt>
@@ -332,7 +336,7 @@
                 paraemters.authNumLength = ($("#authNumLength").val() || ''); /* 승인/취소 */
 
                 //브랜치 조회 여부 Y 조회 N 미조회
-                paraemters.branch = "Y";
+                paraemters.branch = "N";
 
                 paraemters.orderBy = 'ASC';
 
@@ -1003,22 +1007,22 @@
 
             if (item.sendYn === 'Y') {
                 item.formSeq = item.formSeq || 0;
-                if(item.approve_stat_code_desc != null && item.approve_stat_code_desc != "-"){
-                    gCardExcelData[idx].approvalStatus = item.approve_stat_code_desc;
+                if(item.approve_stat_desc != null && item.approve_stat_desc != "-"){
+                    gCardExcelData[idx].approvalStatus = item.approve_stat_desc;
                 }else{
                     gCardExcelData[idx].approvalStatus = fnGetDocStatusLabel(item.docStatus);
                 }
 
             } if((item.useYn || 'Y') == 'N'){
-                if(item.approve_stat_code_desc != null && item.approve_stat_code_desc != "-"){
-                    gCardExcelData[idx].approvalStatus = item.approve_stat_code_desc;
+                if(item.approve_stat_desc != null && item.approve_stat_desc != "-"){
+                    gCardExcelData[idx].approvalStatus = item.approve_stat_desc;
                 }else{
                     gCardExcelData[idx].approvalStatus = '${CL.ex_notUse}';
                 }
             }
             else {
-                if(item.approve_stat_code_desc != null && item.approve_stat_code_desc != "-"){
-                    gCardExcelData[idx].approvalStatus = item.approve_stat_code_desc;
+                if(item.approve_stat_desc != null && item.approve_stat_desc != "-"){
+                    gCardExcelData[idx].approvalStatus = item.approve_stat_desc;
                 }else{
                     gCardExcelData[idx].approvalStatus = '${CL.ex_noRes}';
                 }
@@ -1034,7 +1038,7 @@
             }
 
             if (item.sendYn === 'Y') {
-                if(item.approve_stat_code_desc != null && item.approve_stat_code_desc != "-"){
+                if(item.approve_stat_desc != null && item.approve_stat_desc != "-"){
                     gCardExcelData[idx].approvalDocNo = item.docNo;
                 }else{
                     gCardExcelData[idx].approvalDocNo = item.docNo;
@@ -1305,22 +1309,22 @@
                     template : function(item){
                         if (item.sendYn === 'Y') {
                             item.formSeq = item.formSeq || 0;
-                            if(item.approve_stat_code_desc != null && item.approve_stat_code_desc != "-"){
-                                return '<a class="text_blue eaPop" style="text-decoration:underline;cursor:pointer;" onClick="javascript:fnAppdocPop(' + item.docSeq + ', ' + item.formSeq + ' )" title="전자결재 정보 상세 팝업보기">' + item.approve_stat_code_desc + '</a>';
+                            if(item.approve_stat_desc != null && item.approve_stat_desc != "-"){
+                                return '<a class="text_blue eaPop" style="text-decoration:underline;cursor:pointer;" onClick="javascript:fnAppdocPop(' + item.docSeq + ', ' + item.formSeq + ' )" title="전자결재 정보 상세 팝업보기">' + item.approve_stat_desc + '</a>';
                             }else{
                                 return '<a class="text_blue eaPop" style="text-decoration:underline;cursor:pointer;" onClick="javascript:fnAppdocPop(' + item.docSeq + ', ' + item.formSeq + ' )" title="전자결재 정보 상세 팝업보기">' + fnGetDocStatusLabel(item.docStatus) + '</a>';
                             }
 
                         } if((item.useYn || 'Y') == 'N'){
-                            if(item.approve_stat_code_desc != null && item.approve_stat_code_desc != "-"){
-                                return item.approve_stat_code_desc;
+                            if(item.approve_stat_desc != null && item.approve_stat_desc != "-"){
+                                return item.approve_stat_desc;
                             }else{
                                 return '${CL.ex_notUse}';
                             }
                         }
                         else {
-                            if(item.approve_stat_code_desc != null && item.approve_stat_code_desc != "-"){
-                                return item.approve_stat_code_desc;
+                            if(item.approve_stat_desc != null && item.approve_stat_desc != "-"){
+                                return item.approve_stat_desc;
                             }else{
                                 return '${CL.ex_noRes}';
                             }
@@ -1891,7 +1895,7 @@
         var georaeStat = searchParam.searchGeoraeStat;
         var sendYn = searchParam.searchSendYn;
         var docEmpName = searchParam.searchApprovalEmpName;
-        var useYn = searchParam.searchSendYn;
+        /*var useYn = searchParam.searchSendYn;
         if(useYn == 'UN'){
             sendYn = useYn = 'N';
         }
@@ -1900,7 +1904,7 @@
         }
         else {
             useYn = '';
-        }
+        }*/
 
 
         for(var i = 0; i < aaData.length; i++){
@@ -1933,15 +1937,15 @@
 
 
 
-            /* 결의상태 체크 */
+            /*/!* 결의상태 체크 *!/
             if( (item.sendYn || 'N') .indexOf(sendYn) == -1){
                 continue;
             }
 
-            /* 사용여부 체크 */
+            /!* 사용여부 체크 *!/
             if( (item.useYn || 'Y') .indexOf(useYn) == -1){
                 continue;
-            }
+            }*/
 
             /* 승인시각 누락 필터링 */
             item.authTime = item.authTime || '000000';

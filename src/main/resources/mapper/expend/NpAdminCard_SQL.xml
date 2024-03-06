@@ -94,6 +94,8 @@
 			, IFNULL(send.erp_bgt2_name, '-') AS erp_bgt2_name
 			, IFNULL(send.erp_bgt3_name, '-') AS erp_bgt3_name
 			, IFNULL(send.approve_stat_code_desc, '-') AS approve_stat_code_desc
+			, IFNULL(send.approve_stat_code, '-') AS approve_stat_code
+			, IFNULL(send.approve_stat_desc, '-') AS approve_stat_desc
 			, IFNULL(send.draft_dept_name, '-') AS draft_dept_name
 			, IFNULL(send.draft_emp_name, '-') AS draft_emp_name
 			, (SELECT COUNT(*) FROM DJ_EPIS.V_CARD_MODIFY_LOG WHERE sync_id = card.sync_id) AS modify_count
@@ -117,8 +119,19 @@
 				, IFNULL(rb.erp_bgt2_name, '-') erp_bgt2_name
 				, IFNULL(rb.erp_bgt3_name, '-') erp_bgt3_name
 				, IFNULL(DI.APPROVE_STAT_CODE_DESC, '-') approve_stat_code_desc
+				, IFNULL(DI.APPROVE_STAT_CODE, '') approve_stat_code
 				, IFNULL(DI.DRAFT_DEPT_NAME, '-') draft_dept_name
 				, IFNULL(DI.DRAFT_EMP_NAME, '-') draft_emp_name
+				, (CASE
+				    WHEN (DI.APPROVE_STAT_CODE = '100' OR DI.APPROVE_STAT_CODE = '101') THEN '최종결재'
+					WHEN DI.APPROVE_STAT_CODE = '111' THEN '임시저장'
+				    WHEN DI.APPROVE_STAT_CODE = '10' THEN '상신'
+				    WHEN DI.APPROVE_STAT_CODE = '20' THEN '결재중'
+				    WHEN DI.APPROVE_STAT_CODE = '30' THEN '반려'
+				    WHEN DI.APPROVE_STAT_CODE = '40' THEN '회수'
+				    WHEN DI.APPROVE_STAT_CODE = '50' THEN '재상신'
+				    ELSE '-'
+				    END) AS approve_stat_desc
 			FROM 	NEOS.t_ex_card_aq_tmp	c
 			INNER JOIN	NEOS.t_exnp_restrade t
 			ON	c.sync_id = t.interface_seq
@@ -165,7 +178,17 @@
 		<if test="authNumLength != null and authNumLength != ''">
 			AND LENGTH(card.auth_num) = #{authNumLength}
 		</if>
+		<if test="searchSendYn != null and searchSendYn != ''">
+			<choose>
+				<when test='searchSendYn.equals("100")'>
+					AND send.approve_stat_code in ('100', '101')
+				</when>
+		  		<otherwise>
+					AND send.approve_stat_code = #{searchSendYn}
+				</otherwise>
+			</choose>
 
+		</if>
 		GROUP BY card.card_num, card.auth_date, card.auth_num, card.auth_time, card.georae_stat, card.georae_coll
 		ORDER BY auth_date DESC, auth_time DESC 
 	</select>
