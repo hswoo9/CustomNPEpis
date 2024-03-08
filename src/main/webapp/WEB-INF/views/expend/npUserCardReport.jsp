@@ -336,7 +336,7 @@
                 paraemters.authNumLength = ($("#authNumLength").val() || ''); /* 승인/취소 */
 
                 //브랜치 조회 여부 Y 조회 N 미조회
-                paraemters.branch = "N";
+                paraemters.branch = "Y";
 
                 paraemters.orderBy = 'ASC';
 
@@ -1034,7 +1034,15 @@
                 gCardExcelData[idx].approvalName = item.notUseEmpName;
             }
             else {
-                gCardExcelData[idx].approvalName = "";
+                if(item.sendEmpName != null){
+                    if(item.sendEmpName != ''){
+                        gCardExcelData[idx].approvalName = item.sendEmpName;
+                    }else{
+                        gCardExcelData[idx].approvalName = "";
+                    }
+                }else{
+                    gCardExcelData[idx].approvalName = "";
+                }
             }
 
             if (item.sendYn === 'Y') {
