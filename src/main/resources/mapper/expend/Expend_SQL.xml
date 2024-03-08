@@ -222,6 +222,7 @@
         , IFNULL(receive.use_code, '')		AS receive_yn
         , IFNULL(send.res_note, '') AS res_note
         , IFNULL(send.res_note, '-') AS res_note
+        , IFNULL(send.mgt_seq, '-') AS mgt_seq
         , IFNULL(send.mgt_name, '-') AS mgt_name
         , IFNULL(send.erp_budget_name, '-') AS erp_budget_name
         , IFNULL(send.erp_bgt1_name, '-') AS erp_bgt1_name
@@ -245,6 +246,7 @@
         , doc_status
         , IFNULL(ta.form_id, '') form_seq
         , IFNULL(rh.res_note, '') res_note
+        , IFNULL(rh.mgt_seq, '-') mgt_seq
         , IFNULL(rh.mgt_name, '-') mgt_name
         , IFNULL(rb.erp_budget_name, '-') erp_budget_name
         , IFNULL(rb.erp_bgt1_name, '-') erp_bgt1_name

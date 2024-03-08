@@ -998,6 +998,7 @@
             gCardExcelData[idx].cardNameExcel = (item.cardName || "-");
             gCardExcelData[idx].cardName2Excel = (item.cardName2 || "-");
 
+            gCardExcelData[idx].mgtSeqExcel = (item.mgt_seq || "-");
             gCardExcelData[idx].mgtNameExcel = (item.mgt_name || "-");
             gCardExcelData[idx].erpBgt1NameExcel = (item.erp_bgt1_name || "-");
             gCardExcelData[idx].erpBgt2NameExcel = (item.erp_bgt2_name || "-");
@@ -1105,6 +1106,7 @@
             approvalDocNo : '문서번호',
             resNote : '적요',
             mgtNameExcel : '사업명',
+            mgtSeqExcel : '사업코드',
             erpBgt1NameExcel : '관',
             erpBgt2NameExcel : '항'
             //docEmpNameExcel : '상신자'
@@ -1380,6 +1382,10 @@
                     field : "mgt_name",
                     title : "사업명",
                     width : "200px"
+                }, {
+                    field : "mgt_seq",
+                    title : "사업코드",
+                    width : "100px"
                 }, {
                     field : "erp_bgt1_name",
                     title : "관",
