@@ -188,6 +188,35 @@
                     </select>
                 </dd>
             </dl>
+            <dl>
+                <dt style="width: 70px;">문서번호</dt>
+                <dd style="width: 290px;" class="mr5">
+                    <input id="docNo" type="text" value="" />
+                </dd>
+                <dt>적요</dt>
+                <dd class="mr5" style="width: 271px;">
+                    <input id="resNote" type="text" value="" />
+                </dd>
+                <dt>사업명</dt>
+                <dd class="mr5" style="padding-left: 40px;">
+                    <input id="mgtName" type="text" value="" />
+                </dd>
+            </dl>
+            <dl>
+                <dt style="width: 70px;">사업코드</dt>
+                <dd class="mr5" style="width: 246px;">
+                    <input id="mgtSeq" type="text" value="" />
+                </dd>
+                <dt style="width: 70px;">관</dt>
+                <dd class="mr5" style="width: 240px;">
+                    <input id="erpBgt1Name" type="text" value="" />
+                </dd>
+                <dt style="width: 70px;">항</dt>
+                <dd class="mr5" style="padding-left: 40px;">
+                    <input id="erpBgt2Name" type="text" value="" />
+                </dd>
+            </dl>
+
         </div>
         <div id="" class="controll_btn btn_div cl">
             <div class="left_div fwb mt5">
@@ -337,6 +366,15 @@
 
                 //브랜치 조회 여부 Y 조회 N 미조회
                 paraemters.branch = "Y";
+
+                paraemters.docNo = $("#docNo").val();
+                paraemters.resNote = $("#resNote").val();
+                paraemters.mgtName = $("#mgtName").val();
+                paraemters.mgtSeq = $("#mgtSeq").val();
+                paraemters.erpBgt1Name = $("#erpBgt1Name").val();
+                paraemters.erpBgt2Name = $("#erpBgt2Name").val();
+
+
 
                 paraemters.orderBy = 'ASC';
 
@@ -1105,8 +1143,8 @@
             approvalName : '결의자',
             approvalDocNo : '문서번호',
             resNote : '적요',
-            mgtNameExcel : '사업명',
             mgtSeqExcel : '사업코드',
+            mgtNameExcel : '사업명',
             erpBgt1NameExcel : '관',
             erpBgt2NameExcel : '항'
             //docEmpNameExcel : '상신자'
@@ -1379,13 +1417,13 @@
                         return (item.res_note || "");
                     }
                 }, {
-                    field : "mgt_name",
-                    title : "사업명",
-                    width : "200px"
-                }, {
                     field : "mgt_seq",
                     title : "사업코드",
                     width : "100px"
+                }, {
+                    field : "mgt_name",
+                    title : "사업명",
+                    width : "200px"
                 }, {
                     field : "erp_bgt1_name",
                     title : "관",

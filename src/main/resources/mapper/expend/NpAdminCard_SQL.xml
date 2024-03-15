@@ -86,7 +86,6 @@
 			, IFNULL(receive.use_code, '')		AS receiveYN
 			, IFNULL(receive.use_code, '')		AS receiveYn
 			, IFNULL(receive.use_code, '')		AS receive_yn
-			, IFNULL(send.res_note, '') AS res_note
 			, IFNULL(send.res_note, '-') AS res_note
 			, IFNULL(send.mgt_seq, '-') AS mgt_seq
 			, IFNULL(send.mgt_name, '-') AS mgt_name
@@ -127,11 +126,11 @@
 				, (CASE
 				    WHEN (DI.APPROVE_STAT_CODE = '100' OR DI.APPROVE_STAT_CODE = '101') THEN '최종결재'
 					WHEN DI.APPROVE_STAT_CODE = '111' THEN '임시저장'
-				    WHEN DI.APPROVE_STAT_CODE = '10' THEN '상신'
-				    WHEN DI.APPROVE_STAT_CODE = '20' THEN '결재중'
+				    WHEN DI.APPROVE_STAT_CODE = '10' THEN '최종결재'
+				    WHEN DI.APPROVE_STAT_CODE = '20' THEN '최종결재'
 				    WHEN DI.APPROVE_STAT_CODE = '30' THEN '반려'
 				    WHEN DI.APPROVE_STAT_CODE = '40' THEN '회수'
-				    WHEN DI.APPROVE_STAT_CODE = '50' THEN '재상신'
+				    WHEN DI.APPROVE_STAT_CODE = '50' THEN '최종결재'
 				    ELSE '-'
 				    END) AS approve_stat_desc
 			FROM 	NEOS.t_ex_card_aq_tmp	c
@@ -191,6 +190,31 @@
 			</choose>
 
 		</if>
+		<if test="docNo != null and docNo != ''">
+			AND send.doc_no LIKE CONCAT('%', #{docNo}, '%')
+		</if>
+
+		<if test="resNote != null and resNote != ''">
+			AND send.res_note LIKE CONCAT('%', #{resNote}, '%')
+		</if>
+
+		<if test="mgtName != null and mgtName != ''">
+			AND send.mgt_name LIKE CONCAT('%', #{mgtName}, '%')
+		</if>
+
+		<if test="mgtSeq != null and mgtSeq != ''">
+			AND send.mgt_seq LIKE CONCAT('%', #{mgtSeq}, '%')
+		</if>
+
+		<if test="erpBgt1Name != null and erpBgt1Name != ''">
+			AND send.erp_bgt1_name LIKE CONCAT('%', #{erpBgt1Name}, '%')
+		</if>
+
+		<if test="erpBgt2Name != null and erpBgt2Name != ''">
+			AND send.erp_bgt2_name LIKE CONCAT('%', #{erpBgt2Name}, '%')
+		</if>
+
+
 		GROUP BY card.card_num, card.auth_date, card.auth_num, card.auth_time, card.georae_stat, card.georae_coll
 		ORDER BY auth_date DESC, auth_time DESC 
 	</select>
