@@ -88,7 +88,11 @@
     }
 
     .modify {
-        background-color: #b3b3b382;
+        background-color: #b3b3b382 !important;
+    }
+
+    .yellow {
+        background-color: #ffff0085 !important;
     }
 </style>
 <body>
@@ -167,11 +171,9 @@
                     <select style="width: 70px;" id="selDocStatus" class="selectmenu">
                         <option value="">전체</option>
                         <option value="111">임시저장</option>
-                        <option value="10">상신</option>
                         <option value="20">결재중</option>
                         <option value="30">반려</option>
                         <option value="40">회수</option>
-                        <option value="50">재상신</option>
                         <option value="100">최종결재</option>
                     </select>
                 </dd>
@@ -1471,6 +1473,13 @@
                     var dataItem = e.sender.dataItem(row);
 
                     var units = dataItem.get("modify_count");
+
+                    if(dataItem.useName != null){
+                        if(dataItem.useName == "확정"){
+                            row.addClass("yellow");
+                        }
+                    }
+
 
                     var cell = row.children().eq(columnIndex);
                     if(units > 0){

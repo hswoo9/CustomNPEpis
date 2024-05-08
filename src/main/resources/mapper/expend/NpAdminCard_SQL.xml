@@ -99,6 +99,11 @@
 			, IFNULL(send.draft_dept_name, '-') AS draft_dept_name
 			, IFNULL(send.draft_emp_name, '-') AS draft_emp_name
 			, (SELECT COUNT(*) FROM DJ_EPIS.V_CARD_MODIFY_LOG WHERE sync_id = card.sync_id) AS modify_count
+			, case
+				when ds.use_yn = 'N' then '처리제외'
+				when ds.custom_use_yn = 'Y' then '확정'
+				else '미확정'
+				end AS useName
 		FROM    NEOS.t_ex_card_aq_tmp card
 		LEFT	JOIN NEOS.t_ex_card c
 		ON	card.card_num = replace(c.card_num,'-','')
@@ -133,6 +138,7 @@
 				    WHEN DI.APPROVE_STAT_CODE = '50' THEN '최종결재'
 				    ELSE '-'
 				    END) AS approve_stat_desc
+				,d.res_doc_seq
 			FROM 	NEOS.t_ex_card_aq_tmp	c
 			INNER JOIN	NEOS.t_exnp_restrade t
 			ON	c.sync_id = t.interface_seq
@@ -174,7 +180,11 @@
 			FROM	NEOS.t_ex_card_transfer	aq
 			 WHERE	IFNULL(use_yn, 'N')  = 'N'
 		)	notUse
-		ON	card.sync_id = notUse.sync_id			
+		ON	card.sync_id = notUse.sync_id
+
+		LEFT JOIN cust_epis.res_doc_submit ds
+		ON send.res_doc_seq = ds.resDocSeq
+
 		WHERE   card.auth_date BETWEEN #{cardAuthDateFrom} AND #{cardAuthDateTo}
 		<if test="authNumLength != null and authNumLength != ''">
 			AND LENGTH(card.auth_num) = #{authNumLength}
