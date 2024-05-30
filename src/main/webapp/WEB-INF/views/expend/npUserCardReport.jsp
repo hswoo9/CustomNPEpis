@@ -94,6 +94,10 @@
     .yellow {
         background-color: #ffff0085 !important;
     }
+
+    .lightgray {
+        background-color: lightgray !important;
+    }
 </style>
 <body>
 <form id="excelDownload" name="excel" method="post">
@@ -1473,6 +1477,8 @@
                     var dataItem = e.sender.dataItem(row);
 
                     var units = dataItem.get("modify_count");
+                    var cell = row.children().eq(columnIndex);
+
 
                     if(dataItem.useName != null){
                         if(dataItem.useName == "확정"){
@@ -1480,8 +1486,15 @@
                         }
                     }
 
+                    if((dataItem.useYn || 'Y') == 'N'){
+                        if(dataItem.approve_stat_desc != null && dataItem.approve_stat_desc != "-"){
+                        }else{
+                            row.addClass("lightgray");
+                        }
+                    }
 
-                    var cell = row.children().eq(columnIndex);
+
+
                     if(units > 0){
                         row.addClass("modify");
                     }
