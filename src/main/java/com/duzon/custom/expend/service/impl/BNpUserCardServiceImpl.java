@@ -40,11 +40,14 @@ public class BNpUserCardServiceImpl implements BNpUserCardService {
                     List<Map<String, Object>> stradeList = resAlphaG20DAO.selectTradeAddrInfo2(params);
                     if (list.size() > 0) {
                         for(int i = 0 ; i < list.size() ; i++) {
-                            Map<String, Object> erpBgMap = budgetDAO.getErpBgInfo(list.get(i));
+                            if(list.get(i).containsKey("erpCompSeq") && list.get(i).containsKey("erpGisuDate") && list.get(i).containsKey("erpGisuSq") && list.get(i).containsKey("erpBgSq")){
+                                Map<String, Object> erpBgMap = budgetDAO.getErpBgInfo(list.get(i));
 
-                            if (erpBgMap != null) {
-                                list.get(i).putAll(erpBgMap);
+                                if (erpBgMap != null) {
+                                    list.get(i).putAll(erpBgMap);
+                                }
                             }
+
                         }
 
 

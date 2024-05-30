@@ -99,10 +99,10 @@
 			, IFNULL(send.draft_dept_name, '-') AS draft_dept_name
 			, IFNULL(send.draft_emp_name, '-') AS draft_emp_name
 
-			, IFNULL(send.erpCompSeq, '-') AS erpCompSeq
-			, IFNULL(send.erpGisuDate, '-') AS erpGisuDate
-			, IFNULL(send.erpGisuSq, '-') AS erpGisuSq
-			, IFNULL(send.erpBgSq, '-') AS erpBgSq
+			, send.erpCompSeq AS erpCompSeq
+			, send.erpGisuDate AS erpGisuDate
+			, send.erpGisuSq AS erpGisuSq
+			, send.erpBgSq AS erpBgSq
 
 			, (SELECT COUNT(*) FROM DJ_EPIS.V_CARD_MODIFY_LOG WHERE sync_id = card.sync_id) AS modify_count
 			, case
@@ -127,10 +127,10 @@
 				, IFNULL(rh.mgt_seq, '-') mgt_seq
 				, IFNULL(rh.mgt_name, '-') mgt_name
 
-				, IFNULL(rh.erp_comp_seq, '-') erpCompSeq
-				, IFNULL(rb.erp_gisu_date, '-') erpGisuDate
-				, IFNULL(rb.erp_gisu_sq, '-') erpGisuSq
-				, IFNULL(rb.erp_bg_sq, '-') erpBgSq
+				, rh.erp_comp_seq as erpCompSeq
+				, rb.erp_gisu_date as erpGisuDate
+				, rb.erp_gisu_sq as erpGisuSq
+				, rb.erp_bg_sq as  erpBgSq
 
 				, IFNULL(rb.erp_budget_name, '-') erp_budget_name
 				, IFNULL(rb.erp_bgt1_name, '-') erp_bgt1_name
