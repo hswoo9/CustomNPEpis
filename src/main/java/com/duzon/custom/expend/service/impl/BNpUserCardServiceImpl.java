@@ -1,5 +1,6 @@
 package com.duzon.custom.expend.service.impl;
 
+import com.duzon.custom.budget.dao.BudgetDAO;
 import com.duzon.custom.expend.etc.ResultVO;
 import com.duzon.custom.expend.service.BNpUserCardService;
 import com.duzon.custom.expend.service.FNpUserCardService;
@@ -20,6 +21,9 @@ public class BNpUserCardServiceImpl implements BNpUserCardService {
     @Resource(name = "ResAlphaG20DAO")
     private ResAlphaG20DAO resAlphaG20DAO;
 
+    @Resource ( name = "BudgetDAO" )
+    private BudgetDAO budgetDAO;
+
     @Override
     public ResultVO GetCardList(ResultVO params) throws Exception {
         return null;
@@ -35,6 +39,15 @@ public class BNpUserCardServiceImpl implements BNpUserCardService {
                 if (params.get("branch").toString().equals("Y")) {
                     List<Map<String, Object>> stradeList = resAlphaG20DAO.selectTradeAddrInfo2(params);
                     if (list.size() > 0) {
+                        for(int i = 0 ; i < list.size() ; i++) {
+                            Map<String, Object> erpBgMap = budgetDAO.getErpBgInfo(list.get(i));
+
+                            if (erpBgMap != null) {
+                                list.get(i).putAll(erpBgMap);
+                            }
+                        }
+
+
                         if (stradeList.size() > 0) {
                             for(int i = 0 ; i < list.size() ; i++) {
                                 for(int j = 0 ; j < stradeList.size() ; j++) {
