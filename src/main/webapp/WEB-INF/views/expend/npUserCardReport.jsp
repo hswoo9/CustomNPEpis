@@ -179,6 +179,8 @@
                         <option value="30">반려</option>
                         <option value="40">회수</option>
                         <option value="100">최종결재</option>
+                        <option value="999">미결의</option>
+                        <option value="0000">집행확정</option>
                     </select>
                 </dd>
                 <dt>${CL.ex_resPerson}</dt>
@@ -364,13 +366,16 @@
                 paraemters.searchCardInfo = searchCardInfo.substr(1); /* 카드번호 */
                 paraemters.searchPartnerNo = ($("#txtOwnerRegNo").val() || ''); /* 사업자등록번호 */
                 paraemters.searchSendYn = ($("#selDocStatus").val() || ''); /* 결의상태 */
+                if($("#selDocStatus").val() == "999" || $("#selDocStatus").val() == "0000"){
+                    paraemters.searchSendYn = '';
+                }
                 paraemters.searchApprovalEmpName = ($("#txtEmpName").val() || ''); /* 결의자 */
                 paraemters.searchPartnerName = ($("#txtMercName").val() || ''); /* 사용자 */
                 paraemters.searchAuthNum = ($("#txtCardAuthNum").val() || ''); /* 승인번호 */
                 paraemters.searchGeoraeStat = ($("#georaeStatus").val() || ''); /* 승인/취소 */
                 paraemters.authNumLength = ($("#authNumLength").val() || ''); /* 승인/취소 */
 
-                //브랜치 조회 여부 Y 조회 N 미조회
+                //브랜치 조회 여부 Y 조회 N 미조 회
                 paraemters.branch = "Y";
 
                 paraemters.docNo = $("#docNo").val();
@@ -904,7 +909,7 @@
 
                 $.ajax({
                     type : 'post',
-                    url : "<c:url value='/expend/np/user/NPUserCardUseYN.do' />",
+                    url : "/exp/expend/np/user/NPUserCardUseYN.do",
                     datatype : 'json',
                     async : false,
                     data : ajaxParam,
@@ -1053,21 +1058,103 @@
             if (item.sendYn === 'Y') {
                 item.formSeq = item.formSeq || 0;
                 if(item.approve_stat_desc != null && item.approve_stat_desc != "-"){
-                    gCardExcelData[idx].approvalStatus = item.approve_stat_desc;
+                    if(item.approve_stat_code != null){
+                        switch(item.approve_stat_code){
+                            case "111" :
+                                gCardExcelData[idx].approvalStatus = "임시저장";
+                            break;
+                            case "20" :
+                                gCardExcelData[idx].approvalStatus = "결재중";
+                            break;
+                            case "30" :
+                                gCardExcelData[idx].approvalStatus = "반려";
+                            break;
+                            case "40" :
+                                gCardExcelData[idx].approvalStatus = "회수";
+                            break;
+                            case "100" :
+                                gCardExcelData[idx].approvalStatus = "최종결재";
+                            break;
+                            case "101" :
+                                gCardExcelData[idx].approvalStatus = "전결";
+                            break;
+                            default :
+                                gCardExcelData[idx].approvalStatus = "임시저장";
+                            break;
+                        }
+
+                    }else{
+                        gCardExcelData[idx].approvalStatus = item.approve_stat_desc;
+                    }
+
                 }else{
                     gCardExcelData[idx].approvalStatus = fnGetDocStatusLabel(item.docStatus);
                 }
 
             } if((item.useYn || 'Y') == 'N'){
                 if(item.approve_stat_desc != null && item.approve_stat_desc != "-"){
-                    gCardExcelData[idx].approvalStatus = item.approve_stat_desc;
+                    if(item.approve_stat_code != null){
+                        switch(item.approve_stat_code){
+                            case "111" :
+                                gCardExcelData[idx].approvalStatus = "임시저장";
+                                break;
+                            case "20" :
+                                gCardExcelData[idx].approvalStatus = "결재중";
+                                break;
+                            case "30" :
+                                gCardExcelData[idx].approvalStatus = "반려";
+                                break;
+                            case "40" :
+                                gCardExcelData[idx].approvalStatus = "회수";
+                                break;
+                            case "100" :
+                                gCardExcelData[idx].approvalStatus = "최종결재";
+                                break;
+                            case "101" :
+                                gCardExcelData[idx].approvalStatus = "전결";
+                                break;
+                            default :
+                                gCardExcelData[idx].approvalStatus = "임시저장";
+                                break;
+                        }
+
+                    }else{
+                        gCardExcelData[idx].approvalStatus = item.approve_stat_desc;
+                    }
                 }else{
                     gCardExcelData[idx].approvalStatus = '${CL.ex_notUse}';
                 }
             }
             else {
                 if(item.approve_stat_desc != null && item.approve_stat_desc != "-"){
-                    gCardExcelData[idx].approvalStatus = item.approve_stat_desc;
+                    if(item.approve_stat_code != null){
+                        switch(item.approve_stat_code){
+                            case "111" :
+                                gCardExcelData[idx].approvalStatus = "임시저장";
+                                break;
+                            case "20" :
+                                gCardExcelData[idx].approvalStatus = "결재중";
+                                break;
+                            case "30" :
+                                gCardExcelData[idx].approvalStatus = "반려";
+                                break;
+                            case "40" :
+                                gCardExcelData[idx].approvalStatus = "회수";
+                                break;
+                            case "100" :
+                                gCardExcelData[idx].approvalStatus = "최종결재";
+                                break;
+                            case "101" :
+                                gCardExcelData[idx].approvalStatus = "전결";
+                                break;
+                            default :
+                                gCardExcelData[idx].approvalStatus = "임시저장";
+                                break;
+                        }
+
+                    }else{
+                        gCardExcelData[idx].approvalStatus = item.approve_stat_desc;
+                    }
                 }else{
                     gCardExcelData[idx].approvalStatus = '${CL.ex_noRes}';
                 }
@@ -1100,6 +1187,11 @@
                 gCardExcelData[idx].approvalDocNo = "";
             }
 
+            if(item.useName != null){
+                if(item.useName == "확정"){
+                    gCardExcelData[idx].approvalStatus = "집행확정";
+                }
+            }
         });
 
         var excelHeader = {
@@ -1361,28 +1453,83 @@
                     title : "결의상태",
                     width : "150px",
                     template : function(item){
-                        if (item.sendYn === 'Y') {
-                            item.formSeq = item.formSeq || 0;
-                            if(item.approve_stat_desc != null && item.approve_stat_desc != "-"){
-                                return '<a class="text_blue eaPop" style="text-decoration:underline;cursor:pointer;" onClick="javascript:fnAppdocPop(' + item.docSeq + ', ' + item.formSeq + ' )" title="전자결재 정보 상세 팝업보기">' + item.approve_stat_desc + '</a>';
-                            }else{
-                                return '<a class="text_blue eaPop" style="text-decoration:underline;cursor:pointer;" onClick="javascript:fnAppdocPop(' + item.docSeq + ', ' + item.formSeq + ' )" title="전자결재 정보 상세 팝업보기">' + fnGetDocStatusLabel(item.docStatus) + '</a>';
+                        if(item.useName != null){
+
+                            if (item.sendYn === 'Y') {
+                                item.formSeq = item.formSeq || 0;
+                                if(item.approve_stat_desc != null && item.approve_stat_desc != "-"){
+                                    if(item.useName == "확정"){
+                                        return '<a class="text_blue eaPop" style="text-decoration:underline;cursor:pointer;" onClick="javascript:fnAppdocPop(' + item.docSeq + ', ' + item.formSeq + ' )" title="전자결재 정보 상세 팝업보기">집행확정</a>';
+                                    }else{
+                                        return '<a class="text_blue eaPop" style="text-decoration:underline;cursor:pointer;" onClick="javascript:fnAppdocPop(' + item.docSeq + ', ' + item.formSeq + ' )" title="전자결재 정보 상세 팝업보기">' + item.approve_stat_desc + '</a>';
+                                    }
+
+                                }else{
+                                    if(item.useName == "확정"){
+                                        return '<a class="text_blue eaPop" style="text-decoration:underline;cursor:pointer;" onClick="javascript:fnAppdocPop(' + item.docSeq + ', ' + item.formSeq + ' )" title="전자결재 정보 상세 팝업보기">집행확정</a>';
+                                    }else{
+                                        return '<a class="text_blue eaPop" style="text-decoration:underline;cursor:pointer;" onClick="javascript:fnAppdocPop(' + item.docSeq + ', ' + item.formSeq + ' )" title="전자결재 정보 상세 팝업보기">' + fnGetDocStatusLabel(item.docStatus) + '</a>';
+                                    }
+
+                                }
+
                             }
 
-                        } if((item.useYn || 'Y') == 'N'){
-                            if(item.approve_stat_desc != null && item.approve_stat_desc != "-"){
-                                return item.approve_stat_desc;
-                            }else{
-                                return '${CL.ex_notUse}';
+                            if((item.useYn || 'Y') == 'N'){
+                                if(item.approve_stat_desc != null && item.approve_stat_desc != "-"){
+                                    if(item.useName == "확정"){
+                                        return "집행확정";
+                                    }else{
+                                        return item.approve_stat_desc;
+                                    }
+                                }else{
+                                    if(item.useName == "확정"){
+                                        return "집행확정";
+                                    }else{
+                                        return '${CL.ex_notUse}';
+                                    }
+                                }
+                            }else {
+                                if(item.approve_stat_desc != null && item.approve_stat_desc != "-"){
+                                    if(item.useName == "확정"){
+                                        return "집행확정";
+                                    }else{
+                                        return item.approve_stat_desc;
+                                    }
+                                }else{
+                                    if(item.useName == "확정"){
+                                        return "집행확정";
+                                    }else{
+                                        return '${CL.ex_noRes}';
+                                    }
+                                }
+                            }
+                        }else{
+                            if (item.sendYn === 'Y') {
+                                item.formSeq = item.formSeq || 0;
+                                if(item.approve_stat_desc != null && item.approve_stat_desc != "-"){
+                                    return '<a class="text_blue eaPop" style="text-decoration:underline;cursor:pointer;" onClick="javascript:fnAppdocPop(' + item.docSeq + ', ' + item.formSeq + ' )" title="전자결재 정보 상세 팝업보기">' + item.approve_stat_desc + '</a>';
+                                }else{
+                                    return '<a class="text_blue eaPop" style="text-decoration:underline;cursor:pointer;" onClick="javascript:fnAppdocPop(' + item.docSeq + ', ' + item.formSeq + ' )" title="전자결재 정보 상세 팝업보기">' + fnGetDocStatusLabel(item.docStatus) + '</a>';
+                                }
+
+                            }
+
+                            if((item.useYn || 'Y') == 'N'){
+                                if(item.approve_stat_desc != null && item.approve_stat_desc != "-"){
+                                    return item.approve_stat_desc;
+                                }else{
+                                    return '${CL.ex_notUse}';
+                                }
+                            }else {
+                                if(item.approve_stat_desc != null && item.approve_stat_desc != "-"){
+                                    return item.approve_stat_desc;
+                                }else{
+                                    return '${CL.ex_noRes}';
+                                }
                             }
                         }
-                        else {
-                            if(item.approve_stat_desc != null && item.approve_stat_desc != "-"){
-                                return item.approve_stat_desc;
-                            }else{
-                                return '${CL.ex_noRes}';
-                            }
-                        }
+
                     }
                 }, {
                     field : "",
@@ -1969,7 +2116,13 @@
         var georaeStat = searchParam.searchGeoraeStat;
         var sendYn = searchParam.searchSendYn;
         var docEmpName = searchParam.searchApprovalEmpName;
-        /*var useYn = searchParam.searchSendYn;
+
+
+        var useYn = $("#selDocStatus").val();
+        if(useYn == "999"){
+            sendYn = 'N';
+        }
+        /*
         if(useYn == 'UN'){
             sendYn = useYn = 'N';
         }
@@ -2010,6 +2163,15 @@
             }
 
 
+            if( (item.sendYn || 'N') .indexOf(sendYn) == -1){
+                continue;
+            }
+
+            if(useYn == "0000" && item.useName != null){
+                if(item.useName != "확정"){
+                    continue;
+                }
+            }
 
             /*/!* 결의상태 체크 *!/
             if( (item.sendYn || 'N') .indexOf(sendYn) == -1){
