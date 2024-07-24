@@ -642,4 +642,9 @@ public class BudgetDAO extends AbstractDAO{
 	public List<Map<String, Object>> getAdocuDocInfoTempList(Map<String, Object> params){
 		return selectList("BudgetMaria.getAdocuDocInfoTempList", params);
 	}
+
+	public Map<String, Object> getMapData(Map<String, Object> map) {
+		return (Map<String, Object>)selectOne("BudgetMaria.getMapData", map);
+	}
+
 }

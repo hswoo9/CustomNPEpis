@@ -1548,6 +1548,54 @@
                     }
                 }, {
                     field : "",
+                    title : "사용자",
+                    width : "300px",
+                    template : function(item){
+                        var returnUser = "";
+                        if(item.mapData != null){
+                            console.log("-----------------------------------------------");
+                            console.log(JSON.parse(item.mapData.mapData));
+                            var mapData = JSON.parse(item.mapData.mapData);
+                            console.log(mapData.length);
+                            console.log("-----------------------------------------------");
+                            if(mapData.length > 0){
+                                for(var i = 0 ; i < mapData.length; i++){
+                                    if(i == 0){
+                                        returnUser += mapData[i].djDailyExpUser == null ? "" : mapData[i].djDailyExpUser;
+                                    }else{
+                                        returnUser += mapData[i].djDailyExpUser == null ? "" : ", " + mapData[i].djDailyExpUser;
+                                    }
+
+                                }
+                            }else if(mapData != null){
+                                returnUser = mapData.djWorkFeeUser2;
+                            }
+                        }
+                        if (item.sendYn === 'Y') {
+                            item.formSeq = item.formSeq || 0;
+                            if(returnUser != ""){
+                                return returnUser;
+                            }else{
+                                return item.sendEmpName;
+                            }
+
+                        } if((item.useYn || 'Y') == 'N'){
+                            if(returnUser != ""){
+                                return returnUser;
+                            }else{
+                                return item.notUseEmpName;
+                            }
+                        }
+                        else {
+                            if(returnUser != ""){
+                                return returnUser;
+                            }else{
+                                return "-";
+                            }
+                        }
+                    }
+                }, {
+                    field : "",
                     title : "문서번호",
                     width : "150px",
                     template : function(item){

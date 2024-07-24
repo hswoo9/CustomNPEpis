@@ -98,6 +98,7 @@
 			, IFNULL(send.approve_stat_desc, '-') AS approve_stat_desc
 			, IFNULL(send.draft_dept_name, '-') AS draft_dept_name
 			, IFNULL(send.draft_emp_name, '-') AS draft_emp_name
+			, send.res_doc_seq
 
 			, send.erpCompSeq AS erpCompSeq
 			, send.erpGisuDate AS erpGisuDate

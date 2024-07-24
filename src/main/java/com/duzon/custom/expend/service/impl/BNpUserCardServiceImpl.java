@@ -101,6 +101,13 @@ public class BNpUserCardServiceImpl implements BNpUserCardService {
                 }
             }
 
+            if(list.size() > 0){
+                for(int i = 0 ; i < list.size() ; i++){
+                    if(list.get(i).containsKey("res_doc_seq")){
+                        list.get(i).put("mapData", budgetDAO.getMapData(list.get(i)));
+                    }
+                }
+            }
             result.setAaData(list);
         }
 

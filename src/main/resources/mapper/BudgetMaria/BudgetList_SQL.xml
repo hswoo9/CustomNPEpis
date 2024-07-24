@@ -1227,4 +1227,20 @@
 		WHERE APPR_STATUS IN('20', '80', '90')
 		AND APPRO_KEY = concat('DJADOCUEA_', #{ISU_DT}, '_', #{ISU_SQ})
 	</select>
+
+	<select id="getMapData" parameterType="map" resultType="map">
+		select
+			*
+		from
+		(
+		select data AS mapData from
+			cust_epis.res_daily_exp
+		where res_doc_seq = #{res_doc_seq}
+		union all
+		select workFeeData AS mapData from
+			cust_epis.res_work_fee
+		where resDocSeq = #{res_doc_seq}
+		) a
+		limit 1
+	</select>
 </mapper>
