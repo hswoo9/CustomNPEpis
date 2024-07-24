@@ -1553,11 +1553,6 @@
                     template : function(item){
                         var returnUser = "";
                         if(item.mapData != null){
-                            console.log("-----------------------------------------------");
-                            console.log(JSON.parse(item.mapData.mapData));
-                            var mapData = JSON.parse(item.mapData.mapData);
-                            console.log(mapData.length);
-                            console.log("-----------------------------------------------");
                             if(mapData.length > 0){
                                 for(var i = 0 ; i < mapData.length; i++){
                                     if(i == 0){
