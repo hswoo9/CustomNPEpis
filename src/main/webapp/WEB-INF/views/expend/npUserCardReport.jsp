@@ -115,7 +115,7 @@
         <div class="top_box">
             <dl>
                 <dt>${CL.ex_approvalDate}</dt>
-                NpUserCardReport<dd>
+               <dd>
                     <div class="dal_div">
                         <!--<input type="text" autocomplete="off" id="txtFromDate" value="" class="inpDateBox puddSetup" pudd-type="datepicker" /> <a href="#n" id="btnFromDate" class="button_dal pudd-type="datepicker""></a>  -->
                         <input type="text" autocomplete="off" id="txtFromDate" value="" class="inpDateBox puddSetup" pudd-type="datepicker" />
@@ -311,6 +311,7 @@
     var gCurrentPage = 1;
     var beforePageLength = 10;
     var gCardExcelData = [];
+    var reqAmtSum = 0;
 
     /* ## 공통함수 정의 ## */
     /* ====================================================================================================================================================== */
@@ -1350,13 +1351,18 @@
                     width : "80px",
                     template : function(item){
                         return '<a class="text_blue cardPop" style="text-decoration:underline;cursor:pointer;" title="법인카드 사용내역 상세 팝업보기" syncId="'+ item.syncId +'">' + (item.authNum || '') + '</a>';
-                    }
+                    },
+                    footerTemplate: "합계"
                 }, {
                     field : "",
                     title : "승인금액",
                     width : "100px",
                     template : function(item){
+                        reqAmtSum += Number((item.georaeStat=='N' || item.georaeStat=='A') ? item.reqAmt:(Math.abs(item.reqAmt) * -1));
                         return (item.georaeStat=='N' || item.georaeStat=='A') ?Common.Format.Amt(item.reqAmt):Common.Format.Amt(Math.abs(item.reqAmt) * -1);
+                    },
+                    footerTemplate: function(){
+                        return "<div style='text-align: center'>"+Common.Format.Amt(reqAmtSum)+"</div>";
                     }
                 }, {
                     field : "",
