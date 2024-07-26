@@ -1241,9 +1241,9 @@
             chainCeoExcel : '가맹점 대표자명',
             inOrOutExcel : '국내외구분',
             branchTypeExcel : '가맹점업종',
+            cardNameExcel : '카드별칭',
             /*cardKindExcel : '카드구분',*/
             /*cardStatusExcel : '카드상태',*/
-            cardNameExcel : '카드별칭',
             //docEmpNameExcel : '상신자'
         }
 
@@ -1570,21 +1570,21 @@
                     template : function(item){
                         return (item.branchType || "-");
                     }
-                }, /*{
-                    field : "",
-                    title : "카드상태",
-                    width : "80px",
-                    template : function(e){
-                        return "";
-                    }
-                },*/  {
+                },{
                     field : "",
                     title : "카드별칭",
                     width : "300px",
                     template : function(item){
                         return (item.cardName || '') ;
                     }
-                }, {
+                },  /*{
+                    field : "",
+                    title : "카드상태",
+                    width : "80px",
+                    template : function(e){
+                        return "";
+                    }
+                },{
                     field : "",
                     title : "사용자",
                     width : "300px",
@@ -1627,7 +1627,7 @@
                             }
                         }
                     }
-                }, {
+                },*/  {
                     field : "",
                     title : "수정내역",
                     width : "150px",
