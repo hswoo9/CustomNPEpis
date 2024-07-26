@@ -115,7 +115,7 @@
         <div class="top_box">
             <dl>
                 <dt>${CL.ex_approvalDate}</dt>
-                <dd>
+                NpUserCardReport<dd>
                     <div class="dal_div">
                         <!--<input type="text" autocomplete="off" id="txtFromDate" value="" class="inpDateBox puddSetup" pudd-type="datepicker" /> <a href="#n" id="btnFromDate" class="button_dal pudd-type="datepicker""></a>  -->
                         <input type="text" autocomplete="off" id="txtFromDate" value="" class="inpDateBox puddSetup" pudd-type="datepicker" />
@@ -1226,25 +1226,24 @@
             reqAmtExcel : '승인금액',
             georaeStatNameExcel : '취소여부',
             partnerNameExcel : '가맹점',
+            approvalStatus : '결의상태',
+            approvalName : '결의자',
+            mgtSeqExcel : '사업코드',
+            mgtNameExcel : '사업명',
+            erpBgt1NameExcel : '관',
+            erpBgt2NameExcel : '항',
+            approvalDocNo : '문서번호',
+            resNote : '적요',
             partnerNoExcel : '가맹점사업자번호',
             mercAddrExcel : '가맹점주소',
             chainCdExcel : '가맹점번호',
             mercTelExcel : '가맹점 전화번호',
             chainCeoExcel : '가맹점 대표자명',
-            cardKindExcel : '카드구분',
             inOrOutExcel : '국내외구분',
-            cardStatusExcel : '카드상태',
             branchTypeExcel : '가맹점업종',
+            /*cardKindExcel : '카드구분',*/
+            /*cardStatusExcel : '카드상태',*/
             cardNameExcel : '카드별칭',
-
-            approvalStatus : '결의상태',
-            approvalName : '결의자',
-            approvalDocNo : '문서번호',
-            resNote : '적요',
-            mgtSeqExcel : '사업코드',
-            mgtNameExcel : '사업명',
-            erpBgt1NameExcel : '관',
-            erpBgt2NameExcel : '항'
             //docEmpNameExcel : '상신자'
         }
 
@@ -1378,77 +1377,7 @@
                     template : function(item){
                         return item.partnerName;
                     }
-                }, {
-                    field : "",
-                    title : "가맹점사업자번호",
-                    width : "150px",
-                    template : function(item){
-                        return Common.Format.RegNo(item.partnerNo);
-                    }
-                }, {
-                    field : "",
-                    title : "가맹점주소",
-                    width : "200px",
-                    template : function(item){
-                        return (item.mercAddr || "-");
-                    }
-                }, {
-                    field : "",
-                    title : "가맹점번호",
-                    width : "100px",
-                    template : function(item){
-                        return (item.chainCd || "-")
-                    }
-                }, {
-                    field : "",
-                    title : "가맹점 전화번호",
-                    width : "150px",
-                    template : function(item){
-                        return Common.Format.Tel(item.mercTel);
-                    }
-                }, {
-                    field : "",
-                    title : "가맹점 대표자명",
-                    width : "150px",
-                    template : function(item){
-                        return (item.chainCeo || "-")
-                    }
-                }, {
-                    field : "",
-                    title : "카드구분",
-                    width : "100px",
-                    template : function(item){
-                        return "";
-                    }
-                }, {
-                    field : "",
-                    title : "국내외구분",
-                    width : "80px",
-                    template : function(item){
-                        return item.authNum.toString().length == 6 ? "국외" : "국내";
-                    }
-                }, {
-                    field : "",
-                    title : "카드상태",
-                    width : "80px",
-                    template : function(e){
-                        return "";
-                    }
-                }, {
-                    field : "",
-                    title : "가맹점업종",
-                    width : "150px",
-                    template : function(item){
-                        return (item.branchType || "-");
-                    }
-                }, {
-                    field : "",
-                    title : "카드별칭",
-                    width : "300px",
-                    template : function(item){
-                        return (item.cardName || '') ;
-                    }
-                }, {
+                },  {
                     field : "",
                     title : "결의상태",
                     width : "150px",
@@ -1546,6 +1475,115 @@
                             return "-";
                         }
                     }
+                },{
+                    field : "mgt_seq",
+                    title : "사업코드",
+                    width : "100px"
+                }, {
+                    field : "mgt_name",
+                    title : "사업명",
+                    width : "200px"
+                }, {
+                    field : "erp_bgt1_name",
+                    title : "관",
+                    width : "150px"
+                }, {
+                    field : "erp_bgt2_name",
+                    title : "항",
+                    width : "150px"
+                }, {
+                    field : "",
+                    title : "문서번호",
+                    width : "150px",
+                    template : function(item){
+                        if (item.sendYn === 'Y') {
+                            item.formSeq = item.formSeq || 0;
+                            if(item.approve_stat_code_desc != null && item.approve_stat_code_desc != "-"){
+                                return '<a class="text_blue eaPop" style="text-decoration:underline;cursor:pointer;" onClick="javascript:fnAppdocPop(' + item.docSeq + ', ' + item.formSeq + ' )" title="전자결재 정보 상세 팝업보기">' + item.docNo + '</a>';
+                            }else{
+                                return '<a class="text_blue eaPop" style="text-decoration:underline;cursor:pointer;" onClick="javascript:fnAppdocPop(' + item.docSeq + ', ' + item.formSeq + ' )" title="전자결재 정보 상세 팝업보기">' + item.docNo + '</a>';
+                            }
+                        }else{
+                            return "-";
+                        }
+                    }
+                },{
+                    field : "",
+                    title : "적요",
+                    width : "300px",
+                    template : function(item){
+                        return (item.res_note || "");
+                    }
+                },{
+                    field : "",
+                    title : "가맹점사업자번호",
+                    width : "150px",
+                    template : function(item){
+                        return Common.Format.RegNo(item.partnerNo);
+                    }
+                }, {
+                    field : "",
+                    title : "가맹점주소",
+                    width : "200px",
+                    template : function(item){
+                        return (item.mercAddr || "-");
+                    }
+                }, {
+                    field : "",
+                    title : "가맹점번호",
+                    width : "100px",
+                    template : function(item){
+                        return (item.chainCd || "-")
+                    }
+                }, {
+                    field : "",
+                    title : "가맹점 전화번호",
+                    width : "150px",
+                    template : function(item){
+                        return Common.Format.Tel(item.mercTel);
+                    }
+                }, {
+                    field : "",
+                    title : "가맹점 대표자명",
+                    width : "150px",
+                    template : function(item){
+                        return (item.chainCeo || "-")
+                    }
+                }, /*{
+                    field : "",
+                    title : "카드구분",
+                    width : "100px",
+                    template : function(item){
+                        return "";
+                    }
+                },*/ {
+                    field : "",
+                    title : "국내외구분",
+                    width : "80px",
+                    template : function(item){
+                        return item.authNum.toString().length == 6 ? "국외" : "국내";
+                    }
+                },{
+                    field : "",
+                    title : "가맹점업종",
+                    width : "150px",
+                    template : function(item){
+                        return (item.branchType || "-");
+                    }
+                }, /*{
+                    field : "",
+                    title : "카드상태",
+                    width : "80px",
+                    template : function(e){
+                        return "";
+                    }
+                },*/  {
+                    field : "",
+                    title : "카드별칭",
+                    width : "300px",
+                    template : function(item){
+                        return (item.cardName || '') ;
+                    }
                 }, {
                     field : "",
                     title : "사용자",
@@ -1589,45 +1627,6 @@
                             }
                         }
                     }
-                }, {
-                    field : "",
-                    title : "문서번호",
-                    width : "150px",
-                    template : function(item){
-                        if (item.sendYn === 'Y') {
-                            item.formSeq = item.formSeq || 0;
-                            if(item.approve_stat_code_desc != null && item.approve_stat_code_desc != "-"){
-                                return '<a class="text_blue eaPop" style="text-decoration:underline;cursor:pointer;" onClick="javascript:fnAppdocPop(' + item.docSeq + ', ' + item.formSeq + ' )" title="전자결재 정보 상세 팝업보기">' + item.docNo + '</a>';
-                            }else{
-                                return '<a class="text_blue eaPop" style="text-decoration:underline;cursor:pointer;" onClick="javascript:fnAppdocPop(' + item.docSeq + ', ' + item.formSeq + ' )" title="전자결재 정보 상세 팝업보기">' + item.docNo + '</a>';
-                            }
-                        }else{
-                            return "-";
-                        }
-                    }
-                }, {
-                    field : "",
-                    title : "적요",
-                    width : "300px",
-                    template : function(item){
-                        return (item.res_note || "");
-                    }
-                }, {
-                    field : "mgt_seq",
-                    title : "사업코드",
-                    width : "100px"
-                }, {
-                    field : "mgt_name",
-                    title : "사업명",
-                    width : "200px"
-                }, {
-                    field : "erp_bgt1_name",
-                    title : "관",
-                    width : "150px"
-                }, {
-                    field : "erp_bgt2_name",
-                    title : "항",
-                    width : "150px"
                 }, {
                     field : "",
                     title : "수정내역",
