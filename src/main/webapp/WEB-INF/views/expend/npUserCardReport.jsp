@@ -711,7 +711,7 @@
                 gCardReportData = aaData;
                 gCardExcelData = gCardReportData;
                 gCurrentPage = 1;
-
+                reqAmtSum = 0;
                 /* 테이블 그리기 */
                 //fnRenderTable2(gCardReportData, ($("#selViewLength").val() || 10));
                 fnRenderTable3(gCardReportData);
@@ -1262,7 +1262,6 @@
     }
 
     function fnRenderTable3(aaData){
-
         $("#divGridArea").kendoGrid({
             dataSource : aaData,
             height : 600,
