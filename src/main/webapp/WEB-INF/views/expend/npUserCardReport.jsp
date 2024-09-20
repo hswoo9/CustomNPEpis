@@ -1589,7 +1589,7 @@
                     template : function(e){
                         return "";
                     }
-                },{
+                },*/{
                     field : "",
                     title : "사용자",
                     width : "300px",
@@ -1632,7 +1632,7 @@
                             }
                         }
                     }
-                },*/  {
+                },  {
                     field : "",
                     title : "수정내역",
                     width : "150px",
