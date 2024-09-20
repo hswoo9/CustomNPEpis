@@ -1596,17 +1596,19 @@
                     template : function(item){
                         var returnUser = "";
                         if(item.mapData != null){
-                            if(mapData.length > 0){
-                                for(var i = 0 ; i < mapData.length; i++){
+                            var tempData = item.mapData.mapData;
+                            tempData = JSON.parse(tempData);
+                            if(tempData.length > 0){
+                                for(var i = 0 ; i < tempData.length; i++){
                                     if(i == 0){
-                                        returnUser += mapData[i].djDailyExpUser == null ? "" : mapData[i].djDailyExpUser;
+                                        returnUser += tempData[i].djDailyExpUser == null ? "" : tempData[i].djDailyExpUser;
                                     }else{
-                                        returnUser += mapData[i].djDailyExpUser == null ? "" : ", " + mapData[i].djDailyExpUser;
+                                        returnUser += tempData[i].djDailyExpUser == null ? "" : ", " + tempData[i].djDailyExpUser;
                                     }
 
                                 }
-                            }else if(mapData != null){
-                                returnUser = mapData.djWorkFeeUser2;
+                            }else if(tempData != null){
+                                returnUser = tempData.djWorkFeeUser2;
                             }
                         }
                         if (item.sendYn === 'Y') {
@@ -2836,6 +2838,7 @@
 
 
     }
+    var testData;
 </script>
 </body>
 </html>
