@@ -1010,6 +1010,46 @@
 
 
         $.each(gCardExcelData, function(idx, item) {
+            var returnUser = "";
+            if(item.mapData != null){
+                var tempData = item.mapData.mapData;
+                tempData = JSON.parse(tempData);
+                if(tempData.length > 0){
+                    for(var i = 0 ; i < tempData.length; i++){
+                        if(i == 0){
+                            returnUser += tempData[i].djDailyExpUser == null ? "" : tempData[i].djDailyExpUser;
+                        }else{
+                            returnUser += tempData[i].djDailyExpUser == null ? "" : ", " + tempData[i].djDailyExpUser;
+                        }
+
+                    }
+                }else if(tempData != null){
+                    returnUser = tempData.djWorkFeeUser2;
+                }
+            }
+            if (item.sendYn === 'Y') {
+                item.formSeq = item.formSeq || 0;
+                if(returnUser != ""){
+                    gCardExcelData[idx].useNameExcel = returnUser;
+                }else{
+                    gCardExcelData[idx].useNameExcel = item.sendEmpName;
+                }
+
+            } if((item.useYn || 'Y') == 'N'){
+                if(returnUser != ""){
+                    gCardExcelData[idx].useNameExcel = returnUser;
+                }else{
+                    gCardExcelData[idx].useNameExcel = item.notUseEmpName;
+                }
+            }
+            else {
+                if(returnUser != ""){
+                    gCardExcelData[idx].useNameExcel = returnUser;
+                }else{
+                    gCardExcelData[idx].useNameExcel = "-";
+                }
+            }
+
             gCardExcelData[idx].cardCompanyExcel = 'NH카드(통합부서)';
             gCardExcelData[idx].cardNumExcel = Common.Format.CardNum2((item.cardNum || ''));
             gCardExcelData[idx].draftDeptNameExcel = (item.draft_dept_name || "-");
@@ -1243,6 +1283,7 @@
             inOrOutExcel : '국내외구분',
             branchTypeExcel : '가맹점업종',
             cardNameExcel : '카드별칭',
+            useNameExcel : '사용자',
             /*cardKindExcel : '카드구분',*/
             /*cardStatusExcel : '카드상태',*/
             //docEmpNameExcel : '상신자'
