@@ -143,10 +143,12 @@
             #{authNum},
             #{cardNum},
             #{cardName},
+
             #{georaeStat},
             #{reqAmt},
-            #{serAmount},
+            #{stdAmt},
             #{vatAmt},
+
             #{modifyGeoraeStat},
             #{modifyReqAmt},
             #{modifySerAmount},

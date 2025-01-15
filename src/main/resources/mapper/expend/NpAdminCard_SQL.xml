@@ -111,6 +111,7 @@
 				when ds.custom_use_yn = 'Y' then '확정'
 				else '미확정'
 				end AS useName
+			,IFNULL(g.workFeeData, '-') AS workFeeData
 		FROM    NEOS.t_ex_card_aq_tmp card
 		LEFT	JOIN NEOS.t_ex_card c
 		ON	card.card_num = replace(c.card_num,'-','')
@@ -197,6 +198,9 @@
 
 		LEFT JOIN cust_epis.res_doc_submit ds
 		ON send.res_doc_seq = ds.resDocSeq
+
+		LEFT JOIN cust_epis.res_work_fee g
+		ON  send.res_doc_seq = g.resDocSeq
 
 		WHERE   card.auth_date BETWEEN #{cardAuthDateFrom} AND #{cardAuthDateTo}
 		<if test="authNumLength != null and authNumLength != ''">

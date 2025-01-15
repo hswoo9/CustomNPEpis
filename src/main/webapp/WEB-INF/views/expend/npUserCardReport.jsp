@@ -1398,10 +1398,13 @@
                     title : "승인금액",
                     width : "100px",
                     template : function(item){
-                        reqAmtSum += Number((item.georaeStat=='N' || item.georaeStat=='A') ? item.reqAmt:(Math.abs(item.reqAmt) * -1));
+                        console.log(item);
+                        if(item.cancelYn != 'Y'){
+                            reqAmtSum += Number((item.georaeStat=='N' || item.georaeStat=='A') ? item.reqAmt:(Math.abs(item.reqAmt) * -1));
+                        }
                         return (item.georaeStat=='N' || item.georaeStat=='A') ?Common.Format.Amt(item.reqAmt):Common.Format.Amt(Math.abs(item.reqAmt) * -1);
                     },
-                    footerTemplate: function(){
+                    footerTemplate: function(item){
                         return "<div style='text-align: center'>"+Common.Format.Amt(reqAmtSum)+"</div>";
                     }
                 }, {
@@ -1536,6 +1539,10 @@
                 }, {
                     field : "erp_bgt2_name",
                     title : "항",
+                    width : "150px"
+                }, {
+                    field : "erp_bgt3_name",
+                    title : "목",
                     width : "150px"
                 }, {
                     field : "",
@@ -1777,7 +1784,9 @@
                         html += "<td>"+ originalData.partnerName +"</td>";
                         html += "<td>"+ originalData.cardName +"</td>";
 
-                        if(originalData.georaeStat == "N" || originalData.georaeStat == "A"){
+                        var logList = data.data.logList;
+
+                        /*if(originalData.georaeStat == "N" || originalData.georaeStat == "A"){
                             html += "<td>"+ Common.Format.Amt(originalData.reqAmt) +"</td>";
                             html += "<td>"+ Common.Format.Amt(originalData.stdAmt + originalData.serAmount) +"</td>";
                             html += "<td>"+ Common.Format.Amt(originalData.vatAmt) +"</td>";
@@ -1785,7 +1794,18 @@
                             html += "<td>"+ Common.Format.Amt(Math.abs(originalData.reqAmt) * -1) +"</td>";
                             html += "<td>"+ Common.Format.Amt(Math.abs(originalData.stdAmt + originalData.serAmount) * -1) +"</td>";
                             html += "<td>"+ Common.Format.Amt(Math.abs(originalData.vatAmt) * -1) +"</td>";
+                        }*/
+
+                        if(logList[logList.length - 1].modify_georae_stat == "N" || logList[logList.length - 1].modify_georae_stat == "A"){
+                            html += "<td>"+ Common.Format.Amt(logList[logList.length - 1].prev_req_amt) +"</td>";
+                            html += "<td>"+ Common.Format.Amt(logList[logList.length - 1].prev_ser_amount) +"</td>";
+                            html += "<td>"+ Common.Format.Amt(logList[logList.length - 1].prev_vat_amt) +"</td>";
+                        } else {
+                            html += "<td>"+ Common.Format.Amt(Math.abs(logList[logList.length - 1].prev_req_amt) * -1) +"</td>";
+                            html += "<td>"+ Common.Format.Amt(Math.abs(logList[logList.length - 1].prev_ser_amount) * -1) +"</td>";
+                            html += "<td>"+ Common.Format.Amt(Math.abs(logList[logList.length - 1].prev_vat_amt) * -1) +"</td>";
                         }
+
                         html += "</tr>";
                         html += "</tbody>";
                         html += "</table>";
@@ -1804,7 +1824,7 @@
 
                             html += "<tbody>";
                             html += "<tr>";
-                            var logList = data.data.logList;
+                            //var logList = data.data.logList;
                             for(var i = 0 ; i < logList.length ; i++){
                                 html += "<tr>";
                                 html += "<td>" + logList[i].regDate + "</td>";
