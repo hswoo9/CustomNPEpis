@@ -1682,6 +1682,26 @@
                             }
                         }
                     }
+                },{
+                    field : "",
+                    title : "참석인원",
+                    width : "150px",
+                    template : function(item) {
+                        if(item.workFeeData == '-'){
+                            return '-';
+                        }else{
+                            try {
+                                var tempData = item.workFeeData;
+                                tempData = JSON.parse(tempData);
+
+                                return tempData.djWorkFeeUserCnt ? tempData.djWorkFeeUserCnt + "명" : "-";
+                            } catch (e) {
+                                console.error("JSON 파싱 오류:", e);
+                                return "error";
+                            }
+                        }
+                    }
+
                 },  {
                     field : "",
                     title : "수정내역",
