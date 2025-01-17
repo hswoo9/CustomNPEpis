@@ -1731,6 +1731,9 @@
                 }*/
             ],
             dataBound: function(e) {
+                reqAmtSum = 0;
+
+
                 var columns = e.sender.columns;
                 var columnIndex = this.wrapper.find(".k-grid-header [data-field=" + "UnitsInStock" + "]").index();
                 var rows = e.sender.tbody.children();
