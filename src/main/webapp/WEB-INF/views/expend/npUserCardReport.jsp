@@ -1092,9 +1092,19 @@
             gCardExcelData[idx].mgtNameExcel = (item.mgt_name || "-");
             gCardExcelData[idx].erpBgt1NameExcel = (item.erp_bgt1_name || "-");
             gCardExcelData[idx].erpBgt2NameExcel = (item.erp_bgt2_name || "-");
+            gCardExcelData[idx].erpBgt3NameExcel = (item.erp_bgt3_name || "-");
             gCardExcelData[idx].docEmpNameExcel = (item.docEmpName || "-");
             gCardExcelData[idx].etcExcel = '-';
-            gCardExcelData[idx].resNote = (item.res_note || "");;
+            gCardExcelData[idx].resNote = (item.res_note || "");
+
+            if(item.workFeeData == '-'){
+                gCardExcelData[idx].workFeeUserExcel = '-';
+            }else{
+                var tempData = item.workFeeData;
+                tempData = JSON.parse(tempData);
+
+                gCardExcelData[idx].workFeeUserExcel = tempData.djWorkFeeUserCnt ? tempData.djWorkFeeUserCnt + "명" : "-";
+            }
 
             if (item.sendYn === 'Y') {
                 item.formSeq = item.formSeq || 0;
@@ -1273,6 +1283,7 @@
             mgtNameExcel : '사업명',
             erpBgt1NameExcel : '관',
             erpBgt2NameExcel : '항',
+            erpBgt3NameExcel : '목',
             approvalDocNo : '문서번호',
             resNote : '적요',
             partnerNoExcel : '가맹점사업자번호',
@@ -1284,6 +1295,7 @@
             branchTypeExcel : '가맹점업종',
             cardNameExcel : '카드별칭',
             useNameExcel : '사용자',
+            workFeeUserExcel : '참석인원',
             /*cardKindExcel : '카드구분',*/
             /*cardStatusExcel : '카드상태',*/
             //docEmpNameExcel : '상신자'
