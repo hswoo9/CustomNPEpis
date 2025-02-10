@@ -100,6 +100,7 @@ public class ExpendServiceImpl implements ExpendService {
                         params.putAll(paramsList.get(i));
                         expendDAO.insert("Expend.setCardModifyLog", params);
                         expendDAO.update("Expend.setCardMoney", params);
+                        expendDAO.update("Expend.setCardSendYn", params);
                     }
                 }
                 message = "처리되었습니다.";

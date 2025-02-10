@@ -116,6 +116,12 @@
         WHERE SYNC_ID = #{syncId}
     </update>
 
+    <update id="setCardSendYn" parameterType="map">
+        UPDATE NEOS.T_EX_CARD_AQ_TMP
+        SET SEND_YN = 'C'
+        WHERE SYNC_ID = #{syncId}
+    </update>
+
     <insert id="setCardModifyLog" parameterType="map">
         INSERT INTO DJ_EPIS.V_CARD_MODIFY_LOG
         (
