@@ -1411,9 +1411,41 @@
                     width : "100px",
                     template : function(item){
                         console.log(item);
-                        if(item.cancelYn != 'Y'){
-                            reqAmtSum += Number((item.georaeStat=='N' || item.georaeStat=='A') ? item.reqAmt:(Math.abs(item.reqAmt) * -1));
+
+                        var notUseFlag = false;
+                        var amt = 0;
+
+                        if(item.useName != null) {
+                            if((item.useYn || 'Y') == 'N'){
+                                if(item.approve_stat_desc == null || item.approve_stat_desc == "-"){
+                                    if(item.useName != "확정"){
+                                        notUseFlag = true;
+                                    }
+                                }
+                            }
+                        }else{
+                            if((item.useYn || 'Y') == 'N'){
+                                if(item.approve_stat_desc == null || item.approve_stat_desc == "-"){
+                                    notUseFlag = true;
+                                }
+                            }
                         }
+
+                        if(item.cancelYn !== 'Y'){
+                            if(item.georaeStat === 'N' || item.georaeStat === 'A') {
+                                if(!notUseFlag){
+                                    amt = Number(item.reqAmt);
+                                }
+                            }else{
+                                amt = Number(Math.abs(item.reqAmt)) * -1;
+                            }
+
+                            reqAmtSum += amt;  // 누적 합계에 더함
+                        }
+
+                        /*if(item.cancelYn != 'Y'){
+                            reqAmtSum += Number((item.georaeStat=='N' || item.georaeStat=='A') ? item.reqAmt:(Math.abs(item.reqAmt) * -1));
+                        }*/
                         return (item.georaeStat=='N' || item.georaeStat=='A') ?Common.Format.Amt(item.reqAmt):Common.Format.Amt(Math.abs(item.reqAmt) * -1);
                     },
                     footerTemplate: function(item){
